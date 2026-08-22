@@ -84,7 +84,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-[72px]">
           
-          {/* 1. Left: Astrotalk Logo */}
+          {/* 1. Left: Instant Future Logo */}
           <div 
             onClick={() => handleSubItemClick('astrologers')}
             className="flex items-center gap-2.5 cursor-pointer group shrink-0"
@@ -93,7 +93,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Sparkles className="w-5 h-5 text-slate-950 stroke-[2.5]" />
             </div>
             <span className={`text-xl sm:text-2xl font-bold tracking-tight font-sans ${isLight ? 'text-slate-950' : 'text-white'}`}>
-              Astrotalk <span className="text-xs text-amber-400 font-normal ml-1">वैदिक</span>
+              Instant Future <span className="text-xs text-amber-400 font-normal ml-1">वैदिक</span>
             </span>
           </div>
 

@@ -100,7 +100,7 @@ export const VipAccessGateOverlay: React.FC<VipAccessGateOverlayProps> = ({
           <div className="text-center space-y-2.5">
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold shadow-sm">
               <Sparkles className="w-3.5 h-3.5 text-[#f7e034]" />
-              <span>एस्ट्रोटॉक आधिकारिक वीआईपी सदस्यता गेट</span>
+              <span>Instant Future आधिकारिक वीआईपी सदस्यता गेट</span>
             </div>
 
             <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">

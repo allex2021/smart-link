@@ -623,11 +623,11 @@ export function App() {
 
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-center text-slate-500">
           <div className="flex items-center gap-2">
-            <span className={`font-black ${isLight ? 'text-slate-900' : 'text-slate-300'}`}>ASTROTALK VEDIC PLATFORM</span>
+            <span className={`font-black ${isLight ? 'text-slate-900' : 'text-slate-300'}`}>INSTANT FUTURE VEDIC PLATFORM</span>
             <span>•</span>
             <span>सटीक बहुभाषी वैदिक ज्योतिष व त्वरित 24/7 मार्गदर्शन</span>
           </div>
-          <p>© 2026 AstroTalk Platform. हिन्दी • English • বাংলা • தமிழ் • తెలుగు • ગુજરાતી • मराठी</p>
+          <p>© 2026 Instant Future Platform. हिन्दी • English • বাংলা • தமிழ் • తెలుగు • ગુજરાતી • मराठी</p>
         </div>
       </footer>
     </div>

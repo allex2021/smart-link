@@ -42,7 +42,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
             <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400">
               <Wallet className="w-4 h-4" />
             </div>
-            <h3 className="text-base font-bold text-white">Astrotalk Wallet</h3>
+            <h3 className="text-base font-bold text-white">Instant Future Wallet</h3>
           </div>
           <button
             onClick={onClose}

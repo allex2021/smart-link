@@ -64,7 +64,7 @@ export const HomePageTrustSection: React.FC = () => {
             <Sparkles className="w-3.5 h-3.5" />
             <span>Real Stories from Verified Users</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-white">Why Millions Love AstroTalk</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-white">Why Millions Love Instant Future</h2>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Over 50 million people have found clarity, hope, and direction through our astrologers.
           </p>

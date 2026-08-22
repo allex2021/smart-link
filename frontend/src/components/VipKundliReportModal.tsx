@@ -364,7 +364,7 @@ export const VipKundliReportModal: React.FC<VipKundliReportModalProps> = ({
 
           {/* Footer Note */}
           <div className="pt-8 text-center text-xs text-slate-500 print:text-slate-600 border-t border-slate-800 print:border-slate-300">
-            <p>© 2026 Astrotalk Platform. Certified Swiss Ephemeris Calculations. All rights reserved.</p>
+            <p>© 2026 Instant Future Platform. Certified Swiss Ephemeris Calculations. All rights reserved.</p>
           </div>
         </div>
       </div>

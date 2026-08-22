@@ -116,7 +116,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLoginSuccess })
           <div>
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-slate-950 font-black" />
-              <h3 className="text-lg font-black tracking-tight">ASTROTALK LOGIN</h3>
+              <h3 className="text-lg font-black tracking-tight">INSTANT FUTURE LOGIN</h3>
             </div>
             <p className="text-xs text-slate-950/80 font-semibold mt-0.5">
               {mode === 'LOGIN' ? 'Welcome back! Sign in to talk to astrologers' : 'Create account & get ₹100 FREE Wallet Bonus'}
