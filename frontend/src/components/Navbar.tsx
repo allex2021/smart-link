@@ -245,7 +245,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
 
-            {/* 3. Free Services Dropdown (Kundli & Matchmaking) */}
+            {/* 3. Vedic Services Dropdown (Kundli & Matchmaking) */}
             <div 
               className="relative"
               onMouseEnter={() => setActiveDropdown('free_services')}
@@ -260,7 +260,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     : 'text-slate-300 hover:text-white hover:bg-slate-900/60'
                 }`}
               >
-                <span>Free Services</span>
+                <span>Vedic Services</span>
                 <ChevronDown className="w-3 h-3 opacity-70" />
               </button>
 
@@ -281,7 +281,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <Compass className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Free Janam Kundli</div>
+                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Vedic Janam Kundli</div>
                       <div className="text-[10px] text-slate-500">Birth chart, Lagna & planets</div>
                     </div>
                   </div>
@@ -550,7 +550,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <span>Talk now</span>
               <span className="text-slate-950/50 font-normal">|</span>
-              <span className="text-[11px]">First Chat Free</span>
+              <span className="text-[11px]">₹99 VIP Access</span>
               <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
             </button>
           </div>

@@ -109,7 +109,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                   <Check className="w-3.5 h-3.5 stroke-[3]" />
                 </div>
                 <span className="text-sm sm:text-base text-slate-300 font-medium">
-                  Get Free detailed kundli & 1000+ Yogas
+                  50+ Page VIP Kundli & 1000+ Yogas
                 </span>
               </div>
 
@@ -129,7 +129,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 onClick={onStartConsultation}
                 className="px-7 py-3.5 rounded-2xl bg-[#f7e034] hover:bg-[#ffe838] text-slate-950 font-black text-sm sm:text-base shadow-[0_0_30px_rgba(247,224,52,0.45)] hover:shadow-[0_0_40px_rgba(247,224,52,0.65)] flex items-center gap-2.5 transition-all transform hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
               >
-                <span>Start Free Chat</span>
+                <span>Start VIP Consultation</span>
                 <ArrowRight className="w-4 h-4 stroke-[3]" />
               </button>
             </div>

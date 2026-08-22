@@ -557,7 +557,7 @@ export function App() {
             <h4 className={`font-bold text-sm mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Horoscope & Kundli</h4>
             <ul className="space-y-2">
               <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('horoscope'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Daily Horoscope (12 Signs)</li>
-              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('kundli'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Free Janam Kundli</li>
+              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('kundli'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Vedic Janam Kundli</li>
               <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('matchmaking'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Kundli Milan (Matching)</li>
             </ul>
           </div>

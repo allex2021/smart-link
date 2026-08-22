@@ -9,6 +9,7 @@ import { VedAstroEngine, VedicYoga, AshtakavargaScore, NumerologyReport } from '
 import { KPAstrologyEngine, KPCuspInfo, KPPlanetInfo, KPRulingPlanets } from '../utils/kpAstrologyEngine';
 import { SwissEphShodashavargaSection } from './SwissEphShodashavargaSection';
 import { KundliChartSVG } from './KundliChartSVG';
+import { VipKundliReportModal } from './VipKundliReportModal';
 
 const CITY_COORDINATES: Record<string, { lat: number; lon: number }> = {
   'New Delhi, India': { lat: 28.6139, lon: 77.2090 },
@@ -39,6 +40,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
   const [lon, setLon] = useState('77.2090');
   const [isCalculating, setIsCalculating] = useState(false);
   const [showSuccessBadge, setShowSuccessBadge] = useState(false);
+  const [isVipReportModalOpen, setIsVipReportModalOpen] = useState(false);
   
   // Visual Chart Styles: North / South / East Indian
   const [chartStyle, setChartStyle] = useState<'NORTH' | 'SOUTH' | 'EAST'>('NORTH');
@@ -182,7 +184,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
     if (!isLifetimeVIP && onOpenVipModal) {
       onOpenVipModal();
     } else {
-      window.print();
+      setIsVipReportModalOpen(true);
     }
   };
 
@@ -238,7 +240,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
             <Sparkles className="w-3.5 h-3.5 text-[#f7e034]" />
             <span>Vedic, KP Astrology & Swiss Ephemeris 16-Varga Engine</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-white">Free Complete Janam Kundli, KP & 16 Vargas</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-white">Complete Vedic Janam Kundli, KP & 16 Vargas</h2>
           <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
             North, South & East Indian charts, KP Cuspal Sub-lords, 16 Divisional Charts (D1-D60), Gochar & Varshphal.
           </p>
@@ -251,7 +253,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
             className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-[#f7e034] to-amber-500 hover:from-amber-400 hover:to-amber-400 text-slate-950 text-xs font-black flex items-center gap-2 shadow-[0_0_20px_rgba(247,224,52,0.4)] transition-all cursor-pointer transform hover:scale-105 active:scale-95"
           >
             <Crown className="w-4 h-4 fill-slate-950" />
-            <span>50-Page VIP Kundli PDF (₹99)</span>
+            <span>{isLifetimeVIP ? '👑 Open 50-Page VIP Kundli PDF' : '50-Page VIP Kundli PDF (₹99)'}</span>
             {!isLifetimeVIP && <Lock className="w-3.5 h-3.5 text-slate-900" />}
           </button>
 
@@ -889,6 +891,23 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
           )}
         </div>
       </div>
+
+      {/* 👑 VIP 50-Page Kundli PDF Report Fullscreen Document Modal */}
+      <VipKundliReportModal
+        isOpen={isVipReportModalOpen}
+        onClose={() => setIsVipReportModalOpen(false)}
+        nativeName={name}
+        dob={dob}
+        tob={tob}
+        place={place}
+        kundli={kundliResult}
+        kpCusps={kpCusps}
+        kpPlanets={kpPlanets}
+        kpRulingPlanets={kpRulingPlanets}
+        yogas={yogas}
+        ashtakavarga={ashtakavarga}
+        numerology={numerology}
+      />
     </div>
   );
 };
