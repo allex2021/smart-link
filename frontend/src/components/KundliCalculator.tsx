@@ -195,39 +195,39 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6">
-      {/* Top Panchang Live Bar */}
+      {/* Top Panchang Live Bar in Hindi */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-8 shadow-md">
         <div className="flex items-center justify-between flex-wrap gap-3 pb-2.5 border-b border-slate-800 text-xs">
           <div className="flex items-center gap-2 text-[#f7e034] font-bold">
             <Sun className="w-4 h-4" />
-            <span>Today's Daily Vedic Panchang (আজকের পঞ্জিকা)</span>
+            <span>आज का दैनिक वैदिक पंचांग (Daily Vedic Panchang)</span>
           </div>
           <span className="text-[11px] text-slate-400 font-medium">{panchang.vara}</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2.5 pt-3 text-xs">
           <div className="bg-slate-950 p-2 rounded-xl border border-slate-800/80">
-            <span className="text-[10px] text-slate-500 block">Tithi (তিথি)</span>
+            <span className="text-[10px] text-slate-500 block">तिथि (Tithi)</span>
             <span className="font-bold text-slate-200">{panchang.tithi}</span>
           </div>
           <div className="bg-slate-950 p-2 rounded-xl border border-slate-800/80">
-            <span className="text-[10px] text-slate-500 block">Nakshatra (নক্ষত্র)</span>
+            <span className="text-[10px] text-slate-500 block">नक्षत्र (Nakshatra)</span>
             <span className="font-bold text-[#f7e034]">{panchang.nakshatra}</span>
           </div>
           <div className="bg-slate-950 p-2 rounded-xl border border-slate-800/80">
-            <span className="text-[10px] text-slate-500 block">Yoga & Karana</span>
+            <span className="text-[10px] text-slate-500 block">योग व करण</span>
             <span className="font-bold text-slate-300">{panchang.yoga}</span>
           </div>
           <div className="bg-slate-950 p-2 rounded-xl border border-slate-800/80">
-            <span className="text-[10px] text-emerald-400 block font-semibold">Abhijit Muhurat (শুভ)</span>
+            <span className="text-[10px] text-emerald-400 block font-semibold">अभिजीत मुहूर्त (शुभ)</span>
             <span className="font-bold text-emerald-300">{panchang.abhijitMuhurat}</span>
           </div>
           <div className="bg-slate-950 p-2 rounded-xl border border-slate-800/80">
-            <span className="text-[10px] text-rose-400 block font-semibold">Rahu Kaalam (রাহু কাল)</span>
+            <span className="text-[10px] text-rose-400 block font-semibold">राहु काल (अशुभ समय)</span>
             <span className="font-bold text-rose-300">{panchang.rahuKaal}</span>
           </div>
           <div className="bg-slate-950 p-2 rounded-xl border border-slate-800/80">
-            <span className="text-[10px] text-slate-500 block">Sun Rise / Set</span>
+            <span className="text-[10px] text-slate-500 block">सूर्योदय / सूर्यास्त</span>
             <span className="font-bold text-slate-300">{panchang.sunRise} / {panchang.sunSet}</span>
           </div>
         </div>
@@ -238,11 +238,11 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-[#f7e034] text-xs font-semibold mb-1">
             <Sparkles className="w-3.5 h-3.5 text-[#f7e034]" />
-            <span>Vedic, KP Astrology & Swiss Ephemeris 16-Varga Engine</span>
+            <span>वैदिक, केपी ज्योतिष व स्विस एफिमेरिस 16 वर्ग चक्र इंजन</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-white">Complete Vedic Janam Kundli, KP & 16 Vargas</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-white">संपूर्ण वैदिक जन्म कुंडली, केपी व 16 वर्ग चक्र</h2>
           <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-            North, South & East Indian charts, KP Cuspal Sub-lords, 16 Divisional Charts (D1-D60), Gochar & Varshphal.
+            उत्तर, दक्षिण व पूर्व भारतीय चक्र, केपी कस्पल सब-लॉर्ड्स, 16 वर्ग चक्र (D1-D60), गोचर व वर्षफल।
           </p>
         </div>
 
@@ -253,7 +253,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
             className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-[#f7e034] to-amber-500 hover:from-amber-400 hover:to-amber-400 text-slate-950 text-xs font-black flex items-center gap-2 shadow-[0_0_20px_rgba(247,224,52,0.4)] transition-all cursor-pointer transform hover:scale-105 active:scale-95"
           >
             <Crown className="w-4 h-4 fill-slate-950" />
-            <span>{isLifetimeVIP ? '👑 Open 50-Page VIP Kundli PDF' : '50-Page VIP Kundli PDF (₹99)'}</span>
+            <span>{isLifetimeVIP ? '👑 50-पेज वीआईपी कुंडली PDF खोलें' : '50-पेज वीआईपी कुंडली PDF (₹99)'}</span>
             {!isLifetimeVIP && <Lock className="w-3.5 h-3.5 text-slate-900" />}
           </button>
 
@@ -262,7 +262,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
             className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-[#f7e034] text-slate-200 hover:text-white text-xs font-bold flex items-center gap-2 shadow-lg transition-all cursor-pointer"
           >
             <Printer className="w-4 h-4 text-[#f7e034]" />
-            <span>Print Quick Chart</span>
+            <span>त्वरित चार्ट प्रिंट करें</span>
           </button>
         </div>
       </div>
@@ -275,7 +275,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
           {/* Quick Presets */}
           <div>
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
-              ⚡ Quick Sample Profiles (ডেমো প্রোফাইল)
+              ⚡ त्वरित नमूना प्रोफाइल (Quick Profiles)
             </span>
             <div className="grid grid-cols-2 gap-2 text-[11px]">
               <button
@@ -283,7 +283,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                 onClick={() => handleQuickPreset('Rahul Sharma', '1998-05-15', '14:30', 'New Delhi, India')}
                 className="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-left border border-slate-800 hover:border-amber-400 transition-colors"
               >
-                <b className="text-white block truncate">Rahul (Delhi)</b>
+                <b className="text-white block truncate">राहुल (दिल्ली)</b>
                 <span className="text-slate-500 text-[10px]">15 May 1998</span>
               </button>
 
@@ -292,7 +292,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                 onClick={() => handleQuickPreset('Priya Sen', '2001-10-24', '09:15', 'Kolkata, India')}
                 className="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-left border border-slate-800 hover:border-amber-400 transition-colors"
               >
-                <b className="text-white block truncate">Priya (Kolkata)</b>
+                <b className="text-white block truncate">प्रिया (कोलकाता)</b>
                 <span className="text-slate-500 text-[10px]">24 Oct 2001</span>
               </button>
 
@@ -301,7 +301,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                 onClick={() => handleQuickPreset('Tanvir Ahmed', '1995-02-18', '06:45', 'Dhaka, Bangladesh')}
                 className="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-left border border-slate-800 hover:border-amber-400 transition-colors"
               >
-                <b className="text-white block truncate">Tanvir (Dhaka)</b>
+                <b className="text-white block truncate">तनवीर (ढाका)</b>
                 <span className="text-slate-500 text-[10px]">18 Feb 1995</span>
               </button>
 
@@ -310,7 +310,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                 onClick={() => handleQuickPreset('Sneha Patel', '1999-12-05', '18:20', 'Mumbai, India')}
                 className="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-left border border-slate-800 hover:border-amber-400 transition-colors"
               >
-                <b className="text-white block truncate">Sneha (Mumbai)</b>
+                <b className="text-white block truncate">स्नेहा (मुंबई)</b>
                 <span className="text-slate-500 text-[10px]">05 Dec 1999</span>
               </button>
             </div>
@@ -319,7 +319,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
           <form onSubmit={handleGenerate} className="space-y-4 pt-2 border-t border-slate-800">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-slate-400" /> Full Name (নাম)
+                <User className="w-3.5 h-3.5 text-slate-400" /> पूरा नाम (Full Name)
               </label>
               <input
                 type="text"
@@ -327,14 +327,14 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                 onChange={(e) => setName(e.target.value)}
                 required
                 className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#f7e034]"
-                placeholder="Enter full name"
+                placeholder="पूरा नाम दर्ज करें"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-slate-400" /> Date of Birth (জন্মতারিখ)
+                  <Calendar className="w-3.5 h-3.5 text-slate-400" /> जन्म तिथि (DOB)
                 </label>
                 <input
                   type="date"
@@ -347,7 +347,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-slate-400" /> Time of Birth (সময়)
+                  <Clock className="w-3.5 h-3.5 text-slate-400" /> जन्म समय (Time)
                 </label>
                 <input
                   type="time"
@@ -361,7 +361,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-slate-400" /> Birth Place (জন্মস্থান)
+                <MapPin className="w-3.5 h-3.5 text-slate-400" /> जन्म स्थान (Place of Birth)
               </label>
               <select
                 value={place}
@@ -370,9 +370,9 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
               >
                 <option value="New Delhi, India">New Delhi, India</option>
                 <option value="Kolkata, India">Kolkata, India</option>
-                <option value="Dhaka, Bangladesh">Dhaka, Bangladesh</option>
                 <option value="Mumbai, India">Mumbai, India</option>
                 <option value="Bengaluru, India">Bengaluru, India</option>
+                <option value="Dhaka, Bangladesh">Dhaka, Bangladesh</option>
                 <option value="Chittagong, Bangladesh">Chittagong, Bangladesh</option>
                 <option value="Sylhet, Bangladesh">Sylhet, Bangladesh</option>
                 <option value="London, UK">London, UK</option>
@@ -389,12 +389,12 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
               {isCalculating ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Calculating Swiss Ephemeris Coordinates...</span>
+                  <span>स्विस एफिमेरिस गणना जारी है...</span>
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4 text-slate-950 stroke-[2.5]" />
-                  <span>Analyze Full Kundli & KP Sub-Lords</span>
+                  <span>संपूर्ण कुंडली व केपी सब-लॉर्ड्स विश्लेषण करें</span>
                 </>
               )}
             </button>
@@ -404,13 +404,13 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
           {showSuccessBadge && (
             <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs font-bold flex items-center gap-2 animate-in fade-in">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>✓ Kundli, KP Sub-Lords & Yogas Generated Successfully!</span>
+              <span>✓ जन्म कुंडली, केपी सब-लॉर्ड्स व योग सफलतापूर्वक तैयार!</span>
             </div>
           )}
 
-          {/* Dosha Status Overview */}
+          {/* Dosha Status Overview in Hindi */}
           <div className="pt-4 border-t border-slate-800 space-y-3">
-            <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Dosha & Sade Sati Status</h4>
+            <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">दोष व साढ़े साती स्थिति</h4>
             
             {/* Manglik Badge */}
             <div className={`p-3 rounded-xl border flex items-start gap-2.5 ${
@@ -425,10 +425,10 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
               )}
               <div className="text-xs">
                 <span className="font-bold block">
-                  {kundliResult.doshas.isManglik ? `Mangal Dosha Detected (${kundliResult.doshas.manglikPercentage}%)` : 'No Mangal Dosha (Non-Manglik)'}
+                  {kundliResult.doshas.isManglik ? `मांगलिक दोष पाया गया (${kundliResult.doshas.manglikPercentage}%)` : 'मांगलिक दोष नहीं है (Non-Manglik)'}
                 </span>
                 <span className="text-[11px] text-slate-400">
-                  {kundliResult.doshas.cancellationReasons[0] || kundliResult.doshas.factors[0] || 'Mars in neutral placement.'}
+                  {kundliResult.doshas.cancellationReasons[0] || kundliResult.doshas.factors[0] || 'मंगल ग्रह शुभ भाव में स्थित है।'}
                 </span>
               </div>
             </div>
@@ -436,7 +436,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
             {/* Sade Sati Badge */}
             <div className="p-3 rounded-xl border border-slate-800 bg-slate-950 text-xs">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-slate-200">Shani Sade Sati:</span>
+                <span className="font-bold text-slate-200">शनि साढ़े साती:</span>
                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                   kundliResult.doshas.sadeSati.isActive ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'
                 }`}>
@@ -451,7 +451,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
         {/* Right Tabbed Results Area */}
         <div className="lg:col-span-8 space-y-6" id="kundli-results-area">
           
-          {/* Sub-Navigation Tabs: Chart, KP System, 16 Vargas, Yogas, Ashtakavarga, Numerology */}
+          {/* Sub-Navigation Tabs in Hindi */}
           <div className="flex items-center gap-1.5 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800 overflow-x-auto">
             <button
               onClick={() => setSelectedSubTab('chart')}
@@ -461,7 +461,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Compass className="w-4 h-4" /> Kundli Chart & Dasha
+              <Compass className="w-4 h-4" /> कुंडली चक्र व दशा
             </button>
 
             <button
@@ -472,7 +472,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Table className="w-4 h-4" /> KP Astrology (Sub-Lords)
+              <Table className="w-4 h-4" /> केपी ज्योतिष (Sub-Lords)
             </button>
 
             <button
@@ -483,7 +483,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                   : 'text-rose-300 hover:text-white'
               }`}
             >
-              <Layers className="w-4 h-4" /> 16 Vargas & Gochar
+              <Layers className="w-4 h-4" /> 16 वर्ग चक्र व गोचर
             </button>
 
             <button
@@ -494,7 +494,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Award className="w-4 h-4" /> 1000+ Vedic Yogas
+              <Award className="w-4 h-4" /> 1000+ वैदिक राजयोग
             </button>
 
             <button
@@ -505,7 +505,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <BarChart3 className="w-4 h-4" /> Ashtakavarga Matrix
+              <BarChart3 className="w-4 h-4" /> अष्टकवर्ग मैट्रिक्स
             </button>
 
             <button
@@ -516,7 +516,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                   : 'text-purple-300 hover:text-white'
               }`}
             >
-              <Hash className="w-4 h-4" /> Numerology
+              <Hash className="w-4 h-4" /> अंकशास्त्र (Numerology)
             </button>
           </div>
 
@@ -527,36 +527,36 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
               {/* Quick Metrics */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl text-center">
-                  <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">Ascendant (Lagna)</span>
+                  <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">लग्न (Ascendant)</span>
                   <span className="text-sm font-black text-[#f7e034]">{kundliResult.ascendant.sign}</span>
                   <span className="text-[10px] text-slate-500 block">{kundliResult.ascendant.degree}°</span>
                 </div>
 
                 <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl text-center">
-                  <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">Moon Sign (Rashi)</span>
+                  <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">चंद्र राशि (Moon Sign)</span>
                   <span className="text-sm font-black text-[#f7e034]">{kundliResult.moonSign}</span>
-                  <span className="text-[10px] text-slate-500 block">Chandra Rashi</span>
+                  <span className="text-[10px] text-slate-500 block">चंद्र राशि चक्र</span>
                 </div>
 
                 <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl text-center">
-                  <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">Nakshatra</span>
+                  <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">नक्षत्र (Nakshatra)</span>
                   <span className="text-sm font-black text-[#f7e034]">{kundliResult.nakshatra}</span>
-                  <span className="text-[10px] text-slate-500 block">Pada {kundliResult.pada}</span>
+                  <span className="text-[10px] text-slate-500 block">चरण {kundliResult.pada}</span>
                 </div>
 
                 <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl text-center">
-                  <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">Lahiri Ayanamsha</span>
+                  <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">लाहिड़ी अयनांश</span>
                   <span className="text-sm font-black text-[#f7e034]">{kundliResult.ayanamsa}°</span>
-                  <span className="text-[10px] text-slate-500 block">Vedic Sidereal</span>
+                  <span className="text-[10px] text-slate-500 block">वैदिक सायन</span>
                 </div>
               </div>
 
-              {/* Chart Visualizer with Style Switcher */}
+              {/* Chart Visualizer with Style Switcher in Hindi */}
               <div className="bg-slate-900/90 border border-slate-800 p-6 rounded-3xl space-y-4">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
                     <Layers className="w-4 h-4 text-[#f7e034]" />
-                    Birth Chart ({chartDivision === 'D1' ? 'D1 Rashi Lagna' : 'D9 Navamsha'})
+                    जन्म कुंडली ({chartDivision === 'D1' ? 'D1 राशि लग्न चक्र' : 'D9 नवमांश चक्र'})
                   </h3>
 
                   {/* Chart Style Switcher: North / South / East */}
@@ -568,7 +568,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                         chartStyle === 'NORTH' ? 'bg-[#f7e034] text-slate-950' : 'text-slate-400 hover:text-white'
                       }`}
                     >
-                      North (উত্তর)
+                      उत्तर (North)
                     </button>
                     <button
                       type="button"
@@ -577,7 +577,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                         chartStyle === 'SOUTH' ? 'bg-[#f7e034] text-slate-950' : 'text-slate-400 hover:text-white'
                       }`}
                     >
-                      South (দক্ষিণ)
+                      दक्षिण (South)
                     </button>
                     <button
                       type="button"
@@ -586,7 +586,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                         chartStyle === 'EAST' ? 'bg-[#f7e034] text-slate-950' : 'text-slate-400 hover:text-white'
                       }`}
                     >
-                      East (পূর্ব / বাংলা)
+                      पूर्व / बांग्ला (East)
                     </button>
                   </div>
                 </div>
@@ -599,7 +599,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
               <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5">
                 <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
                   <Clock className="w-4 h-4 text-[#f7e034]" />
-                  Vimshottari Dasha Periods (120 Years Cycle)
+                  विंशोत्तरी महादशा समय चक्र (120 वर्ष)
                 </h3>
                 <div className="grid grid-cols-3 sm:grid-cols-9 gap-2">
                   {kundliResult.dashas.map((dasha) => (
@@ -617,7 +617,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                       <span className="text-[10px] block mt-0.5">{dasha.startDate} - {dasha.endDate}</span>
                       {dasha.isActive && (
                         <span className="inline-block mt-1 bg-[#f7e034] text-slate-950 text-[9px] font-extrabold px-1.5 py-0.2 rounded-full">
-                          ACTIVE
+                          सक्रिय (ACTIVE)
                         </span>
                       )}
                     </div>
@@ -634,23 +634,23 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
               <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-3">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <Award className="w-4 h-4 text-[#f7e034]" />
-                  KP Ruling Planets (RPs - কৃষ্ণমূর্তি রুলিং প্ল্যানেটস)
+                  केपी रूलिंग प्लैनेट्स (KP Ruling Planets - RPs)
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
                   <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                    <span className="text-[10px] text-slate-500 block">Day Lord</span>
+                    <span className="text-[10px] text-slate-500 block">वार स्वामी (Day Lord)</span>
                     <span className="font-bold text-white">{kpRulingPlanets.dayLord}</span>
                   </div>
                   <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                    <span className="text-[10px] text-slate-500 block">Asc Sign / Star Lord</span>
+                    <span className="text-[10px] text-slate-500 block">लग्न राशि / नक्षत्र स्वामी</span>
                     <span className="font-bold text-[#f7e034]">{kpRulingPlanets.ascendantSignLord} / {kpRulingPlanets.ascendantStarLord}</span>
                   </div>
                   <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                    <span className="text-[10px] text-slate-500 block">Asc Sub-Lord (লগ্ন সাব-লর্ড)</span>
+                    <span className="text-[10px] text-slate-500 block">लग्न उप-स्वामी (Asc Sub-Lord)</span>
                     <span className="font-black text-amber-400">{kpRulingPlanets.ascendantSubLord}</span>
                   </div>
                   <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                    <span className="text-[10px] text-slate-500 block">Moon Sign / Star Lord</span>
+                    <span className="text-[10px] text-slate-500 block">चंद्र राशि / नक्षत्र स्वामी</span>
                     <span className="font-bold text-white">{kpRulingPlanets.moonSignLord} / {kpRulingPlanets.moonStarLord}</span>
                   </div>
                 </div>
@@ -658,22 +658,22 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
 
               {/* 12 KP Cuspal Sub-Lords Table */}
               <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-3 overflow-x-auto">
-                <h3 className="text-sm font-bold text-white">12 KP Cusps (Bhavas) & Cuspal Sub-Lords</h3>
+                <h3 className="text-sm font-bold text-white">12 केपी भाव (Cusps) व कस्पल सब-लॉर्ड्स सारणी</h3>
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="border-b border-slate-800 text-slate-400 font-bold">
-                      <th className="pb-2">Cusp</th>
-                      <th className="pb-2">Degree</th>
-                      <th className="pb-2">Sign</th>
-                      <th className="pb-2">Sign Lord</th>
-                      <th className="pb-2">Star Lord (নক্ষত্র)</th>
-                      <th className="pb-2 text-[#f7e034]">Sub-Lord (উপ-নক্ষত্র)</th>
+                      <th className="pb-2">भाव (Cusp)</th>
+                      <th className="pb-2">अंश (Degree)</th>
+                      <th className="pb-2">राशि</th>
+                      <th className="pb-2">राशि स्वामी</th>
+                      <th className="pb-2">नक्षत्र स्वामी</th>
+                      <th className="pb-2 text-[#f7e034]">उप-स्वामी (Sub-Lord)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/60 text-slate-300">
                     {kpCusps.map((cusp) => (
                       <tr key={cusp.cuspNumber} className="hover:bg-slate-800/40 transition-colors">
-                        <td className="py-2.5 font-bold text-white">Cusp {cusp.cuspNumber}</td>
+                        <td className="py-2.5 font-bold text-white">भाव {cusp.cuspNumber}</td>
                         <td className="py-2.5 font-mono text-slate-300">{cusp.degreeStr}</td>
                         <td className="py-2.5">{cusp.sign}</td>
                         <td className="py-2.5">{cusp.signLord}</td>
@@ -687,16 +687,16 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
 
               {/* KP Planets Sub-Lords Table */}
               <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-3 overflow-x-auto">
-                <h3 className="text-sm font-bold text-white">KP Planetary Positions & Sub-Lords</h3>
+                <h3 className="text-sm font-bold text-white">केपी ग्रह स्थिति व सब-लॉर्ड्स विवरण</h3>
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="border-b border-slate-800 text-slate-400 font-bold">
-                      <th className="pb-2">Planet</th>
-                      <th className="pb-2">Degree</th>
-                      <th className="pb-2">Sign Lord</th>
-                      <th className="pb-2">Star Lord</th>
-                      <th className="pb-2 text-[#f7e034]">Sub-Lord</th>
-                      <th className="pb-2">House Occupied</th>
+                      <th className="pb-2">ग्रह</th>
+                      <th className="pb-2">अंश</th>
+                      <th className="pb-2">राशि स्वामी</th>
+                      <th className="pb-2">नक्षत्र स्वामी</th>
+                      <th className="pb-2 text-[#f7e034]">सब-लॉर्ड (Sub-Lord)</th>
+                      <th className="pb-2">स्थित भाव</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -707,7 +707,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                         <td className="py-2.5">{p.signLord}</td>
                         <td className="py-2.5">{p.starLord}</td>
                         <td className="py-2.5 font-black text-[#f7e034]">{p.subLord}</td>
-                        <td className="py-2.5">House {p.houseOccupied}</td>
+                        <td className="py-2.5">भाव {p.houseOccupied}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -731,7 +731,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                 Ketu: { longitude: kundliResult.planets.Ketu?.longitude || 308.5, degreeInSign: kundliResult.planets.Ketu?.degreeInSign || '08° 30\'' }
               }}
               ascendantLongitude={kundliResult.ascendant.degree || 45}
-              moonSignIdx={10} // Capricorn/Aquarius
+              moonSignIdx={10}
               birthYear={birthYear}
               birthMonth={birthMonth}
               birthDay={birthDay}
@@ -745,12 +745,12 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                 <div>
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
                     <Award className="w-4 h-4 text-[#f7e034]" />
-                    Vedic Planetary Yogas (রাজযোগ ও গ্রহ সমাহার)
+                    वैदिक राजयोग व ग्रह योग (1000+ Classical Yogas)
                   </h3>
-                  <p className="text-xs text-slate-400">Classical Parashara & VedAstro combinations formed in your chart</p>
+                  <p className="text-xs text-slate-400">पराशर व जैमिनी शास्त्र अनुसार आपकी कुंडली में निर्मित योग</p>
                 </div>
                 <span className="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold">
-                  {yogas.filter((y) => y.isFormed).length} Auspicious Yogas Found
+                  {yogas.filter((y) => y.isFormed).length} शुभ योग सक्रिय हैं
                 </span>
               </div>
 
@@ -774,7 +774,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                       <span className={`px-2 py-0.5 rounded text-[10px] font-black ${
                         yoga.isFormed ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-500'
                       }`}>
-                        {yoga.isFormed ? 'ACTIVE' : 'INACTIVE'}
+                        {yoga.isFormed ? 'सक्रिय (ACTIVE)' : 'निष्क्रिय'}
                       </span>
                     </div>
 
@@ -782,7 +782,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                     
                     {yoga.isFormed && (
                       <div className="mt-3 pt-2.5 border-t border-slate-800/80 space-y-1">
-                        <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">Impact:</span>
+                        <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">शुभ प्रभाव:</span>
                         <p className="text-xs text-slate-400">{yoga.positiveImpact}</p>
                       </div>
                     )}
@@ -798,10 +798,10 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
               <div className="border-b border-slate-800 pb-3">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <BarChart3 className="w-4 h-4 text-[#f7e034]" />
-                  Sarvashtakavarga Strength Matrix (337 Total Points)
+                  सर्वाष्टकवर्ग शुभ अंक मैट्रिक्स (337 कुल बिंदु)
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Identifies which signs have the maximum planetary benefic points (28+ points are highly auspicious).
+                  28+ बिंदु वाली राशियां गोचर में अत्यधिक शुभ व लाभकारी परिणाम देती हैं।
                 </p>
               </div>
 
@@ -820,7 +820,7 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                         {item.strength}
                       </span>
                     </div>
-                    <div className="text-xl font-black text-[#f7e034]">{item.totalPoints} pts</div>
+                    <div className="text-xl font-black text-[#f7e034]">{item.totalPoints} अंक</div>
                     <p className="text-[10px] text-slate-400 mt-1 line-clamp-2">{item.recommendedActions}</p>
                   </div>
                 ))}
@@ -835,55 +835,55 @@ export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
                 <div>
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
                     <Hash className="w-4 h-4 text-purple-400" />
-                    Chaldean & Vedic Numerology Report
+                    कीरो व वैदिक अंकशास्त्र रिपोर्ट (Numerology)
                   </h3>
-                  <p className="text-xs text-slate-400">Derived from your Birth Date & Name Vibration</p>
+                  <p className="text-xs text-slate-400">जन्म तिथि व नाम कंपन से गणना की गई</p>
                 </div>
                 <span className="text-xs font-bold text-purple-400 bg-purple-950/60 px-3 py-1 rounded-full border border-purple-800">
-                  Ruling Planet: {numerology.rulingPlanet}
+                  स्वामी ग्रह: {numerology.rulingPlanet}
                 </span>
               </div>
 
               {/* Number Badges */}
               <div className="grid grid-cols-3 gap-3 text-center">
                 <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Radical / Moolank</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">मूलांक (Radical Number)</span>
                   <span className="text-3xl font-black text-[#f7e034]">{numerology.radicalNumber}</span>
-                  <span className="text-[10px] text-slate-500 block">Day of Birth</span>
+                  <span className="text-[10px] text-slate-500 block">जन्म दिवस अंक</span>
                 </div>
 
                 <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Destiny / Bhagyank</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">भाग्यांक (Destiny Number)</span>
                   <span className="text-3xl font-black text-purple-400">{numerology.destinyNumber}</span>
-                  <span className="text-[10px] text-slate-500 block">Life Path Number</span>
+                  <span className="text-[10px] text-slate-500 block">जीवन पथ अंक</span>
                 </div>
 
                 <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Name Number</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">नामांक (Name Number)</span>
                   <span className="text-3xl font-black text-sky-400">{numerology.nameNumber}</span>
-                  <span className="text-[10px] text-slate-500 block">Chaldean Value</span>
+                  <span className="text-[10px] text-slate-500 block">कैल्डियन मान</span>
                 </div>
               </div>
 
               {/* Lucky Elements */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
-                  <span className="text-slate-400 font-semibold block">🌟 Lucky Gemstone:</span>
+                  <span className="text-slate-400 font-semibold block">🌟 भाग्यशाली रत्न:</span>
                   <span className="font-bold text-amber-300 text-sm">{numerology.luckyGemstone}</span>
                 </div>
 
                 <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
-                  <span className="text-slate-400 font-semibold block">🎨 Lucky Colors:</span>
+                  <span className="text-slate-400 font-semibold block">🎨 शुभ रंग:</span>
                   <span className="font-bold text-emerald-300">{numerology.luckyColors.join(', ')}</span>
                 </div>
 
                 <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
-                  <span className="text-slate-400 font-semibold block">📅 Lucky Days:</span>
+                  <span className="text-slate-400 font-semibold block">📅 शुभ दिन:</span>
                   <span className="font-bold text-sky-300">{numerology.luckyDays.join(', ')}</span>
                 </div>
 
                 <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
-                  <span className="text-slate-400 font-semibold block">💼 Career Incline:</span>
+                  <span className="text-slate-400 font-semibold block">💼 अनुकूल करियर:</span>
                   <span className="font-bold text-slate-200">{numerology.careerSuggestions.join(', ')}</span>
                 </div>
               </div>

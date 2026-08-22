@@ -37,14 +37,14 @@ export const VipAccessGateOverlay: React.FC<VipAccessGateOverlayProps> = ({
   };
 
   // Valid default master keys
-  const VALID_PROMO_KEYS = ['VIP99', 'VEDIC99', 'ASTRO99', 'GOLD99', 'VIP-99-ASTRO', 'LIFETIME99'];
+  const VALID_PROMO_KEYS = ['VIP99', 'VEDIC99', 'ASTRO99', 'GOLD99', 'VIP-99-ASTRO', 'LIFETIME99', 'SHIV99'];
 
   const handleVerifyKey = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanKey = inputKey.trim().toUpperCase();
     
     if (!cleanKey) {
-      setKeyError('দয়া করে আপনার সিক্রেট কী (Secret Key) প্রদান করুন।');
+      setKeyError('कृपया अपनी गुप्त एक्टिवेशन कुंजी (Secret Key) दर्ज करें।');
       return;
     }
 
@@ -52,7 +52,7 @@ export const VipAccessGateOverlay: React.FC<VipAccessGateOverlayProps> = ({
       setKeyError('');
       onUnlockSuccess(cleanKey);
     } else {
-      setKeyError('ভুল সিক্রেট কী! সঠিক কী প্রদান করুন অথবা মাত্র ₹৯৯ দিয়ে অ্যাক্টিভেশন কী সংগ্রহ করুন।');
+      setKeyError('अमान्य सीक्रेट की! कृपया सही की दर्ज करें या मात्र ₹99 में एक्टिवेशन प्राप्त करें।');
     }
   };
 
@@ -87,9 +87,9 @@ export const VipAccessGateOverlay: React.FC<VipAccessGateOverlayProps> = ({
         {/* Top Urgency Ribbon */}
         <div className="bg-gradient-to-r from-amber-500 via-[#f7e034] to-amber-500 text-slate-950 py-2 px-4 text-center font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md">
           <Crown className="w-4 h-4 fill-slate-950" />
-          <span>👑 LIFETIME VIP PASS — ONE-TIME ₹99 ONLY (90% OFF)</span>
+          <span>👑 लाइफटाइम वीआईपी पास — केवल ₹99 एकमुश्त (90% की भारी छूट)</span>
           <span className="bg-slate-950 text-[#f7e034] px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ml-1">
-            ENDS IN {formatTimer(timeLeft)}
+            समाप्त होने में: {formatTimer(timeLeft)}
           </span>
         </div>
 
@@ -100,27 +100,27 @@ export const VipAccessGateOverlay: React.FC<VipAccessGateOverlayProps> = ({
           <div className="text-center space-y-2.5">
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold shadow-sm">
               <Sparkles className="w-3.5 h-3.5 text-[#f7e034]" />
-              <span>Astrotalk Official VIP Membership Gate</span>
+              <span>एस्ट्रोटॉक आधिकारिक वीआईपी सदस्यता गेट</span>
             </div>
 
             <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-              প্ল্যাটফর্মের সকল প্রিমিয়াম সেবা আনলক করুন
+              प्लेटफ़ॉर्म की सभी प्रीमियम सेवाएं अनलॉक करें
             </h1>
 
             <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
-              মাত্র <b>₹৯৯ টাকায় আজীবন ভিআইপি মেম্বারশিপ</b> নিন। কোনো মাসিক চার্জ বা অতিরিক্ত ফি নেই—১ ক্লিকে আনলিমিটেড অ্যাক্সেস!
+              मात्र <b>₹99 में आजीवन वीआईपी एक्सेस (Lifetime VIP)</b> प्राप्त करें। कोई मासिक शुल्क नहीं, कोई छिपा हुआ चार्ज नहीं—असीमित ज्योतिषीय मार्गदर्शन!
             </p>
           </div>
 
-          {/* 6 Core Value Proposition Cards (Why You Must Take It) */}
+          {/* 6 Core Value Proposition Cards in Hindi */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-200">
             <div className="flex items-start gap-2.5 bg-slate-950/80 p-3 rounded-2xl border border-slate-800 hover:border-amber-400/40 transition-colors">
               <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
                 <Check className="w-3.5 h-3.5 stroke-[3]" />
               </div>
               <div>
-                <b className="text-white text-xs block">৫০+ পৃষ্ঠার রঙিন বৈদিক কুণ্ডলী PDF</b>
-                <span className="text-[11px] text-slate-400">রঙিন রাশি, লগ্ন ও নবাংশ ছক আজীবন ডাউনলোড ও প্রিন্ট</span>
+                <b className="text-white text-xs block">50+ पृष्ठ रंगीन वैदिक जन्म कुंडली PDF</b>
+                <span className="text-[11px] text-slate-400">रंगीन लग्न, नवमांश व भाव चक्र आजीवन डाउनलोड व प्रिंट करें</span>
               </div>
             </div>
 
@@ -129,8 +129,8 @@ export const VipAccessGateOverlay: React.FC<VipAccessGateOverlayProps> = ({
                 <Check className="w-3.5 h-3.5 stroke-[3]" />
               </div>
               <div>
-                <b className="text-white text-xs block">২৪/৭ মহর্ষি আর্যভট্ট (Vedic AI Acharya)</b>
-                <span className="text-[11px] text-slate-400">বিয়ে, চাকরি, প্রেম ও ব্যবসা নিয়ে সরাসরি আনলিমিটেড চ্যাট</span>
+                <b className="text-white text-xs block">24/7 महर्षि आर्यभट्ट (Vedic AI Acharya)</b>
+                <span className="text-[11px] text-slate-400">विवाह, नौकरी, करियर, प्रेम व व्यापार पर असीमित लाइव परामर्श</span>
               </div>
             </div>
 
@@ -139,8 +139,8 @@ export const VipAccessGateOverlay: React.FC<VipAccessGateOverlayProps> = ({
                 <Check className="w-3.5 h-3.5 stroke-[3]" />
               </div>
               <div>
-                <b className="text-white text-xs block">১৬টি বর্গ ছক (Shodashavarga D1-D60)</b>
-                <span className="text-[11px] text-slate-400">সুইস এফিমেরিস ও লাইভ গ্রহ গোচর বিশ্লেষণ</span>
+                <b className="text-white text-xs block">16 वर्ग चक्र (षोडशवर्ग D1-D60)</b>
+                <span className="text-[11px] text-slate-400">स्विस एफिमेरिस व लाइव ग्रह गोचर का सटीक प्रभाव</span>
               </div>
             </div>
 
@@ -149,8 +149,8 @@ export const VipAccessGateOverlay: React.FC<VipAccessGateOverlayProps> = ({
                 <Check className="w-3.5 h-3.5 stroke-[3]" />
               </div>
               <div>
-                <b className="text-white text-xs block">১০০০+ বৈদিক রাজযোগ ও ধনযোগ</b>
-                <span className="text-[11px] text-slate-400">গজকেশরী, বুধাদিত্য, লক্ষ্মী ও পঞ্চমহাপুরুষ যোগ</span>
+                <b className="text-white text-xs block">1000+ वैदिक राजयोग व धनयोग</b>
+                <span className="text-[11px] text-slate-400">गजकेसरी, बुधादित्य, लक्ष्मी व पंचमहापुरुष योग गणना</span>
               </div>
             </div>
 
@@ -159,8 +159,8 @@ export const VipAccessGateOverlay: React.FC<VipAccessGateOverlayProps> = ({
                 <Check className="w-3.5 h-3.5 stroke-[3]" />
               </div>
               <div>
-                <b className="text-white text-xs block">৩৬ গুণ কুষ্ঠি মিলন ও ৮-অক্ষীয় রাডার</b>
-                <span className="text-[11px] text-slate-400">দাম্পত্য ও প্রেম সম্পর্কের পূর্ণাঙ্গ ম্যাচিং স্কোর</span>
+                <b className="text-white text-xs block">36 गुण कुंडली मिलान व अष्टकूट सिनैस्ट्री</b>
+                <span className="text-[11px] text-slate-400">दांपत्य व प्रेम संबंधों का संपूर्ण 8-अक्षीय रडार विश्लेषण</span>
               </div>
             </div>
 
@@ -169,8 +169,8 @@ export const VipAccessGateOverlay: React.FC<VipAccessGateOverlayProps> = ({
                 <Check className="w-3.5 h-3.5 stroke-[3]" />
               </div>
               <div>
-                <b className="text-white text-xs block">শনি সাড়ে সাতি ও মাঙ্গলিক প্রতিকার</b>
-                <span className="text-[11px] text-slate-400">লাকি রত্ন, রুদ্রাক্ষ, মন্ত্র ও খাঁটি শাস্ত্রমতে সমাধান</span>
+                <b className="text-white text-xs block">शनि साढ़े साती ও मांगलिक दोष उपाय</b>
+                <span className="text-[11px] text-slate-400">व्यक्तिगत भाग्यशाली रत्न, रुद्राक्ष, मंत्र व वैदिक शांति उपाय</span>
               </div>
             </div>
           </div>
@@ -182,32 +182,32 @@ export const VipAccessGateOverlay: React.FC<VipAccessGateOverlayProps> = ({
               /* Success Secret Key Display */
               <div className="text-center space-y-3 p-4 bg-emerald-500/10 border border-emerald-400/60 rounded-2xl animate-in zoom-in">
                 <div className="text-3xl">🎉</div>
-                <h3 className="text-base font-bold text-emerald-300">পেমেন্ট সফল হয়েছে! আপনার ভিআইপি সিক্রেট কী:</h3>
+                <h3 className="text-base font-bold text-emerald-300">भुगतान सफल! आपकी वीआईपी सीक्रेट की (Secret Key):</h3>
                 <div className="p-3 bg-slate-900 border-2 border-emerald-400 rounded-xl font-mono text-xl sm:text-2xl font-black text-[#f7e034] tracking-widest select-all">
                   {generatedKey}
                 </div>
-                <p className="text-xs text-slate-300">সাইটটি স্বয়ংক্রিয়ভাবে আনলক হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</p>
+                <p className="text-xs text-slate-300">प्लेटफ़ॉर्म स्वचालित रूप से अनलॉक हो रहा है, कृपया प्रतीक्षा करें...</p>
               </div>
             ) : (
               /* Payment CTA */
               <div>
                 <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
                   <div>
-                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">এককালীন স্পেশাল অফার</span>
+                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">विशेष एकमुश्त ऑफर</span>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-3xl sm:text-4xl font-black text-[#f7e034]">₹৯৯</span>
-                      <span className="text-sm text-slate-500 line-through">₹৯৯৯</span>
+                      <span className="text-3xl sm:text-4xl font-black text-[#f7e034]">₹99</span>
+                      <span className="text-sm text-slate-500 line-through">₹999</span>
                       <span className="text-xs bg-emerald-500/20 text-emerald-400 font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
-                        ৯০% ছাড়
+                        90% छूट
                       </span>
                     </div>
                   </div>
 
                   <div className="text-right">
                     <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> আজীবন বৈধতা (Lifetime)
+                      <CheckCircle2 className="w-3.5 h-3.5" /> आजीवन वैधता (Lifetime)
                     </span>
-                    <span className="text-[11px] text-slate-400">ভবিষ্যতের সকল আপডেট ফ্রি</span>
+                    <span className="text-[11px] text-slate-400">भविष्य के सभी अपडेट निःशुल्क</span>
                   </div>
                 </div>
 
@@ -219,11 +219,11 @@ export const VipAccessGateOverlay: React.FC<VipAccessGateOverlayProps> = ({
                   {isProcessingPayment ? (
                     <>
                       <RefreshCw className="w-5 h-5 animate-spin" />
-                      <span>পেমেন্ট গেটওয়ে সংযুক্ত হচ্ছে...</span>
+                      <span>सुरक्षित पेमेंट गेटवे से जुड़ रहे हैं...</span>
                     </>
                   ) : (
                     <>
-                      <span>₹৯৯ পে করুন এবং সিক্রেট কী সহ আনলক করুন</span>
+                      <span>₹99 का भुगतान करें और सीक्रेट की के साथ अनलॉक करें</span>
                       <ArrowRight className="w-5 h-5 stroke-[2.5]" />
                     </>
                   )}
@@ -240,24 +240,24 @@ export const VipAccessGateOverlay: React.FC<VipAccessGateOverlayProps> = ({
                   className="text-xs text-amber-400 hover:text-amber-300 font-bold flex items-center justify-center gap-1.5 mx-auto cursor-pointer"
                 >
                   <Key className="w-3.5 h-3.5" />
-                  <span>ইতিমধ্যে সিক্রেট কী আছে? কী দিয়ে আনলক করুন →</span>
+                  <span>क्या आपके पास पहले से सीक्रेट की है? यहां दर्ज करें →</span>
                 </button>
               ) : (
                 <form onSubmit={handleVerifyKey} className="space-y-2 animate-in fade-in max-w-md mx-auto">
-                  <span className="text-xs text-slate-300 font-semibold block">আপনার সিক্রেট অ্যাক্টিভেশন কী লিখুন:</span>
+                  <span className="text-xs text-slate-300 font-semibold block">अपनी सीक्रेट एक्टिवेशन कुंजी दर्ज करें:</span>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={inputKey}
                       onChange={(e) => setInputKey(e.target.value)}
-                      placeholder="e.g. VIP-99-ASTRO / VIP99"
+                      placeholder="उदा. VIP-99-ASTRO / VIP99"
                       className="flex-1 bg-slate-900 border border-slate-700 focus:border-[#f7e034] rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white uppercase font-mono tracking-wider focus:outline-none"
                     />
                     <button
                       type="submit"
                       className="px-4 py-2 rounded-xl bg-[#f7e034] text-slate-950 font-bold text-xs hover:bg-[#ffe838] transition-colors cursor-pointer"
                     >
-                      আনলক করুন
+                      अनलॉक करें
                     </button>
                   </div>
                   {keyError && (
@@ -273,11 +273,11 @@ export const VipAccessGateOverlay: React.FC<VipAccessGateOverlayProps> = ({
           {/* Trust Badges */}
           <div className="flex items-center justify-center gap-4 text-xs text-slate-400 pt-1">
             <span className="flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> ২৫৬-বিট নিরাপদ পেমেন্ট
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> 256-बिट सुरक्षित भुगतान
             </span>
             <span>•</span>
             <span className="flex items-center gap-1">
-              <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" /> ১০০% স্যাটিসফ্যাকশন গ্যারান্টি
+              <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" /> 100% संतुष्टि गारंटी
             </span>
           </div>
         </div>

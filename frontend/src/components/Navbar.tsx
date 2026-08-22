@@ -93,11 +93,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Sparkles className="w-5 h-5 text-slate-950 stroke-[2.5]" />
             </div>
             <span className={`text-xl sm:text-2xl font-bold tracking-tight font-sans ${isLight ? 'text-slate-950' : 'text-white'}`}>
-              Astrotalk
+              Astrotalk <span className="text-xs text-amber-400 font-normal ml-1">वैदिक</span>
             </span>
           </div>
 
-          {/* 2. Center: Dropdown Navigation Links with Sub-Categories */}
+          {/* 2. Center: Dropdown Navigation Links in Hindi */}
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
             
             {/* 1. Consultations Dropdown */}
@@ -115,7 +115,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     : 'text-slate-300 hover:text-white hover:bg-slate-900/60'
                 }`}
               >
-                <span>Consultations</span>
+                <span>परामर्श (Consultations)</span>
                 <ChevronDown className="w-3 h-3 opacity-70" />
               </button>
 
@@ -136,8 +136,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <MessageSquare className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Chat with Astrologer</div>
-                      <div className="text-[10px] text-slate-500">Live 1-on-1 private messaging</div>
+                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>ज्योतिषी से चैट (Chat)</div>
+                      <div className="text-[10px] text-slate-500">1-on-1 गोपनीय लाइव चैट</div>
                     </div>
                   </div>
 
@@ -151,8 +151,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <Phone className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Call with Astrologer</div>
-                      <div className="text-[10px] text-slate-500">High clarity audio consultation</div>
+                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>ज्योतिषी से कॉल (Call)</div>
+                      <div className="text-[10px] text-slate-500">उच्च गुणवत्ता वाला ऑडियो परामर्श</div>
                     </div>
                   </div>
 
@@ -167,17 +167,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </div>
                     <div>
                       <div className={`text-xs font-bold flex items-center gap-1 ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                        Vedic AI Acharya 24/7
+                        वैदिक एआई आचार्य 24/7
                         <span className="text-[9px] bg-amber-500 text-slate-950 font-black px-1.5 rounded">NEW</span>
                       </div>
-                      <div className="text-[10px] text-slate-500">Maharshi Aryabhata (Instant Guidance)</div>
+                      <div className="text-[10px] text-slate-500">महर्षि आर्यभट्ट (त्वरित मार्गदर्शन)</div>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* 2. Horoscope Dropdown */}
+            {/* 2. Horoscope Dropdown in Hindi */}
             <div 
               className="relative"
               onMouseEnter={() => setActiveDropdown('horoscope')}
@@ -192,7 +192,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     : 'text-slate-300 hover:text-white hover:bg-slate-900/60'
                 }`}
               >
-                <span>Horoscope</span>
+                <span>राशिफल (Horoscope)</span>
                 <ChevronDown className="w-3 h-3 opacity-70" />
               </button>
 
@@ -211,8 +211,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <Sparkles className="w-4 h-4 text-amber-500" />
                     <div>
-                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Today's Horoscope</div>
-                      <div className="text-[10px] text-slate-500">Love, career & lucky numbers</div>
+                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>आज का राशिफल (Today)</div>
+                      <div className="text-[10px] text-slate-500">प्रेम, करियर व शुभ अंक</div>
                     </div>
                   </div>
 
@@ -224,8 +224,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <Calendar className="w-4 h-4 text-sky-500" />
                     <div>
-                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Tomorrow's Horoscope</div>
-                      <div className="text-[10px] text-slate-500">Plan ahead with transits</div>
+                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>कल का राशिफल (Tomorrow)</div>
+                      <div className="text-[10px] text-slate-500">गोचर के साथ पूर्व योजना</div>
                     </div>
                   </div>
 
@@ -237,15 +237,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <Award className="w-4 h-4 text-purple-500" />
                     <div>
-                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Yearly 2026 Forecast</div>
-                      <div className="text-[10px] text-slate-500">Comprehensive yearly guide</div>
+                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>वार्षिक 2026 भविष्यफल</div>
+                      <div className="text-[10px] text-slate-500">संपूर्ण वार्षिक मार्गदर्शिका</div>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* 3. Vedic Services Dropdown (Kundli & Matchmaking) */}
+            {/* 3. Vedic Services Dropdown in Hindi */}
             <div 
               className="relative"
               onMouseEnter={() => setActiveDropdown('free_services')}
@@ -260,7 +260,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     : 'text-slate-300 hover:text-white hover:bg-slate-900/60'
                 }`}
               >
-                <span>Vedic Services</span>
+                <span>वैदिक सेवाएं (Vedic Services)</span>
                 <ChevronDown className="w-3 h-3 opacity-70" />
               </button>
 
@@ -281,8 +281,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <Compass className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Vedic Janam Kundli</div>
-                      <div className="text-[10px] text-slate-500">Birth chart, Lagna & planets</div>
+                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>वैदिक जन्म कुंडली (Kundli)</div>
+                      <div className="text-[10px] text-slate-500">लग्न चक्र, ग्रह व भाव स्थिति</div>
                     </div>
                   </div>
 
@@ -296,8 +296,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <HeartHandshake className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Kundli Milan (Matching)</div>
-                      <div className="text-[10px] text-slate-500">36 Guna Milan & Radar Chart</div>
+                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>कुंडली मिलान (Matchmaking)</div>
+                      <div className="text-[10px] text-slate-500">36 गुण मिलान व 8-अक्षीय रडार</div>
                     </div>
                   </div>
 
@@ -311,15 +311,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <Award className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>1000+ Vedic Yogas</div>
-                      <div className="text-[10px] text-slate-500">Rajyoga & Dhan Yoga detector</div>
+                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>1000+ वैदिक राजयोग (Yogas)</div>
+                      <div className="text-[10px] text-slate-500">राजयोग, धनयोग व गजकेसरी</div>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* 4. Calculators Hub Dropdown */}
+            {/* 4. Calculators Hub Dropdown in Hindi */}
             <div 
               className="relative"
               onMouseEnter={() => setActiveDropdown('calculators')}
@@ -334,7 +334,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     : 'text-slate-300 hover:text-white hover:bg-slate-900/60'
                 }`}
               >
-                <span>Calculators</span>
+                <span>कैलकुलेटर (Calculators)</span>
                 <ChevronDown className="w-3 h-3 opacity-70" />
               </button>
 
@@ -353,8 +353,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <Heart className="w-4 h-4 text-rose-500" />
                     <div>
-                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Love Match Calculator</div>
-                      <div className="text-[10px] text-slate-500">Compatibility score & tips</div>
+                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>लव मैच कैलकुलेटर</div>
+                      <div className="text-[10px] text-slate-500">अनुकूलता स्कोर व टिप्स</div>
                     </div>
                   </div>
 
@@ -366,8 +366,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <Grid className="w-4 h-4 text-amber-500" />
                     <div>
-                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Lo Shu Grid 3x3</div>
-                      <div className="text-[10px] text-slate-500">Numerological life planes</div>
+                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>लो शू ग्रिड 3x3</div>
+                      <div className="text-[10px] text-slate-500">अंकशास्त्रीय जीवन तल</div>
                     </div>
                   </div>
 
@@ -379,8 +379,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <Award className="w-4 h-4 text-purple-500" />
                     <div>
-                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Shubh Muhurat Finder</div>
-                      <div className="text-[10px] text-slate-500">Auspicious timing windows</div>
+                      <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>शुभ मुहूर्त फाइंडर</div>
+                      <div className="text-[10px] text-slate-500">शुभ समय सारिणी</div>
                     </div>
                   </div>
                 </div>
@@ -394,7 +394,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 isLight ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-100' : 'text-slate-300 hover:text-white hover:bg-slate-900/60'
               }`}
             >
-              <span>Panchang</span>
+              <span>पंचांग (Panchang)</span>
             </button>
 
             {/* 6. AI Acharya 24/7 */}
@@ -403,7 +403,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="px-3.5 py-1.5 rounded-full text-xs font-bold text-amber-300 bg-amber-950/40 border border-amber-800/60 hover:bg-amber-900/60 transition-all cursor-pointer shadow-sm flex items-center gap-1"
             >
               <Sparkles className="w-3 h-3 text-[#f7e034]" />
-              <span>AI Acharya</span>
+              <span>एआई आचार्य</span>
             </button>
 
             {/* 7. Tarot Reading */}
@@ -417,18 +417,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                   : 'text-slate-300 hover:text-white hover:bg-slate-900/60 border-transparent'
               }`}
             >
-              🔮 Tarot
+              🔮 टैरो (Tarot)
             </button>
           </nav>
 
-          {/* 3. Right: VIP Button, Theme Toggle, Language, Profile & CTA */}
+          {/* 3. Right: VIP Button in Hindi, Theme, Lang, Account & CTA */}
           <div className="flex items-center gap-2.5 sm:gap-3">
             
-            {/* Glowing VIP Pass Button */}
+            {/* Glowing VIP Pass Button in Hindi */}
             {isLifetimeVIP ? (
               <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 text-xs font-black shadow-md border border-amber-300">
                 <Crown className="w-3.5 h-3.5 fill-slate-950" />
-                <span className="hidden sm:inline">VIP MEMBER</span>
+                <span className="hidden sm:inline">वीआईपी सदस्य</span>
               </div>
             ) : (
               <button
@@ -437,7 +437,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500 via-[#f7e034] to-amber-500 text-slate-950 text-xs font-black shadow-[0_0_20px_rgba(247,224,52,0.4)] hover:shadow-[0_0_28px_rgba(247,224,52,0.6)] transform hover:scale-105 active:scale-95 transition-all cursor-pointer"
               >
                 <Crown className="w-3.5 h-3.5 fill-slate-950" />
-                <span>VIP Pass ₹99</span>
+                <span>वीआईपी पास ₹99</span>
               </button>
             )}
 
@@ -450,7 +450,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   ? 'bg-amber-100 border-amber-300 text-amber-600 hover:bg-amber-200' 
                   : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white hover:border-slate-700'
               }`}
-              title={isLight ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+              title={isLight ? 'डार्क मोड' : 'लाइट मोड'}
             >
               {isLight ? (
                 <Sun className="w-4 h-4 fill-amber-500 stroke-[2.5]" />
@@ -459,7 +459,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </button>
 
-            {/* Language Selector (অ/A) */}
+            {/* Language Selector */}
             <LanguageSelector
               currentLanguage={currentLanguage}
               onSelectLanguage={onSelectLanguage}
@@ -520,7 +520,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       }}
                       className="w-full mt-2.5 py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     >
-                      <LogOut className="w-3.5 h-3.5" /> Logout
+                      <LogOut className="w-3.5 h-3.5" /> लॉग आउट (Logout)
                     </button>
                   </div>
                 )}
@@ -531,13 +531,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className={`w-9 h-9 rounded-full border flex items-center justify-center transition-colors cursor-pointer ${
                   isLight ? 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200' : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
                 }`}
-                title="Account Login"
+                title="खाता लॉगिन (Login)"
               >
                 <User className="w-4 h-4" />
               </button>
             )}
 
-            {/* Glowing Yellow CTA Button: "Talk now | First Chat Free ->" */}
+            {/* Glowing Yellow CTA Button in Hindi */}
             <button
               onClick={() => {
                 const el = document.getElementById('astrologers-section');
@@ -549,15 +549,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               }}
               className="px-4 py-2 rounded-full bg-[#f7e034] hover:bg-[#ffe838] text-slate-950 font-bold text-xs shadow-[0_0_25px_rgba(247,224,52,0.5)] hover:shadow-[0_0_35px_rgba(247,224,52,0.7)] flex items-center gap-1.5 transition-all transform hover:scale-105 active:scale-95 shrink-0 cursor-pointer"
             >
-              <span>Talk now</span>
+              <span>बात करें</span>
               <span className="text-slate-950/50 font-normal">|</span>
-              <span className="text-[11px]">₹99 VIP Access</span>
+              <span className="text-[11px]">₹99 वीआईपी एक्सेस</span>
               <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation Row */}
+        {/* Mobile Navigation Row in Hindi */}
         <div className="flex lg:hidden items-center justify-around py-2 border-t border-slate-800/40 gap-1 overflow-x-auto">
           <button
             onClick={() => handleSubItemClick('astrologers')}
@@ -565,7 +565,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               activeTab === 'astrologers' ? 'bg-[#f7e034] text-slate-950' : 'text-slate-400'
             }`}
           >
-            Consultations
+            परामर्श
           </button>
           <button
             onClick={() => handleSubItemClick('horoscope')}
@@ -573,7 +573,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               activeTab === 'horoscope' ? 'bg-[#f7e034] text-slate-950' : 'text-slate-400'
             }`}
           >
-            Horoscope
+            राशिफल
           </button>
           <button
             onClick={() => handleSubItemClick('kundli')}
@@ -581,7 +581,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               activeTab === 'kundli' ? 'bg-[#f7e034] text-slate-950' : 'text-slate-400'
             }`}
           >
-            Kundli
+            कुंडली
           </button>
           <button
             onClick={() => handleSubItemClick('calculators')}
@@ -589,7 +589,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               activeTab === 'calculators' ? 'bg-[#f7e034] text-slate-950' : 'text-slate-400'
             }`}
           >
-            Calculators
+            कैलकुलेटर
           </button>
           <button
             onClick={() => handleSubItemClick('ai-astro')}
@@ -597,7 +597,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               activeTab === 'ai-astro' ? 'bg-amber-400 text-slate-950 font-bold' : 'text-amber-300'
             }`}
           >
-            AI Acharya
+            एआई आचार्य
           </button>
           <button
             onClick={() => handleSubItemClick('tarot')}
@@ -605,7 +605,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               activeTab === 'tarot' ? 'bg-[#f7e034] text-slate-950' : 'text-slate-400'
             }`}
           >
-            Tarot
+            टैरो
           </button>
         </div>
       </div>

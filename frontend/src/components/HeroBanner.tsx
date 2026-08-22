@@ -72,7 +72,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
               </span>
               <span className="text-xs font-semibold text-slate-300">
-                <b className="text-emerald-400 font-bold">1,240</b> astrologers online now
+                <b className="text-emerald-400 font-bold">1,240</b> ज्योतिषी अभी ऑनलाइन हैं
               </span>
               {/* Overlapping Sadhu avatars */}
               <div className="flex items-center -space-x-2 ml-1">
@@ -96,9 +96,9 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-black text-white tracking-tight leading-[1.14]">
-              India's most accurate <br />
+              भारत का सबसे सटीक <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#f7e034] via-yellow-400 to-orange-400">
-                astrology platform
+                वैदिक ज्योतिष मंच
               </span>
             </h1>
 
@@ -109,7 +109,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                   <Check className="w-3.5 h-3.5 stroke-[3]" />
                 </div>
                 <span className="text-sm sm:text-base text-slate-300 font-medium">
-                  50+ Page VIP Kundli & 1000+ Yogas
+                  50+ पेज वीआईपी जन्म कुंडली व 1000+ वैदिक योग
                 </span>
               </div>
 
@@ -118,7 +118,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                   <Check className="w-3.5 h-3.5 stroke-[3]" />
                 </div>
                 <span className="text-sm sm:text-base text-slate-300 font-medium">
-                  Average reply under <b className="text-white font-bold">12 seconds</b>
+                  औसत उत्तर मात्र <b className="text-white font-bold">12 सेकंड के भीतर</b>
                 </span>
               </div>
             </div>
@@ -129,13 +129,13 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 onClick={onStartConsultation}
                 className="px-7 py-3.5 rounded-2xl bg-[#f7e034] hover:bg-[#ffe838] text-slate-950 font-black text-sm sm:text-base shadow-[0_0_30px_rgba(247,224,52,0.45)] hover:shadow-[0_0_40px_rgba(247,224,52,0.65)] flex items-center gap-2.5 transition-all transform hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
               >
-                <span>Start VIP Consultation</span>
+                <span>वीआईपी परामर्श शुरू करें</span>
                 <ArrowRight className="w-4 h-4 stroke-[3]" />
               </button>
             </div>
           </div>
 
-          {/* Right Column: 3 Authentic AI Sadhu / Vedic Rishi / Acharya Portraits */}
+          {/* Right Column: 3 Authentic AI Sadhu / Vedic Rishi / Acharya Portraits with Hindi Badges */}
           <div className="lg:col-span-6 flex items-center justify-center lg:justify-end py-6 lg:py-0">
             <div className="relative w-full max-w-[500px] h-[340px] sm:h-[390px] flex items-center justify-center">
               
@@ -149,7 +149,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                 <div className="absolute bottom-2.5 inset-x-0 text-center">
                   <span className="text-[11px] font-black text-[#f7e034] bg-slate-950/80 border border-amber-500/30 px-2.5 py-0.5 rounded-full backdrop-blur-sm shadow-md">
-                    আচার্য দেব
+                    आचार्य देव
                   </span>
                 </div>
               </div>
@@ -164,7 +164,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
                 <div className="absolute bottom-3 inset-x-0 text-center pointer-events-none">
                   <span className="text-xs font-black text-slate-950 bg-[#f7e034] border border-amber-300 px-3.5 py-1 rounded-full shadow-xl tracking-wide">
-                    পণ্ডিত মহারাজ
+                    पंडित महाराज
                   </span>
                 </div>
               </div>
@@ -179,7 +179,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                 <div className="absolute bottom-2.5 inset-x-0 text-center">
                   <span className="text-[11px] font-black text-[#f7e034] bg-slate-950/80 border border-amber-500/30 px-2.5 py-0.5 rounded-full backdrop-blur-sm shadow-md">
-                    গুরুজী
+                    गुरुजी
                   </span>
                 </div>
               </div>
@@ -193,22 +193,22 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 pt-6 border-t border-slate-800/80 text-left">
           <div>
             <div className="text-3xl sm:text-4xl font-black text-white tracking-tight">5Cr+</div>
-            <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">Users guided</div>
+            <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">संतुष्ट उपयोगकर्ता</div>
           </div>
 
           <div>
             <div className="text-3xl sm:text-4xl font-black text-white tracking-tight">50,000+</div>
-            <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">Verified astrologers</div>
+            <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">सत्यापित ज्योतिषी</div>
           </div>
 
           <div>
             <div className="text-3xl sm:text-4xl font-black text-white tracking-tight">13+</div>
-            <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">Languages</div>
+            <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">भारतीय भाषाएं</div>
           </div>
 
           <div>
             <div className="text-3xl sm:text-4xl font-black text-white tracking-tight">60+</div>
-            <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">Countries</div>
+            <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">देशों में सक्रिय</div>
           </div>
         </div>
       </div>

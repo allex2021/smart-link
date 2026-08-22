@@ -41,7 +41,7 @@ export function extractBirthDetails(text: string): { dob?: string; tob?: string;
   };
 }
 
-export function detectLanguageFromText(text: string, fallback: SupportedLanguageCode = 'bn'): SupportedLanguageCode {
+export function detectLanguageFromText(text: string, fallback: SupportedLanguageCode = 'hi'): SupportedLanguageCode {
   if (/[\u0980-\u09FF]/.test(text) || /\b(amar|amr|kobe|hobe|biye|bibaho|chakri|taka|pabo|kemon|shob|korbo|bhalo|somporko|bidesh|rog|shastho|bacha|shontaan|babsah|porashona|kichu|bolun|bhai|dada|guruji|acharyaji)\b/i.test(text)) {
     return 'bn';
   }
@@ -79,10 +79,10 @@ export function processHumanAstrologerChat(
   let state: ChatSessionState = {
     hasCollectedBirthDetails: false,
     birthDetails: {},
-    preferredLanguage: 'bn',
+    preferredLanguage: 'hi',
     conversationHistoryCount: 0
   };
-  let astrologerName = 'মহর্ষি আর্যভট্ট';
+  let astrologerName = 'महर्षि आर्यभट्ट';
 
   if (stateOrName && typeof stateOrName === 'object') {
     state = { ...state, ...stateOrName };

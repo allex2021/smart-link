@@ -30,7 +30,9 @@ export function App() {
   const [selectedSubCategoryFilter, setSelectedSubCategoryFilter] = useState('All');
   const [selectedLanguageFilter, setSelectedLanguageFilter] = useState('All');
   const [selectedSortBy, setSelectedSortBy] = useState<'recommended' | 'rating' | 'experience' | 'online_now'>('recommended');
-  const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguageCode>('bn');
+  
+  // Set default primary language to Hindi (hi)
+  const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguageCode>('hi');
   const [showTopVipStrip, setShowTopVipStrip] = useState(true);
 
   // VIP Lifetime State
@@ -77,8 +79,8 @@ export function App() {
       id: 'tx_1',
       amount: 150,
       type: 'BONUS',
-      description: 'Welcome promotional signup credit',
-      timestamp: 'Today, 10:00 AM'
+      description: 'स्वागत प्रोमोशनल क्रेडिट (Welcome Bonus)',
+      timestamp: 'आज, 10:00 AM'
     }
   ]);
 
@@ -110,17 +112,45 @@ export function App() {
         id: `tx_${Date.now()}`,
         amount: -99,
         type: 'CONSULTATION_DEBIT',
-        description: 'Lifetime VIP Gold Pass Activation',
+        description: 'लाइफटाइम वीआईपी गोल्ड पास एक्टिवेशन',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       },
       ...prev
     ]);
   };
 
-  // Filter Categories & Sub-Categories
+  // Filter Categories & Sub-Categories in Hindi
   const mainCategories = ['All', 'Vedic Astrology', 'Tarot Cards', 'KP Astrology', 'Vastu Shastra', 'Palmistry', 'Numerology'];
+  const mainCategoryLabels: Record<string, string> = {
+    'All': 'सभी (All)',
+    'Vedic Astrology': 'वैदिक ज्योतिष',
+    'Tarot Cards': 'टैरो कार्ड्स',
+    'KP Astrology': 'केपी ज्योतिष',
+    'Vastu Shastra': 'वास्तु शास्त्र',
+    'Palmistry': 'हस्तरेखा',
+    'Numerology': 'अंकशास्त्र'
+  };
+
   const subCategories = ['All', 'Love & Relationship', 'Marriage & Kundli', 'Career & Job', 'Wealth & Finance', 'Health & Well-being'];
-  const languageFilters = ['All', 'English', 'Hindi', 'Bengali', 'Tamil', 'Telugu', 'Gujarati'];
+  const subCategoryLabels: Record<string, string> = {
+    'All': 'सभी विषय (All)',
+    'Love & Relationship': 'प्रेम व संबंध (Love)',
+    'Marriage & Kundli': 'विवाह व कुंडली (Marriage)',
+    'Career & Job': 'करियर व नौकरी (Career)',
+    'Wealth & Finance': 'धन व वित्त (Finance)',
+    'Health & Well-being': 'स्वास्थ्य व दीर्घायु (Health)'
+  };
+
+  const languageFilters = ['All', 'Hindi', 'English', 'Bengali', 'Tamil', 'Telugu', 'Gujarati'];
+  const languageLabels: Record<string, string> = {
+    'All': 'सभी',
+    'Hindi': 'हिन्दी',
+    'English': 'English',
+    'Bengali': 'বাংলা',
+    'Tamil': 'தமிழ்',
+    'Telugu': 'తెలుగు',
+    'Gujarati': 'ગુજરાતી'
+  };
 
   const filteredAstrologers = astrologers
     .filter((astro) => {
@@ -170,7 +200,7 @@ export function App() {
         id: `tx_${Date.now()}`,
         amount,
         type: 'RECHARGE',
-        description: `Wallet recharge via UPI`,
+        description: `यूपीआई द्वारा वॉलेट रिचार्ज`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       },
       ...prev
@@ -187,7 +217,7 @@ export function App() {
         id: `tx_${Date.now()}`,
         amount: -amount,
         type: 'CONSULTATION_DEBIT',
-        description: `Live consultation charge`,
+        description: `लाइव परामर्श शुल्क`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       },
       ...prev
@@ -216,18 +246,18 @@ export function App() {
       isLight ? 'bg-slate-50 text-slate-900' : 'bg-slate-950 text-slate-100'
     }`}>
       
-      {/* 👑 Top Sticky VIP Flash Announcement Bar */}
+      {/* 👑 Top Sticky VIP Flash Announcement Bar in Hindi */}
       {showTopVipStrip && !isLifetimeVIP && (
         <div className="bg-gradient-to-r from-amber-600 via-[#f7e034] to-amber-500 text-slate-950 py-1.5 px-4 text-xs font-black flex items-center justify-center gap-2 shadow-md relative z-50">
           <Crown className="w-4 h-4 fill-slate-950 animate-bounce" />
           <span>
-            <b>FLASH LAUNCH:</b> Get Lifetime VIP Pass (50+ Page Kundli PDF + 24/7 AI Astrologer) for just <b>₹99</b> only!
+            <b>फ़्लैश लॉन्च:</b> लाइफटाइम वीआईपी पास (50+ पेज कुंडली PDF + 24/7 एआई आचार्य) मात्र <b>₹99</b> में!
           </span>
           <button
             onClick={() => setIsVipModalOpen(true)}
             className="ml-2 px-2.5 py-0.5 rounded-full bg-slate-950 hover:bg-slate-900 text-[#f7e034] text-[10px] font-extrabold flex items-center gap-1 cursor-pointer transition-all shadow-sm"
           >
-            <span>Unlock VIP ₹99</span>
+            <span>वीआईपी अनलॉक करें ₹99</span>
             <ArrowRight className="w-3 h-3" />
           </button>
           <button
@@ -273,7 +303,7 @@ export function App() {
       <main className="flex-1">
         {activeTab === 'astrologers' && (
           <div>
-            {/* 1. Astrotalk Cosmic Hero Banner */}
+            {/* 1. Astrotalk Cosmic Hero Banner in Hindi */}
             <HeroBanner
               onStartConsultation={() => {
                 const onlineAstro = astrologers.find((a) => a.isOnline) || astrologers[0];
@@ -292,7 +322,7 @@ export function App() {
             {/* 2. Problem Solving Topics Strip */}
             <TopicsSection onSelectTopic={handleTopicSelect} />
 
-            {/* 3. Astrologers Directory Section with Multi-layer Categories & Sub-Categories */}
+            {/* 3. Astrologers Directory Section in Hindi */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14" id="astrologers-section">
               
               {/* Header & Search Bar */}
@@ -300,10 +330,10 @@ export function App() {
                 <div>
                   <h2 className={`text-xl sm:text-3xl font-black flex items-center gap-2 ${isLight ? 'text-slate-900' : 'text-white'}`}>
                     <Sparkles className="w-6 h-6 text-[#f7e034]" />
-                    Talk to Verified Astrologers
+                    सत्यापित ज्योतिषियों से परामर्श लें
                   </h2>
                   <p className={`text-xs sm:text-sm mt-1 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-                    Connect 1-on-1 with experts via Chat or Audio Call (English, বাংলা, हिन्दी, தமிழ், తెలుగు)
+                    चैट या ऑडियो कॉल के माध्यम से विशेषज्ञों से 1-on-1 गोपनीय परामर्श (हिन्दी, English, বাংলা, தமிழ், తెలుగు)
                   </p>
                 </div>
 
@@ -312,7 +342,7 @@ export function App() {
                     <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
-                      placeholder="Search astrologer, tarot, marriage..."
+                      placeholder="ज्योतिषी, टैरो, विवाह, नौकरी खोजें..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className={`w-full rounded-xl pl-9 pr-4 py-2.5 text-xs placeholder-slate-400 focus:outline-none focus:border-[#f7e034] transition-colors ${
@@ -328,11 +358,11 @@ export function App() {
                 isLight ? 'bg-white border-slate-200' : 'bg-slate-900/90 border-slate-800'
               }`}>
                 
-                {/* 1. Main Categories Row */}
+                {/* 1. Main Categories Row in Hindi */}
                 <div>
                   <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                     <Filter className="w-3.5 h-3.5 text-[#f7e034]" />
-                    Main Category (প্রধান ক্যাটাগরি)
+                    मुख्य श्रेणी (Main Category)
                   </div>
                   <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
                     {mainCategories.map((skill) => (
@@ -347,17 +377,17 @@ export function App() {
                             : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-white'
                         }`}
                       >
-                        {skill}
+                        {mainCategoryLabels[skill] || skill}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* 2. Sub-Categories (Specializations & Problem Topics) */}
+                {/* 2. Sub-Categories in Hindi */}
                 <div className="pt-2 border-t border-slate-800/20">
                   <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                     <Tag className="w-3.5 h-3.5 text-amber-500" />
-                    Sub-Category / Specialization (সাব-ক্যাটাগরি ও বিষয়)
+                    उप-श्रेणी व विशेषज्ञता (Sub-Category)
                   </div>
                   <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
                     {subCategories.map((sub) => (
@@ -372,19 +402,19 @@ export function App() {
                             : 'bg-slate-950/70 text-slate-400 border-slate-800/80 hover:text-slate-200'
                         }`}
                       >
-                        {sub}
+                        {subCategoryLabels[sub] || sub}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* 3. Language & Sorting Row */}
+                {/* 3. Language & Sorting Row in Hindi */}
                 <div className="pt-2 border-t border-slate-800/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
                   
                   {/* Language Pills */}
                   <div className="flex items-center gap-1.5 overflow-x-auto max-w-full">
                     <span className="text-slate-400 font-semibold flex items-center gap-1 shrink-0 text-[11px]">
-                      <Globe className="w-3.5 h-3.5" /> Language:
+                      <Globe className="w-3.5 h-3.5" /> भाषा (Language):
                     </span>
                     {languageFilters.map((lang) => (
                       <button
@@ -392,20 +422,20 @@ export function App() {
                         onClick={() => setSelectedLanguageFilter(lang)}
                         className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
                           selectedLanguageFilter === lang
-                            ? 'bg-purple-600 text-white font-bold'
+                            ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
                             : isLight
                             ? 'text-slate-600 hover:text-slate-950'
                             : 'text-slate-400 hover:text-white'
                         }`}
                       >
-                        {lang}
+                        {languageLabels[lang] || lang}
                       </button>
                     ))}
                   </div>
 
-                  {/* Sorting Dropdown */}
+                  {/* Sorting Dropdown in Hindi */}
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-slate-400 text-[11px]">Sort By:</span>
+                    <span className="text-slate-400 text-[11px]">क्रमबद्ध करें (Sort By):</span>
                     <select
                       value={selectedSortBy}
                       onChange={(e) => setSelectedSortBy(e.target.value as any)}
@@ -413,10 +443,10 @@ export function App() {
                         isLight ? 'bg-white border-slate-300 text-slate-800' : 'bg-slate-950 border-slate-800 text-slate-200'
                       }`}
                     >
-                      <option value="recommended">⭐ Recommended</option>
-                      <option value="rating">🌟 Highest Rating</option>
-                      <option value="experience">⏳ Most Experienced</option>
-                      <option value="online_now">⚡ Online Now</option>
+                      <option value="recommended">⭐ अनुशंसित (Recommended)</option>
+                      <option value="rating">🌟 उच्चतम रेटिंग (Highest Rating)</option>
+                      <option value="experience">⏳ सर्वाधिक अनुभवी (Experience)</option>
+                      <option value="online_now">⚡ अभी ऑनलाइन (Online Now)</option>
                     </select>
                   </div>
                 </div>
@@ -438,7 +468,7 @@ export function App() {
                 <div className={`text-center py-12 rounded-2xl border ${
                   isLight ? 'bg-white border-slate-200 text-slate-600' : 'bg-slate-900/50 border-slate-800 text-slate-400'
                 }`}>
-                  <p className="text-sm">No astrologers found matching the selected category and sub-category.</p>
+                  <p className="text-sm">चयनित श्रेणी और उप-श्रेणी से मेल खाने वाला कोई ज्योतिषी नहीं मिला।</p>
                   <button
                     onClick={() => {
                       setSearchQuery('');
@@ -448,7 +478,7 @@ export function App() {
                     }}
                     className="mt-3 text-xs text-[#f7e034] font-bold hover:underline"
                   >
-                    Reset all filters (সব ফিল্টার ক্লিয়ার করুন)
+                    सभी फ़िल्टर रीसेट करें (Reset all filters)
                   </button>
                 </div>
               )}
@@ -484,7 +514,7 @@ export function App() {
         className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-amber-500 via-[#f7e034] to-amber-500 text-slate-950 font-black text-xs shadow-2xl shadow-amber-500/40 hover:scale-105 active:scale-95 transition-all glow-amber cursor-pointer"
       >
         <Sparkles className="w-5 h-5 fill-slate-950 animate-pulse" />
-        <span className="hidden sm:inline">Ask AI Acharya 24/7</span>
+        <span className="hidden sm:inline">पूछें एआई आचार्य 24/7</span>
       </button>
 
       {/* 👑 High-Converting Semi-Transparent VIP Access Gate Overlay with Secret Key */}
@@ -548,56 +578,56 @@ export function App() {
         />
       )}
 
-      {/* Astrotalk Grand Footer */}
+      {/* Astrotalk Grand Footer in Hindi */}
       <footer className={`border-t py-12 px-4 sm:px-6 text-xs ${
         isLight ? 'bg-white border-slate-200 text-slate-600' : 'bg-slate-900 border-slate-800 text-slate-400'
       }`}>
         <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-8 pb-10 border-b border-slate-800/40">
           <div>
-            <h4 className={`font-bold text-sm mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Consultations</h4>
+            <h4 className={`font-bold text-sm mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>परामर्श (Consultations)</h4>
             <ul className="space-y-2">
-              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('astrologers'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Chat with Astrologer</li>
-              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('astrologers'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Call with Astrologer</li>
-              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => setIsAIOpen(true)}>AI Astrologer 24/7</li>
+              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('astrologers'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>ज्योतिषी से चैट करें</li>
+              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('astrologers'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>ज्योतिषी से कॉल करें</li>
+              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => setIsAIOpen(true)}>वैदिक एआई आचार्य 24/7</li>
             </ul>
           </div>
 
           <div>
-            <h4 className={`font-bold text-sm mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Horoscope & Kundli</h4>
+            <h4 className={`font-bold text-sm mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>राशिफल व कुंडली</h4>
             <ul className="space-y-2">
-              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('horoscope'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Daily Horoscope (12 Signs)</li>
-              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('kundli'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Vedic Janam Kundli</li>
-              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('matchmaking'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Kundli Milan (Matching)</li>
+              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('horoscope'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>दैनिक राशिफल (12 राशियां)</li>
+              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('kundli'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>वैदिक जन्म कुंडली</li>
+              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('matchmaking'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>कुंडली मिलान (36 गुण)</li>
             </ul>
           </div>
 
           <div>
-            <h4 className={`font-bold text-sm mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Calculators Hub</h4>
+            <h4 className={`font-bold text-sm mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>कैलकुलेटर हब</h4>
             <ul className="space-y-2">
-              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('calculators'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Love Match Calculator</li>
-              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('calculators'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Lo Shu Grid Numerology</li>
-              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('calculators'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Today's Shubh Muhurat</li>
+              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('calculators'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>लव मैच कैलकुलेटर</li>
+              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('calculators'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>लो शू ग्रिड अंकशास्त्र</li>
+              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('calculators'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>आज का शुभ मुहूर्त</li>
             </ul>
           </div>
 
           <div>
-            <h4 className={`font-bold text-sm mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Lifetime VIP Pass</h4>
+            <h4 className={`font-bold text-sm mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>लाइफटाइम वीआईपी पास</h4>
             <ul className="space-y-2">
-              <li className="text-amber-400 font-bold hover:underline cursor-pointer" onClick={() => setIsVipModalOpen(true)}>👑 Unlock Lifetime VIP for ₹99</li>
-              <li className="hover:text-[#f7e034] cursor-pointer">50+ Page PDF Kundli Report</li>
-              <li className="hover:text-[#f7e034] cursor-pointer">16 Shodashavarga Charts (D1-D60)</li>
-              <li className="hover:text-[#f7e034] cursor-pointer">100% Private & 256-Bit SSL Encrypted</li>
+              <li className="text-amber-400 font-bold hover:underline cursor-pointer" onClick={() => setIsVipModalOpen(true)}>👑 मात्र ₹99 में लाइफटाइम वीआईपी लें</li>
+              <li className="hover:text-[#f7e034] cursor-pointer">50+ पेज रंगीन कुंडली PDF रिपोर्ट</li>
+              <li className="hover:text-[#f7e034] cursor-pointer">16 षोडशवर्ग चक्र (D1-D60)</li>
+              <li className="hover:text-[#f7e034] cursor-pointer">100% गोपनीय व 256-बिट सुरक्षित</li>
             </ul>
           </div>
         </div>
 
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-center text-slate-500">
           <div className="flex items-center gap-2">
-            <span className={`font-black ${isLight ? 'text-slate-900' : 'text-slate-300'}`}>ASTROTALK LIVE PLATFORM</span>
+            <span className={`font-black ${isLight ? 'text-slate-900' : 'text-slate-300'}`}>ASTROTALK VEDIC PLATFORM</span>
             <span>•</span>
-            <span>Accurate Multilingual Vedic Astrology & Instant 24/7 Guidance</span>
+            <span>सटीक बहुभाषी वैदिक ज्योतिष व त्वरित 24/7 मार्गदर्शन</span>
           </div>
-          <p>© 2026 AstroTalk Platform. English • বাংলা • हिन्दी • தமிழ் • తెలుగు • ગુજરાતી • मराठी</p>
+          <p>© 2026 AstroTalk Platform. हिन्दी • English • বাংলা • தமிழ் • తెలుగు • ગુજરાતી • मराठी</p>
         </div>
       </footer>
     </div>
