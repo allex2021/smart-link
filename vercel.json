@@ -1,10 +1,11 @@
 {
-  "version": 2,
-  "redirects": [
+  "buildCommand": "npm --prefix frontend install && npm --prefix frontend run build",
+  "outputDirectory": "frontend/dist",
+  "framework": "vite",
+  "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "https://objectlesswaver.com/mjdm8zyhm?key=5b097f4d4a94f321095c12e45978bb52",
-      "permanent": false
+      "destination": "/index.html"
     }
   ]
 }
