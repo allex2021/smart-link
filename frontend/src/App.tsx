@@ -5,13 +5,14 @@ import { AstrologerCard } from './components/AstrologerCard';
 import { KundliCalculator } from './components/KundliCalculator';
 import { MatchmakingTool } from './components/MatchmakingTool';
 import { ChatModal } from './components/ChatModal';
+import { CallModal } from './components/CallModal';
 import { AIAstrologerModal } from './components/AIAstrologerModal';
 import { WalletModal } from './components/WalletModal';
 import { AuthModal } from './components/AuthModal';
 import { MOCK_ASTROLOGERS } from './data/mockData';
 import { Astrologer, Transaction, UserProfile } from './types';
 import { SupportedLanguageCode } from './data/languages';
-import { Search, Sparkles, Bot, Globe } from 'lucide-react';
+import { Search, Sparkles, Bot, Globe, MessageSquare, Phone } from 'lucide-react';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<'astrologers' | 'kundli' | 'matchmaking' | 'ai-astro'>('astrologers');
@@ -45,6 +46,7 @@ export function App() {
 
   // Modals State
   const [activeChatAstrologer, setActiveChatAstrologer] = useState<Astrologer | null>(null);
+  const [activeCallAstrologer, setActiveCallAstrologer] = useState<Astrologer | null>(null);
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const [isAIOpen, setIsAIOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -66,16 +68,19 @@ export function App() {
   const languageFilters = ['All', 'English', 'Hindi', 'Bengali', 'Tamil', 'Telugu', 'Gujarati'];
 
   const filteredAstrologers = astrologers.filter((astro) => {
+    const query = searchQuery.toLowerCase().trim();
     const matchesSearch =
-      astro.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      astro.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      astro.skills.some((s) => s.toLowerCase().includes(searchQuery.toLowerCase()));
+      !query ||
+      astro.name.toLowerCase().includes(query) ||
+      astro.specialty.toLowerCase().includes(query) ||
+      astro.skills.some((s) => s.toLowerCase().includes(query)) ||
+      astro.languages.some((l) => l.toLowerCase().includes(query));
 
     const matchesSkill =
-      selectedSkillFilter === 'All' || astro.skills.includes(selectedSkillFilter);
+      selectedSkillFilter === 'All' || astro.skills.some((s) => s.toLowerCase().includes(selectedSkillFilter.toLowerCase()));
 
     const matchesLang =
-      selectedLanguageFilter === 'All' || astro.languages.includes(selectedLanguageFilter);
+      selectedLanguageFilter === 'All' || astro.languages.some((l) => l.toLowerCase().includes(selectedLanguageFilter.toLowerCase()));
 
     return matchesSearch && matchesSkill && matchesLang;
   });
@@ -123,13 +128,13 @@ export function App() {
     return true;
   };
 
+  // Direct instant access for both guests and logged-in users
   const handleInitiateChat = (astro: Astrologer) => {
-    // If not logged in, prompt login first
-    if (!user) {
-      setIsAuthOpen(true);
-      return;
-    }
     setActiveChatAstrologer(astro);
+  };
+
+  const handleInitiateCall = (astro: Astrologer) => {
+    setActiveCallAstrologer(astro);
   };
 
   return (
@@ -142,6 +147,7 @@ export function App() {
             setIsAIOpen(true);
           } else {
             setActiveTab(tab);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
           }
         }}
         walletBalance={walletBalance}
@@ -162,11 +168,14 @@ export function App() {
                 const onlineAstro = astrologers.find((a) => a.isOnline) || astrologers[0];
                 handleInitiateChat(onlineAstro);
               }}
-              onOpenKundli={() => setActiveTab('kundli')}
+              onOpenKundli={() => {
+                setActiveTab('kundli');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
             />
 
             {/* Astrologers Directory Section */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" id="astrologers-section">
               {/* Filter and Search Bar */}
               <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-6">
                 <div>
@@ -175,7 +184,7 @@ export function App() {
                     Talk to Top Astrologers
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-400">
-                    Connect with experts in your preferred language (English, বাংলা, हिन्दी, தமிழ், తెలుగు)
+                    Connect 1-on-1 with experts via Chat or Call (English, বাংলা, हिन्दी, தமிழ், తెలుగు)
                   </p>
                 </div>
 
@@ -184,7 +193,7 @@ export function App() {
                     <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
-                      placeholder="Search astrologer or problem..."
+                      placeholder="Search astrologer name or skill..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
@@ -240,10 +249,26 @@ export function App() {
                     key={astro.id}
                     astrologer={astro}
                     onInitiateChat={handleInitiateChat}
-                    onInitiateCall={handleInitiateChat}
+                    onInitiateCall={handleInitiateCall}
                   />
                 ))}
               </div>
+
+              {filteredAstrologers.length === 0 && (
+                <div className="text-center py-12 text-slate-400 bg-slate-900/50 rounded-2xl border border-slate-800">
+                  <p className="text-sm">No astrologers found matching your search or filters.</p>
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedSkillFilter('All');
+                      setSelectedLanguageFilter('All');
+                    }}
+                    className="mt-3 text-xs text-amber-400 font-bold hover:underline"
+                  >
+                    Reset all filters
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -272,6 +297,17 @@ export function App() {
           onOpenRecharge={() => setIsWalletOpen(true)}
           currentLanguage={currentLanguage}
           onSelectLanguage={setCurrentLanguage}
+        />
+      )}
+
+      {/* Active Consultation Call Modal */}
+      {activeCallAstrologer && (
+        <CallModal
+          astrologer={activeCallAstrologer}
+          walletBalance={walletBalance}
+          onDeductBalance={handleDeductBalance}
+          onClose={() => setActiveCallAstrologer(null)}
+          onOpenRecharge={() => setIsWalletOpen(true)}
         />
       )}
 
