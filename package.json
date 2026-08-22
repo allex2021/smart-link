@@ -1,0 +1,13 @@
+{
+  "name": "astrotalk-platform",
+  "version": "1.0.0",
+  "description": "Full-stack Astrotalk Astrology Consultation Web Platform",
+  "scripts": {
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "build": "npm run build --prefix frontend && npm run build --prefix backend"
+  },
+  "keywords": ["astrotalk", "astrology", "react", "nodejs", "webrtc", "kundli"],
+  "author": "",
+  "license": "ISC"
+}
