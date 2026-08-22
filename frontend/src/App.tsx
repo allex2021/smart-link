@@ -28,7 +28,7 @@ export function App() {
   const [selectedSkillFilter, setSelectedSkillFilter] = useState('All');
   const [selectedSubCategoryFilter, setSelectedSubCategoryFilter] = useState('All');
   const [selectedLanguageFilter, setSelectedLanguageFilter] = useState('All');
-  const [selectedSortBy, setSelectedSortBy] = useState<'recommended' | 'rating' | 'experience' | 'price_asc'>('recommended');
+  const [selectedSortBy, setSelectedSortBy] = useState<'recommended' | 'rating' | 'experience' | 'online_now'>('recommended');
   const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguageCode>('bn');
   const [showTopVipStrip, setShowTopVipStrip] = useState(true);
 
@@ -147,7 +147,7 @@ export function App() {
     .sort((a, b) => {
       if (selectedSortBy === 'rating') return b.rating - a.rating;
       if (selectedSortBy === 'experience') return b.experienceYears - a.experienceYears;
-      if (selectedSortBy === 'price_asc') return a.chatRatePerMin - b.chatRatePerMin;
+      if (selectedSortBy === 'online_now') return (b.isOnline ? 1 : 0) - (a.isOnline ? 1 : 0);
       return 0; // recommended default
     });
 
@@ -415,7 +415,7 @@ export function App() {
                       <option value="recommended">⭐ Recommended</option>
                       <option value="rating">🌟 Highest Rating</option>
                       <option value="experience">⏳ Most Experienced</option>
-                      <option value="price_asc">💰 Lowest Rate / min</option>
+                      <option value="online_now">⚡ Online Now</option>
                     </select>
                   </div>
                 </div>
