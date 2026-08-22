@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Sparkles, Heart, Briefcase, Activity, Compass, Flame } from 'lucide-react';
+import { Sparkles, Heart, Briefcase, Activity, Compass, Flame, Clock } from 'lucide-react';
+import { ChoghadiyaHoraSection } from './ChoghadiyaHoraSection';
 
 interface ZodiacInfo {
   sign: string;
@@ -165,12 +166,12 @@ export const DailyHoroscopeSection: React.FC = () => {
   const [selectedZodiac, setSelectedZodiac] = useState<ZodiacInfo>(ZODIAC_DATA[0]);
 
   return (
-    <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-12">
       {/* Title */}
       <div className="text-center max-w-2xl mx-auto mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold mb-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-[#f7e034] text-xs font-semibold mb-2">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Daily Planetary Transits</span>
+          <span>Daily Planetary Transits & Horas</span>
         </div>
         <h2 className="text-2xl sm:text-3xl font-black text-white">Daily Horoscope & Zodiac Predictions</h2>
         <p className="text-xs sm:text-sm text-slate-400 mt-1">
@@ -188,8 +189,8 @@ export const DailyHoroscopeSection: React.FC = () => {
               onClick={() => setSelectedZodiac(zodiac)}
               className={`p-3 rounded-2xl border flex flex-col items-center justify-center transition-all ${
                 isSelected
-                  ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold shadow-lg shadow-amber-500/20 scale-105'
-                  : 'bg-slate-900/90 text-slate-400 border-slate-800 hover:border-amber-500/40 hover:text-slate-200'
+                  ? 'bg-[#f7e034] text-slate-950 border-[#f7e034] font-bold shadow-lg shadow-[#f7e034]/20 scale-105'
+                  : 'bg-slate-900/90 text-slate-400 border-slate-800 hover:border-[#f7e034]/40 hover:text-slate-200'
               }`}
             >
               <span className="text-2xl mb-1">{zodiac.symbol}</span>
@@ -206,13 +207,13 @@ export const DailyHoroscopeSection: React.FC = () => {
       <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl animate-in fade-in">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center text-3xl text-slate-950 shadow-md shadow-amber-500/20">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#f7e034] to-amber-300 flex items-center justify-center text-3xl text-slate-950 shadow-md shadow-[#f7e034]/20">
               {selectedZodiac.symbol}
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-xl font-black text-white">{selectedZodiac.sign}</h3>
-                <span className="bg-amber-500/20 text-amber-300 text-xs font-bold px-2 py-0.5 rounded-full border border-amber-500/30">
+                <span className="bg-amber-500/20 text-[#f7e034] text-xs font-bold px-2 py-0.5 rounded-full border border-amber-500/30">
                   {selectedZodiac.sanskrit}
                 </span>
               </div>
@@ -225,7 +226,7 @@ export const DailyHoroscopeSection: React.FC = () => {
           <div className="flex items-center gap-4 text-xs">
             <div className="bg-slate-950 px-3.5 py-2 rounded-xl border border-slate-800">
               <span className="text-slate-500 block text-[10px]">Lucky Number</span>
-              <span className="font-black text-amber-400 text-sm">{selectedZodiac.luckyNumber}</span>
+              <span className="font-black text-[#f7e034] text-sm">{selectedZodiac.luckyNumber}</span>
             </div>
             <div className="bg-slate-950 px-3.5 py-2 rounded-xl border border-slate-800">
               <span className="text-slate-500 block text-[10px]">Lucky Color</span>
@@ -245,7 +246,7 @@ export const DailyHoroscopeSection: React.FC = () => {
           </div>
 
           <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800/80 space-y-2">
-            <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
+            <div className="flex items-center gap-2 text-[#f7e034] font-bold text-sm">
               <Briefcase className="w-4 h-4" />
               <span>Career & Finance (কর্ম ও অর্থ)</span>
             </div>
@@ -261,6 +262,9 @@ export const DailyHoroscopeSection: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Live Choghadiya, Planetary Hora & Festivals Section */}
+      <ChoghadiyaHoraSection />
     </div>
   );
 };

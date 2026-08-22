@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
-import { Compass, Calendar, Clock, MapPin, Sparkles, User, AlertTriangle, CheckCircle2, Sun, Award, BarChart3, Hash, ShieldCheck, Flame } from 'lucide-react';
+import { 
+  Compass, Calendar, Clock, MapPin, Sparkles, User, AlertTriangle, 
+  CheckCircle2, Sun, Award, BarChart3, Hash, ShieldCheck, Flame, 
+  Download, Printer, Bookmark, ChevronRight, Layers, Table
+} from 'lucide-react';
 import { calculateKundliClient, calculateDailyPanchang } from '../utils/astrology';
 import { VedAstroEngine, VedicYoga, AshtakavargaScore, NumerologyReport } from '../utils/vedAstroEngine';
+import { KPAstrologyEngine, KPCuspInfo, KPPlanetInfo, KPRulingPlanets } from '../utils/kpAstrologyEngine';
 import { KundliChartSVG } from './KundliChartSVG';
 
 export const KundliCalculator: React.FC = () => {
@@ -11,16 +16,45 @@ export const KundliCalculator: React.FC = () => {
   const [place, setPlace] = useState('New Delhi, India');
   const [lat, setLat] = useState('28.6139');
   const [lon, setLon] = useState('77.2090');
-  const [activeChartType, setActiveChartType] = useState<'D1' | 'D9'>('D1');
-  const [selectedSubTab, setSelectedSubTab] = useState<'chart' | 'yogas' | 'ashtakavarga' | 'numerology'>('chart');
+  
+  // Visual Chart Styles: North / South / East Indian
+  const [chartStyle, setChartStyle] = useState<'NORTH' | 'SOUTH' | 'EAST'>('NORTH');
+  const [chartDivision, setChartDivision] = useState<'D1' | 'D9'>('D1');
+  
+  // Sub-Navigation Tabs
+  const [selectedSubTab, setSelectedSubTab] = useState<'chart' | 'kp' | 'yogas' | 'ashtakavarga' | 'numerology'>('chart');
 
+  // Kundli & Engine States
   const [kundliResult, setKundliResult] = useState(() => {
     return calculateKundliClient(1998, 5, 15, 14, 30, 28.6139, 77.209, 'New Delhi, India');
   });
 
+  const [kpCusps, setKpCusps] = useState<KPCuspInfo[]>(() => {
+    return KPAstrologyEngine.generateKPCusps(kundliResult.ascendant.degree || 45);
+  });
+
+  const [kpPlanets, setKpPlanets] = useState<KPPlanetInfo[]>(() => {
+    return KPAstrologyEngine.generateKPPlanets(
+      {
+        Sun: { longitude: 58.4, isRetrograde: false },
+        Moon: { longitude: 275.2, isRetrograde: false },
+        Mars: { longitude: 35.8, isRetrograde: false },
+        Jupiter: { longitude: 334.6, isRetrograde: false },
+        Saturn: { longitude: 312.1, isRetrograde: true },
+        Rahu: { longitude: 128.5, isRetrograde: true },
+        Ketu: { longitude: 308.5, isRetrograde: true }
+      },
+      kundliResult.ascendant.degree || 45
+    );
+  });
+
+  const [kpRulingPlanets, setKpRulingPlanets] = useState<KPRulingPlanets>(() => {
+    return KPAstrologyEngine.generateRulingPlanets(45, 275.2, 'Friday');
+  });
+
   const [yogas, setYogas] = useState<VedicYoga[]>(() => {
     const initial = calculateKundliClient(1998, 5, 15, 14, 30, 28.6139, 77.209, 'New Delhi, India');
-    return VedAstroEngine.detectYogas(initial.planets, initial.ascendant.sign ? 1 : 1);
+    return VedAstroEngine.detectYogas(initial.planets, 1);
   });
 
   const [ashtakavarga, setAshtakavarga] = useState<AshtakavargaScore[]>(() => {
@@ -54,14 +88,33 @@ export const KundliCalculator: React.FC = () => {
     );
     setKundliResult(result);
 
-    const detected = VedAstroEngine.detectYogas(result.planets, result.ascendant.degree ? 1 : 1);
-    setYogas(detected);
+    // Update KP System
+    const ascLong = result.ascendant.degree || 45;
+    setKpCusps(KPAstrologyEngine.generateKPCusps(ascLong));
+    setKpPlanets(
+      KPAstrologyEngine.generateKPPlanets(
+        {
+          Sun: { longitude: result.planets.Sun?.longitude || 58, isRetrograde: false },
+          Moon: { longitude: result.planets.Moon?.longitude || 275, isRetrograde: false },
+          Mars: { longitude: result.planets.Mars?.longitude || 35, isRetrograde: false },
+          Jupiter: { longitude: result.planets.Jupiter?.longitude || 334, isRetrograde: false },
+          Saturn: { longitude: result.planets.Saturn?.longitude || 312, isRetrograde: true },
+          Rahu: { longitude: result.planets.Rahu?.longitude || 128, isRetrograde: true },
+          Ketu: { longitude: result.planets.Ketu?.longitude || 308, isRetrograde: true }
+        },
+        ascLong
+      )
+    );
+    setKpRulingPlanets(KPAstrologyEngine.generateRulingPlanets(ascLong, result.planets.Moon?.longitude || 275, 'Friday'));
 
-    const av = VedAstroEngine.calculateAshtakavarga(1, 1);
-    setAshtakavarga(av);
+    // Update Yogas, Ashtakavarga & Numerology
+    setYogas(VedAstroEngine.detectYogas(result.planets, 1));
+    setAshtakavarga(VedAstroEngine.calculateAshtakavarga(1, 1));
+    setNumerology(VedAstroEngine.calculateNumerology(dayNum, monthNum, yearNum, name));
+  };
 
-    const num = VedAstroEngine.calculateNumerology(dayNum, monthNum, yearNum, name);
-    setNumerology(num);
+  const handlePrintPDF = () => {
+    window.print();
   };
 
   return (
@@ -69,7 +122,7 @@ export const KundliCalculator: React.FC = () => {
       {/* Top Panchang Live Bar */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-8 shadow-md">
         <div className="flex items-center justify-between flex-wrap gap-3 pb-2.5 border-b border-slate-800 text-xs">
-          <div className="flex items-center gap-2 text-amber-400 font-bold">
+          <div className="flex items-center gap-2 text-[#f7e034] font-bold">
             <Sun className="w-4 h-4" />
             <span>Today's Daily Vedic Panchang (আজকের পঞ্জিকা)</span>
           </div>
@@ -83,7 +136,7 @@ export const KundliCalculator: React.FC = () => {
           </div>
           <div className="bg-slate-950 p-2 rounded-xl border border-slate-800/80">
             <span className="text-[10px] text-slate-500 block">Nakshatra (নক্ষত্র)</span>
-            <span className="font-bold text-amber-400">{panchang.nakshatra}</span>
+            <span className="font-bold text-[#f7e034]">{panchang.nakshatra}</span>
           </div>
           <div className="bg-slate-950 p-2 rounded-xl border border-slate-800/80">
             <span className="text-[10px] text-slate-500 block">Yoga & Karana</span>
@@ -104,36 +157,48 @@ export const KundliCalculator: React.FC = () => {
         </div>
       </div>
 
-      <div className="text-center max-w-2xl mx-auto mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold mb-2">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Powered by VedAstro Vedic Intelligence</span>
+      {/* Main Title & Action Buttons */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold mb-1">
+            <Sparkles className="w-3.5 h-3.5 text-[#f7e034]" />
+            <span>Vedic, KP Astrology & Multi-Style Kundli Engine</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black text-white">Free Complete Janam Kundli & KP Analysis</h2>
+          <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
+            North, South & East Indian charts, KP Cuspal Sub-lords, 1000+ Yogas & Dasha Timeline.
+          </p>
         </div>
-        <h2 className="text-2xl sm:text-3xl font-black text-white">Advanced Kundli, 1000+ Yogas & Numerology</h2>
-        <p className="text-xs sm:text-sm text-slate-400 mt-1">
-          Complete planetary calculation with Rajyoga detection, Ashtakavarga strength score, and Chaldean lucky numbers.
-        </p>
+
+        <button
+          onClick={handlePrintPDF}
+          className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-[#f7e034] text-slate-200 hover:text-white text-xs font-bold flex items-center gap-2 shadow-lg transition-all"
+        >
+          <Printer className="w-4 h-4 text-[#f7e034]" />
+          <span>Print / Save PDF Report</span>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
         {/* Left Form */}
-        <div className="lg:col-span-4 bg-slate-900/90 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl">
-          <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-amber-400" />
+        <div className="lg:col-span-4 bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl space-y-5">
+          <h3 className="text-base font-bold text-white flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#f7e034]" />
             Enter Birth Details
           </h3>
 
           <form onSubmit={handleGenerate} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-slate-400" /> Name
+                <User className="w-3.5 h-3.5 text-slate-400" /> Full Name
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500"
+                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#f7e034]"
                 placeholder="Enter full name"
               />
             </div>
@@ -148,7 +213,7 @@ export const KundliCalculator: React.FC = () => {
                   value={dob}
                   onChange={(e) => setDob(e.target.value)}
                   required
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#f7e034]"
                 />
               </div>
 
@@ -161,7 +226,7 @@ export const KundliCalculator: React.FC = () => {
                   value={tob}
                   onChange={(e) => setTob(e.target.value)}
                   required
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#f7e034]"
                 />
               </div>
             </div>
@@ -175,21 +240,21 @@ export const KundliCalculator: React.FC = () => {
                 value={place}
                 onChange={(e) => setPlace(e.target.value)}
                 required
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500"
+                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#f7e034]"
                 placeholder="e.g. New Delhi, Dhaka, Kolkata"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/20 hover:from-amber-400 hover:to-amber-300 transition-all mt-2"
+              className="w-full py-3 rounded-xl bg-[#f7e034] hover:bg-[#ffe838] text-slate-950 font-black text-sm shadow-lg shadow-[#f7e034]/20 transition-all mt-2"
             >
-              Analyze Full Kundli & Yogas
+              Analyze Full Kundli & KP Sub-Lords
             </button>
           </form>
 
           {/* Dosha Status Overview */}
-          <div className="mt-6 pt-5 border-t border-slate-800 space-y-3">
+          <div className="pt-4 border-t border-slate-800 space-y-3">
             <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Dosha & Sade Sati Status</h4>
             
             {/* Manglik Badge */}
@@ -208,7 +273,7 @@ export const KundliCalculator: React.FC = () => {
                   {kundliResult.doshas.isManglik ? `Mangal Dosha Detected (${kundliResult.doshas.manglikPercentage}%)` : 'No Mangal Dosha (Non-Manglik)'}
                 </span>
                 <span className="text-[11px] text-slate-400">
-                  {kundliResult.doshas.cancellationReasons[0] || kundliResult.doshas.factors[0] || 'Mars in neutral house.'}
+                  {kundliResult.doshas.cancellationReasons[0] || kundliResult.doshas.factors[0] || 'Mars in neutral placement.'}
                 </span>
               </div>
             </div>
@@ -230,35 +295,47 @@ export const KundliCalculator: React.FC = () => {
 
         {/* Right Tabbed Results Area */}
         <div className="lg:col-span-8 space-y-6">
-          {/* Sub-Navigation Tabs */}
+          
+          {/* Sub-Navigation Tabs: Chart, KP System, Yogas, Ashtakavarga, Numerology */}
           <div className="flex items-center gap-1.5 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800 overflow-x-auto">
             <button
               onClick={() => setSelectedSubTab('chart')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                 selectedSubTab === 'chart'
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                  ? 'bg-[#f7e034] text-slate-950 shadow-md'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Compass className="w-4 h-4" /> Kundli & Dasha
+              <Compass className="w-4 h-4" /> Kundli Chart & Dasha
+            </button>
+
+            <button
+              onClick={() => setSelectedSubTab('kp')}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                selectedSubTab === 'kp'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Table className="w-4 h-4" /> KP Astrology (Sub-Lords)
             </button>
 
             <button
               onClick={() => setSelectedSubTab('yogas')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                 selectedSubTab === 'yogas'
-                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-amber-500/20'
+                  ? 'bg-[#f7e034] text-slate-950 shadow-md'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Award className="w-4 h-4" /> 1000+ Vedic Yogas ({yogas.filter((y) => y.isFormed).length} Active)
+              <Award className="w-4 h-4" /> 1000+ Vedic Yogas
             </button>
 
             <button
               onClick={() => setSelectedSubTab('ashtakavarga')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                 selectedSubTab === 'ashtakavarga'
-                  ? 'bg-amber-500 text-slate-950 shadow-md'
+                  ? 'bg-[#f7e034] text-slate-950 shadow-md'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -267,80 +344,95 @@ export const KundliCalculator: React.FC = () => {
 
             <button
               onClick={() => setSelectedSubTab('numerology')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                 selectedSubTab === 'numerology'
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-600/20'
+                  ? 'bg-purple-600 text-white shadow-md'
                   : 'text-purple-300 hover:text-white'
               }`}
             >
-              <Hash className="w-4 h-4" /> Chaldean Numerology
+              <Hash className="w-4 h-4" /> Numerology
             </button>
           </div>
 
-          {/* TAB 1: KUNDLI CHART & DASHA */}
+          {/* TAB 1: KUNDLI CHART & MULTI-STYLE SWITCHER */}
           {selectedSubTab === 'chart' && (
             <div className="space-y-6 animate-in fade-in">
+              
+              {/* Quick Metrics */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-xl text-center">
+                <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl text-center">
                   <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">Ascendant (Lagna)</span>
-                  <span className="text-sm font-black text-amber-400">{kundliResult.ascendant.sign}</span>
+                  <span className="text-sm font-black text-[#f7e034]">{kundliResult.ascendant.sign}</span>
                   <span className="text-[10px] text-slate-500 block">{kundliResult.ascendant.degree}°</span>
                 </div>
 
-                <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-xl text-center">
+                <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl text-center">
                   <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">Moon Sign (Rashi)</span>
-                  <span className="text-sm font-black text-amber-400">{kundliResult.moonSign}</span>
+                  <span className="text-sm font-black text-[#f7e034]">{kundliResult.moonSign}</span>
                   <span className="text-[10px] text-slate-500 block">Chandra Rashi</span>
                 </div>
 
-                <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-xl text-center">
+                <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl text-center">
                   <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">Nakshatra</span>
-                  <span className="text-sm font-black text-amber-400">{kundliResult.nakshatra}</span>
+                  <span className="text-sm font-black text-[#f7e034]">{kundliResult.nakshatra}</span>
                   <span className="text-[10px] text-slate-500 block">Pada {kundliResult.pada}</span>
                 </div>
 
-                <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-xl text-center">
+                <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl text-center">
                   <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">Lahiri Ayanamsha</span>
-                  <span className="text-sm font-black text-amber-400">{kundliResult.ayanamsa}°</span>
+                  <span className="text-sm font-black text-[#f7e034]">{kundliResult.ayanamsa}°</span>
                   <span className="text-[10px] text-slate-500 block">Vedic Sidereal</span>
                 </div>
               </div>
 
-              {/* Chart SVG */}
-              <div className="bg-slate-900/90 border border-slate-800 p-6 rounded-2xl">
-                <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
-                  <h3 className="text-sm font-bold text-white">
-                    Vedic Birth Chart ({activeChartType === 'D1' ? 'D1 Rashi Lagna' : 'D9 Navamsha Chart'})
+              {/* Chart Visualizer with Style Switcher */}
+              <div className="bg-slate-900/90 border border-slate-800 p-6 rounded-3xl space-y-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-[#f7e034]" />
+                    Birth Chart ({chartDivision === 'D1' ? 'D1 Rashi Lagna' : 'D9 Navamsha'})
                   </h3>
-                  <div className="flex gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+
+                  {/* Chart Style Switcher: North / South / East */}
+                  <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
                     <button
                       type="button"
-                      onClick={() => setActiveChartType('D1')}
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                        activeChartType === 'D1' ? 'bg-amber-500 text-slate-950' : 'text-slate-400 hover:text-white'
+                      onClick={() => setChartStyle('NORTH')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                        chartStyle === 'NORTH' ? 'bg-[#f7e034] text-slate-950' : 'text-slate-400 hover:text-white'
                       }`}
                     >
-                      D1 Lagna
+                      North (উত্তর)
                     </button>
                     <button
                       type="button"
-                      onClick={() => setActiveChartType('D9')}
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                        activeChartType === 'D9' ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-white'
+                      onClick={() => setChartStyle('SOUTH')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                        chartStyle === 'SOUTH' ? 'bg-[#f7e034] text-slate-950' : 'text-slate-400 hover:text-white'
                       }`}
                     >
-                      D9 Navamsha
+                      South (দক্ষিণ)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setChartStyle('EAST')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                        chartStyle === 'EAST' ? 'bg-[#f7e034] text-slate-950' : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      East (পূর্ব / বাংলা)
                     </button>
                   </div>
                 </div>
 
-                <KundliChartSVG kundli={kundliResult} />
+                {/* SVG Visualizer */}
+                <KundliChartSVG kundli={kundliResult} styleType={chartStyle} />
               </div>
 
               {/* Vimshottari Mahadasha Timeline */}
-              <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5">
+              <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5">
                 <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-amber-400" />
+                  <Clock className="w-4 h-4 text-[#f7e034]" />
                   Vimshottari Dasha Periods (120 Years Cycle)
                 </h3>
                 <div className="grid grid-cols-3 sm:grid-cols-9 gap-2">
@@ -349,16 +441,16 @@ export const KundliCalculator: React.FC = () => {
                       key={dasha.lord}
                       className={`p-2.5 rounded-xl border text-center transition-all ${
                         dasha.isActive
-                          ? 'bg-amber-500/20 border-amber-400 shadow-md shadow-amber-500/20 ring-1 ring-amber-400'
+                          ? 'bg-amber-500/20 border-[#f7e034] shadow-md ring-1 ring-[#f7e034]'
                           : 'bg-slate-950 border-slate-800/80 text-slate-400'
                       }`}
                     >
-                      <span className={`text-xs font-black block ${dasha.isActive ? 'text-amber-400' : 'text-slate-200'}`}>
+                      <span className={`text-xs font-black block ${dasha.isActive ? 'text-[#f7e034]' : 'text-slate-200'}`}>
                         {dasha.lord}
                       </span>
                       <span className="text-[10px] block mt-0.5">{dasha.startDate} - {dasha.endDate}</span>
                       {dasha.isActive && (
-                        <span className="inline-block mt-1 bg-amber-500 text-slate-950 text-[9px] font-extrabold px-1.5 py-0.2 rounded-full">
+                        <span className="inline-block mt-1 bg-[#f7e034] text-slate-950 text-[9px] font-extrabold px-1.5 py-0.2 rounded-full">
                           ACTIVE
                         </span>
                       )}
@@ -369,13 +461,102 @@ export const KundliCalculator: React.FC = () => {
             </div>
           )}
 
-          {/* TAB 2: 1000+ VEDIC YOGAS */}
+          {/* TAB 2: KP ASTROLOGY (CUSP & PLANETARY SUB-LORDS) */}
+          {selectedSubTab === 'kp' && (
+            <div className="space-y-6 animate-in fade-in">
+              {/* KP Ruling Planets Box */}
+              <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-3">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <Award className="w-4 h-4 text-[#f7e034]" />
+                  KP Ruling Planets (RPs - কৃষ্ণমূর্তি রুলিং প্ল্যানেটস)
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                  <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                    <span className="text-[10px] text-slate-500 block">Day Lord</span>
+                    <span className="font-bold text-white">{kpRulingPlanets.dayLord}</span>
+                  </div>
+                  <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                    <span className="text-[10px] text-slate-500 block">Asc Sign / Star Lord</span>
+                    <span className="font-bold text-[#f7e034]">{kpRulingPlanets.ascendantSignLord} / {kpRulingPlanets.ascendantStarLord}</span>
+                  </div>
+                  <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                    <span className="text-[10px] text-slate-500 block">Asc Sub-Lord (লগ্ন সাব-লর্ড)</span>
+                    <span className="font-black text-amber-400">{kpRulingPlanets.ascendantSubLord}</span>
+                  </div>
+                  <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                    <span className="text-[10px] text-slate-500 block">Moon Sign / Star Lord</span>
+                    <span className="font-bold text-white">{kpRulingPlanets.moonSignLord} / {kpRulingPlanets.moonStarLord}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 12 KP Cuspal Sub-Lords Table */}
+              <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-3 overflow-x-auto">
+                <h3 className="text-sm font-bold text-white">12 KP Cusps (Bhavas) & Cuspal Sub-Lords</h3>
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-slate-400 font-bold">
+                      <th className="pb-2">Cusp</th>
+                      <th className="pb-2">Degree</th>
+                      <th className="pb-2">Sign</th>
+                      <th className="pb-2">Sign Lord</th>
+                      <th className="pb-2">Star Lord (নক্ষত্র)</th>
+                      <th className="pb-2 text-[#f7e034]">Sub-Lord (উপ-নক্ষত্র)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                    {kpCusps.map((cusp) => (
+                      <tr key={cusp.cuspNumber} className="hover:bg-slate-800/40 transition-colors">
+                        <td className="py-2.5 font-bold text-white">Cusp {cusp.cuspNumber}</td>
+                        <td className="py-2.5 font-mono text-slate-300">{cusp.degreeStr}</td>
+                        <td className="py-2.5">{cusp.sign}</td>
+                        <td className="py-2.5">{cusp.signLord}</td>
+                        <td className="py-2.5">{cusp.starLord}</td>
+                        <td className="py-2.5 font-black text-[#f7e034]">{cusp.subLord}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* KP Planets Sub-Lords Table */}
+              <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-3 overflow-x-auto">
+                <h3 className="text-sm font-bold text-white">KP Planetary Positions & Sub-Lords</h3>
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-slate-400 font-bold">
+                      <th className="pb-2">Planet</th>
+                      <th className="pb-2">Degree</th>
+                      <th className="pb-2">Sign Lord</th>
+                      <th className="pb-2">Star Lord</th>
+                      <th className="pb-2 text-[#f7e034]">Sub-Lord</th>
+                      <th className="pb-2">House Occupied</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                    {kpPlanets.map((p) => (
+                      <tr key={p.planet} className="hover:bg-slate-800/40 transition-colors">
+                        <td className="py-2.5 font-bold text-white">{p.planet}</td>
+                        <td className="py-2.5 font-mono text-slate-300">{p.degreeStr}</td>
+                        <td className="py-2.5">{p.signLord}</td>
+                        <td className="py-2.5">{p.starLord}</td>
+                        <td className="py-2.5 font-black text-[#f7e034]">{p.subLord}</td>
+                        <td className="py-2.5">House {p.houseOccupied}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: 1000+ VEDIC YOGAS */}
           {selectedSubTab === 'yogas' && (
             <div className="space-y-4 animate-in fade-in">
               <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Award className="w-4 h-4 text-amber-400" />
+                    <Award className="w-4 h-4 text-[#f7e034]" />
                     Vedic Planetary Yogas (রাজযোগ ও গ্রহ সমাহার)
                   </h3>
                   <p className="text-xs text-slate-400">Classical Parashara & VedAstro combinations formed in your chart</p>
@@ -400,7 +581,7 @@ export const KundliCalculator: React.FC = () => {
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div>
                         <h4 className="text-sm font-bold text-white">{yoga.name}</h4>
-                        <span className="text-[11px] font-serif text-amber-400">{yoga.sanskritName}</span>
+                        <span className="text-[11px] font-serif text-[#f7e034]">{yoga.sanskritName}</span>
                       </div>
                       <span className={`px-2 py-0.5 rounded text-[10px] font-black ${
                         yoga.isFormed ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-500'
@@ -415,11 +596,6 @@ export const KundliCalculator: React.FC = () => {
                       <div className="mt-3 pt-2.5 border-t border-slate-800/80 space-y-1">
                         <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">Impact:</span>
                         <p className="text-xs text-slate-400">{yoga.positiveImpact}</p>
-                        {yoga.remedy && (
-                          <div className="mt-2 p-2 bg-rose-500/10 rounded-lg text-[11px] text-rose-300 border border-rose-500/20">
-                            <b>প্রতিকার (Remedy):</b> {yoga.remedy}
-                          </div>
-                        )}
                       </div>
                     )}
                   </div>
@@ -428,12 +604,12 @@ export const KundliCalculator: React.FC = () => {
             </div>
           )}
 
-          {/* TAB 3: ASHTAKAVARGA SCORE */}
+          {/* TAB 4: ASHTAKAVARGA SCORE */}
           {selectedSubTab === 'ashtakavarga' && (
             <div className="bg-slate-900/90 border border-slate-800 p-5 rounded-2xl space-y-4 animate-in fade-in">
               <div className="border-b border-slate-800 pb-3">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-amber-400" />
+                  <BarChart3 className="w-4 h-4 text-[#f7e034]" />
                   Sarvashtakavarga Strength Matrix (337 Total Points)
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
@@ -448,7 +624,7 @@ export const KundliCalculator: React.FC = () => {
                       <span className="text-xs font-bold text-white">{item.sign}</span>
                       <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
                         item.strength === 'EXCELLENT'
-                          ? 'bg-amber-500 text-slate-950'
+                          ? 'bg-[#f7e034] text-slate-950'
                           : item.strength === 'STRONG'
                           ? 'bg-emerald-500/20 text-emerald-300'
                           : 'bg-slate-800 text-slate-400'
@@ -456,7 +632,7 @@ export const KundliCalculator: React.FC = () => {
                         {item.strength}
                       </span>
                     </div>
-                    <div className="text-xl font-black text-amber-400">{item.totalPoints} pts</div>
+                    <div className="text-xl font-black text-[#f7e034]">{item.totalPoints} pts</div>
                     <p className="text-[10px] text-slate-400 mt-1 line-clamp-2">{item.recommendedActions}</p>
                   </div>
                 ))}
@@ -464,7 +640,7 @@ export const KundliCalculator: React.FC = () => {
             </div>
           )}
 
-          {/* TAB 4: CHALDEAN NUMEROLOGY */}
+          {/* TAB 5: CHALDEAN NUMEROLOGY */}
           {selectedSubTab === 'numerology' && (
             <div className="bg-slate-900/90 border border-slate-800 p-6 rounded-2xl space-y-5 animate-in fade-in">
               <div className="border-b border-slate-800 pb-3 flex items-center justify-between">
@@ -484,7 +660,7 @@ export const KundliCalculator: React.FC = () => {
               <div className="grid grid-cols-3 gap-3 text-center">
                 <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
                   <span className="text-[10px] text-slate-400 uppercase font-semibold block">Radical / Moolank</span>
-                  <span className="text-3xl font-black text-amber-400">{numerology.radicalNumber}</span>
+                  <span className="text-3xl font-black text-[#f7e034]">{numerology.radicalNumber}</span>
                   <span className="text-[10px] text-slate-500 block">Day of Birth</span>
                 </div>
 
@@ -522,10 +698,6 @@ export const KundliCalculator: React.FC = () => {
                   <span className="text-slate-400 font-semibold block">💼 Career Incline:</span>
                   <span className="font-bold text-slate-200">{numerology.careerSuggestions.join(', ')}</span>
                 </div>
-              </div>
-
-              <div className="p-4 bg-purple-950/20 border border-purple-800/40 rounded-xl text-xs text-purple-200 leading-relaxed">
-                <b>Life Path Assessment:</b> {numerology.lifePathDescription}
               </div>
             </div>
           )}
