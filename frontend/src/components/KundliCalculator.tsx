@@ -2,12 +2,24 @@ import React, { useState } from 'react';
 import { 
   Compass, Calendar, Clock, MapPin, Sparkles, User, AlertTriangle, 
   CheckCircle2, Sun, Award, BarChart3, Hash, ShieldCheck, Flame, 
-  Download, Printer, Bookmark, ChevronRight, Layers, Table
+  Download, Printer, Bookmark, ChevronRight, Layers, Table, Loader2
 } from 'lucide-react';
 import { calculateKundliClient, calculateDailyPanchang } from '../utils/astrology';
 import { VedAstroEngine, VedicYoga, AshtakavargaScore, NumerologyReport } from '../utils/vedAstroEngine';
 import { KPAstrologyEngine, KPCuspInfo, KPPlanetInfo, KPRulingPlanets } from '../utils/kpAstrologyEngine';
 import { KundliChartSVG } from './KundliChartSVG';
+
+const CITY_COORDINATES: Record<string, { lat: number; lon: number }> = {
+  'New Delhi, India': { lat: 28.6139, lon: 77.2090 },
+  'Kolkata, India': { lat: 22.5726, lon: 88.3639 },
+  'Dhaka, Bangladesh': { lat: 23.8103, lon: 90.4125 },
+  'Mumbai, India': { lat: 19.0760, lon: 72.8777 },
+  'Bengaluru, India': { lat: 12.9716, lon: 77.5946 },
+  'Chittagong, Bangladesh': { lat: 22.3569, lon: 91.7832 },
+  'Sylhet, Bangladesh': { lat: 24.8949, lon: 91.8687 },
+  'London, UK': { lat: 51.5074, lon: -0.1278 },
+  'New York, USA': { lat: 40.7128, lon: -74.0060 }
+};
 
 export const KundliCalculator: React.FC = () => {
   const [name, setName] = useState('Rahul Sharma');
@@ -16,6 +28,8 @@ export const KundliCalculator: React.FC = () => {
   const [place, setPlace] = useState('New Delhi, India');
   const [lat, setLat] = useState('28.6139');
   const [lon, setLon] = useState('77.2090');
+  const [isCalculating, setIsCalculating] = useState(false);
+  const [showSuccessBadge, setShowSuccessBadge] = useState(false);
   
   // Visual Chart Styles: North / South / East Indian
   const [chartStyle, setChartStyle] = useState<'NORTH' | 'SOUTH' | 'EAST'>('NORTH');
@@ -67,50 +81,89 @@ export const KundliCalculator: React.FC = () => {
 
   const panchang = calculateDailyPanchang();
 
+  const handleCityChange = (newCity: string) => {
+    setPlace(newCity);
+    if (CITY_COORDINATES[newCity]) {
+      setLat(CITY_COORDINATES[newCity].lat.toString());
+      setLon(CITY_COORDINATES[newCity].lon.toString());
+    }
+  };
+
+  const handleQuickPreset = (presetName: string, presetDob: string, presetTob: string, presetPlace: string) => {
+    setName(presetName);
+    setDob(presetDob);
+    setTob(presetTob);
+    handleCityChange(presetPlace);
+  };
+
   const handleGenerate = (e: React.FormEvent) => {
     e.preventDefault();
-    const [yearStr, monthStr, dayStr] = dob.split('-');
-    const [hourStr, minStr] = tob.split(':');
+    setIsCalculating(true);
+    setShowSuccessBadge(false);
 
-    const yearNum = parseInt(yearStr, 10);
-    const monthNum = parseInt(monthStr, 10);
-    const dayNum = parseInt(dayStr, 10);
+    setTimeout(() => {
+      try {
+        const parts = dob.split('-');
+        const yearNum = parts.length === 3 ? parseInt(parts[0], 10) : 1998;
+        const monthNum = parts.length === 3 ? parseInt(parts[1], 10) : 5;
+        const dayNum = parts.length === 3 ? parseInt(parts[2], 10) : 15;
 
-    const result = calculateKundliClient(
-      yearNum,
-      monthNum,
-      dayNum,
-      parseInt(hourStr, 10),
-      parseInt(minStr, 10),
-      parseFloat(lat) || 28.6139,
-      parseFloat(lon) || 77.209,
-      place
-    );
-    setKundliResult(result);
+        const timeParts = tob.split(':');
+        const hourNum = timeParts.length >= 2 ? parseInt(timeParts[0], 10) : 12;
+        const minNum = timeParts.length >= 2 ? parseInt(timeParts[1], 10) : 0;
 
-    // Update KP System
-    const ascLong = result.ascendant.degree || 45;
-    setKpCusps(KPAstrologyEngine.generateKPCusps(ascLong));
-    setKpPlanets(
-      KPAstrologyEngine.generateKPPlanets(
-        {
-          Sun: { longitude: result.planets.Sun?.longitude || 58, isRetrograde: false },
-          Moon: { longitude: result.planets.Moon?.longitude || 275, isRetrograde: false },
-          Mars: { longitude: result.planets.Mars?.longitude || 35, isRetrograde: false },
-          Jupiter: { longitude: result.planets.Jupiter?.longitude || 334, isRetrograde: false },
-          Saturn: { longitude: result.planets.Saturn?.longitude || 312, isRetrograde: true },
-          Rahu: { longitude: result.planets.Rahu?.longitude || 128, isRetrograde: true },
-          Ketu: { longitude: result.planets.Ketu?.longitude || 308, isRetrograde: true }
-        },
-        ascLong
-      )
-    );
-    setKpRulingPlanets(KPAstrologyEngine.generateRulingPlanets(ascLong, result.planets.Moon?.longitude || 275, 'Friday'));
+        const latitude = parseFloat(lat) || 28.6139;
+        const longitude = parseFloat(lon) || 77.209;
 
-    // Update Yogas, Ashtakavarga & Numerology
-    setYogas(VedAstroEngine.detectYogas(result.planets, 1));
-    setAshtakavarga(VedAstroEngine.calculateAshtakavarga(1, 1));
-    setNumerology(VedAstroEngine.calculateNumerology(dayNum, monthNum, yearNum, name));
+        const result = calculateKundliClient(
+          yearNum,
+          monthNum,
+          dayNum,
+          hourNum,
+          minNum,
+          latitude,
+          longitude,
+          place || 'New Delhi, India'
+        );
+        setKundliResult(result);
+
+        // Update KP System
+        const ascLong = result.ascendant.degree || 45;
+        setKpCusps(KPAstrologyEngine.generateKPCusps(ascLong));
+        setKpPlanets(
+          KPAstrologyEngine.generateKPPlanets(
+            {
+              Sun: { longitude: result.planets.Sun?.longitude || 58.4, isRetrograde: false },
+              Moon: { longitude: result.planets.Moon?.longitude || 275.2, isRetrograde: false },
+              Mars: { longitude: result.planets.Mars?.longitude || 35.8, isRetrograde: false },
+              Jupiter: { longitude: result.planets.Jupiter?.longitude || 334.6, isRetrograde: false },
+              Saturn: { longitude: result.planets.Saturn?.longitude || 312.1, isRetrograde: true },
+              Rahu: { longitude: result.planets.Rahu?.longitude || 128.5, isRetrograde: true },
+              Ketu: { longitude: result.planets.Ketu?.longitude || 308.5, isRetrograde: true }
+            },
+            ascLong
+          )
+        );
+        setKpRulingPlanets(KPAstrologyEngine.generateRulingPlanets(ascLong, result.planets.Moon?.longitude || 275.2, 'Friday'));
+
+        // Update Yogas, Ashtakavarga & Numerology
+        setYogas(VedAstroEngine.detectYogas(result.planets, 1));
+        setAshtakavarga(VedAstroEngine.calculateAshtakavarga(1, 1));
+        setNumerology(VedAstroEngine.calculateNumerology(dayNum, monthNum, yearNum, name || 'User'));
+
+        setIsCalculating(false);
+        setShowSuccessBadge(true);
+
+        // Smooth scroll to results on mobile / small screens
+        const resEl = document.getElementById('kundli-results-area');
+        if (resEl && window.innerWidth < 1024) {
+          resEl.scrollIntoView({ behavior: 'smooth' });
+        }
+      } catch (err) {
+        console.error('Error generating Kundli:', err);
+        setIsCalculating(false);
+      }
+    }, 250);
   };
 
   const handlePrintPDF = () => {
@@ -160,7 +213,7 @@ export const KundliCalculator: React.FC = () => {
       {/* Main Title & Action Buttons */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold mb-1">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-[#f7e034] text-xs font-semibold mb-1">
             <Sparkles className="w-3.5 h-3.5 text-[#f7e034]" />
             <span>Vedic, KP Astrology & Multi-Style Kundli Engine</span>
           </div>
@@ -183,15 +236,55 @@ export const KundliCalculator: React.FC = () => {
         
         {/* Left Form */}
         <div className="lg:col-span-4 bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl space-y-5">
-          <h3 className="text-base font-bold text-white flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#f7e034]" />
-            Enter Birth Details
-          </h3>
+          
+          {/* Quick Presets */}
+          <div>
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
+              ⚡ Quick Sample Profiles (ডেমো প্রোফাইল)
+            </span>
+            <div className="grid grid-cols-2 gap-2 text-[11px]">
+              <button
+                type="button"
+                onClick={() => handleQuickPreset('Rahul Sharma', '1998-05-15', '14:30', 'New Delhi, India')}
+                className="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-left border border-slate-800 hover:border-amber-400 transition-colors"
+              >
+                <b className="text-white block truncate">Rahul (Delhi)</b>
+                <span className="text-slate-500 text-[10px]">15 May 1998</span>
+              </button>
 
-          <form onSubmit={handleGenerate} className="space-y-4">
+              <button
+                type="button"
+                onClick={() => handleQuickPreset('Priya Sen', '2001-10-24', '09:15', 'Kolkata, India')}
+                className="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-left border border-slate-800 hover:border-amber-400 transition-colors"
+              >
+                <b className="text-white block truncate">Priya (Kolkata)</b>
+                <span className="text-slate-500 text-[10px]">24 Oct 2001</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleQuickPreset('Tanvir Ahmed', '1995-02-18', '06:45', 'Dhaka, Bangladesh')}
+                className="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-left border border-slate-800 hover:border-amber-400 transition-colors"
+              >
+                <b className="text-white block truncate">Tanvir (Dhaka)</b>
+                <span className="text-slate-500 text-[10px]">18 Feb 1995</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleQuickPreset('Sneha Patel', '1999-12-05', '18:20', 'Mumbai, India')}
+                className="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-left border border-slate-800 hover:border-amber-400 transition-colors"
+              >
+                <b className="text-white block truncate">Sneha (Mumbai)</b>
+                <span className="text-slate-500 text-[10px]">05 Dec 1999</span>
+              </button>
+            </div>
+          </div>
+
+          <form onSubmit={handleGenerate} className="space-y-4 pt-2 border-t border-slate-800">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-slate-400" /> Full Name
+                <User className="w-3.5 h-3.5 text-slate-400" /> Full Name (নাম)
               </label>
               <input
                 type="text"
@@ -206,7 +299,7 @@ export const KundliCalculator: React.FC = () => {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-slate-400" /> Date of Birth
+                  <Calendar className="w-3.5 h-3.5 text-slate-400" /> Date of Birth (জন্মতারিখ)
                 </label>
                 <input
                   type="date"
@@ -219,7 +312,7 @@ export const KundliCalculator: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-slate-400" /> Time of Birth
+                  <Clock className="w-3.5 h-3.5 text-slate-400" /> Time of Birth (সময়)
                 </label>
                 <input
                   type="time"
@@ -233,25 +326,52 @@ export const KundliCalculator: React.FC = () => {
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-slate-400" /> Birth Place
+                <MapPin className="w-3.5 h-3.5 text-slate-400" /> Birth Place (জন্মস্থান)
               </label>
-              <input
-                type="text"
+              <select
                 value={place}
-                onChange={(e) => setPlace(e.target.value)}
-                required
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#f7e034]"
-                placeholder="e.g. New Delhi, Dhaka, Kolkata"
-              />
+                onChange={(e) => handleCityChange(e.target.value)}
+                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#f7e034]"
+              >
+                <option value="New Delhi, India">New Delhi, India</option>
+                <option value="Kolkata, India">Kolkata, India</option>
+                <option value="Dhaka, Bangladesh">Dhaka, Bangladesh</option>
+                <option value="Mumbai, India">Mumbai, India</option>
+                <option value="Bengaluru, India">Bengaluru, India</option>
+                <option value="Chittagong, Bangladesh">Chittagong, Bangladesh</option>
+                <option value="Sylhet, Bangladesh">Sylhet, Bangladesh</option>
+                <option value="London, UK">London, UK</option>
+                <option value="New York, USA">New York, USA</option>
+              </select>
             </div>
 
+            {/* Calculate Button with Loading State */}
             <button
               type="submit"
-              className="w-full py-3 rounded-xl bg-[#f7e034] hover:bg-[#ffe838] text-slate-950 font-black text-sm shadow-lg shadow-[#f7e034]/20 transition-all mt-2"
+              disabled={isCalculating}
+              className="w-full py-3.5 rounded-2xl bg-[#f7e034] hover:bg-[#ffe838] text-slate-950 font-black text-sm shadow-[0_0_25px_rgba(247,224,52,0.35)] transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
             >
-              Analyze Full Kundli & KP Sub-Lords
+              {isCalculating ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Calculating Planetary Coordinates...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 text-slate-950 stroke-[2.5]" />
+                  <span>Analyze Full Kundli & KP Sub-Lords</span>
+                </>
+              )}
             </button>
           </form>
+
+          {/* Success Confirmation Toast */}
+          {showSuccessBadge && (
+            <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs font-bold flex items-center gap-2 animate-in fade-in">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>✓ Kundli, KP Sub-Lords & Yogas Generated Successfully!</span>
+            </div>
+          )}
 
           {/* Dosha Status Overview */}
           <div className="pt-4 border-t border-slate-800 space-y-3">
@@ -294,7 +414,7 @@ export const KundliCalculator: React.FC = () => {
         </div>
 
         {/* Right Tabbed Results Area */}
-        <div className="lg:col-span-8 space-y-6">
+        <div className="lg:col-span-8 space-y-6" id="kundli-results-area">
           
           {/* Sub-Navigation Tabs: Chart, KP System, Yogas, Ashtakavarga, Numerology */}
           <div className="flex items-center gap-1.5 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800 overflow-x-auto">
