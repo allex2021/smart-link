@@ -7,6 +7,9 @@ import { MatchmakingTool } from './components/MatchmakingTool';
 import { DailyHoroscopeSection } from './components/DailyHoroscopeSection';
 import { AstroShopSection } from './components/AstroShopSection';
 import { CalculatorsHub } from './components/CalculatorsHub';
+import { TopicsSection } from './components/TopicsSection';
+import { HomePageTrustSection } from './components/HomePageTrustSection';
+import { FaqSection } from './components/FaqSection';
 import { ChatModal } from './components/ChatModal';
 import { CallModal } from './components/CallModal';
 import { AIAstrologerModal } from './components/AIAstrologerModal';
@@ -139,6 +142,12 @@ export function App() {
     setActiveCallAstrologer(astro);
   };
 
+  const handleTopicSelect = (topicTitle: string) => {
+    setSearchQuery(topicTitle.split(' ')[0]);
+    const el = document.getElementById('astrologers-section');
+    el?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
       {/* Navigation Bar */}
@@ -165,59 +174,45 @@ export function App() {
       <main className="flex-1">
         {activeTab === 'astrologers' && (
           <div>
+            {/* 1. Astrotalk Cosmic Hero Banner */}
             <HeroBanner
               onStartConsultation={() => {
                 const onlineAstro = astrologers.find((a) => a.isOnline) || astrologers[0];
                 handleInitiateChat(onlineAstro);
               }}
-              onOpenKundli={() => {
-                setActiveTab('kundli');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+              onNavigateTab={(tab) => {
+                if (tab === 'ai-astro') {
+                  setIsAIOpen(true);
+                } else {
+                  setActiveTab(tab);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
               }}
             />
 
-            {/* Daily Horoscope Quick Preview Row */}
-            <div className="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-950 border-y border-slate-800 py-6 px-4">
-              <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div>
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-amber-400" />
-                    Read Today's Free Horoscope (আজকের রাশিফল)
-                  </h3>
-                  <p className="text-xs text-slate-400">Discover today's love, career & lucky numbers for all 12 zodiac signs.</p>
-                </div>
-                <button
-                  onClick={() => {
-                    setActiveTab('horoscope');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition-all whitespace-nowrap"
-                >
-                  View 12 Zodiacs Horoscope →
-                </button>
-              </div>
-            </div>
+            {/* 2. Problem Solving Topics Strip */}
+            <TopicsSection onSelectTopic={handleTopicSelect} />
 
-            {/* Astrologers Directory Section */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" id="astrologers-section">
+            {/* 3. Astrologers Directory Section */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14" id="astrologers-section">
               {/* Filter and Search Bar */}
               <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-6">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-amber-400" />
-                    Talk to Top Astrologers
+                  <h2 className="text-xl sm:text-3xl font-black text-white flex items-center gap-2">
+                    <Sparkles className="w-6 h-6 text-amber-400" />
+                    Talk to Verified Astrologers
                   </h2>
-                  <p className="text-xs sm:text-sm text-slate-400">
-                    Connect 1-on-1 with verified experts via Chat or Call (English, বাংলা, हिन्दी, தமிழ், తెలుగు)
+                  <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                    Connect 1-on-1 with experts via Chat or Audio Call (English, বাংলা, हिन्दी, தமிழ், తెలుగు)
                   </p>
                 </div>
 
                 <div className="flex items-center gap-3 w-full md:w-auto">
-                  <div className="relative w-full md:w-72">
+                  <div className="relative w-full md:w-80">
                     <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
-                      placeholder="Search astrologer name or skill..."
+                      placeholder="Search astrologer, tarot, marriage..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
@@ -227,16 +222,16 @@ export function App() {
               </div>
 
               {/* Skills Filter & Language Filter */}
-              <div className="space-y-3 mb-6">
+              <div className="space-y-3 mb-8">
                 {/* Category Pills */}
                 <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
                   {filterSkills.map((skill) => (
                     <button
                       key={skill}
                       onClick={() => setSelectedSkillFilter(skill)}
-                      className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
+                      className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
                         selectedSkillFilter === skill
-                          ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md shadow-amber-500/20'
+                          ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md shadow-amber-500/20 font-bold'
                           : 'bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-white'
                       }`}
                     >
@@ -294,6 +289,12 @@ export function App() {
                 </div>
               )}
             </div>
+
+            {/* 4. Trust, Stats & User Testimonials Section */}
+            <HomePageTrustSection />
+
+            {/* 5. Astrotalk FAQ Section */}
+            <FaqSection />
           </div>
         )}
 
@@ -362,14 +363,14 @@ export function App() {
         />
       )}
 
-      {/* Footer */}
-      <footer className="bg-slate-900 border-t border-slate-800 py-10 px-4 sm:px-6 text-xs text-slate-400">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-8 pb-8 border-b border-slate-800">
+      {/* Astrotalk Grand Footer */}
+      <footer className="bg-slate-900 border-t border-slate-800 py-12 px-4 sm:px-6 text-xs text-slate-400">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-8 pb-10 border-b border-slate-800">
           <div>
             <h4 className="font-bold text-white text-sm mb-3">Consultations</h4>
             <ul className="space-y-2">
-              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('astrologers')}>Chat with Astrologer</li>
-              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('astrologers')}>Call with Astrologer</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => { setActiveTab('astrologers'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Chat with Astrologer</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => { setActiveTab('astrologers'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Call with Astrologer</li>
               <li className="hover:text-amber-400 cursor-pointer" onClick={() => setIsAIOpen(true)}>AI Astrologer 24/7</li>
             </ul>
           </div>
@@ -377,34 +378,34 @@ export function App() {
           <div>
             <h4 className="font-bold text-white text-sm mb-3">Horoscope & Kundli</h4>
             <ul className="space-y-2">
-              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('horoscope')}>Daily Horoscope (12 Signs)</li>
-              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('kundli')}>Free Janam Kundli</li>
-              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('matchmaking')}>Kundli Milan (Matching)</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => { setActiveTab('horoscope'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Daily Horoscope (12 Signs)</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => { setActiveTab('kundli'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Free Janam Kundli</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => { setActiveTab('matchmaking'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Kundli Milan (Matching)</li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold text-white text-sm mb-3">Calculators Hub</h4>
             <ul className="space-y-2">
-              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('calculators')}>Love Match Calculator</li>
-              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('calculators')}>Lo Shu Grid Numerology</li>
-              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('calculators')}>Today's Shubh Muhurat</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => { setActiveTab('calculators'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Love Match Calculator</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => { setActiveTab('calculators'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Lo Shu Grid Numerology</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => { setActiveTab('calculators'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Today's Shubh Muhurat</li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold text-white text-sm mb-3">AstroShop</h4>
             <ul className="space-y-2">
-              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('shop')}>Certified Gemstones</li>
-              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('shop')}>Rudraksha Malas</li>
-              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('shop')}>Shree Yantras</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => { setActiveTab('shop'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Certified Gemstones</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => { setActiveTab('shop'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Rudraksha Malas</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => { setActiveTab('shop'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Shree Yantras</li>
             </ul>
           </div>
         </div>
 
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-center text-slate-500">
           <div className="flex items-center gap-2">
-            <span className="font-black text-slate-300">ASTROTALK WEB PLATFORM</span>
+            <span className="font-black text-slate-300">ASTROTALK LIVE PLATFORM</span>
             <span>•</span>
             <span>Accurate Multilingual Vedic Astrology & Instant 24/7 Guidance</span>
           </div>
