@@ -2,6 +2,38 @@ import { Astrologer } from '../types';
 
 export const MOCK_ASTROLOGERS: Astrologer[] = [
   {
+    id: 'astro_ai_01',
+    name: 'Aryabhata AI (Vedic Bot)',
+    avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=256',
+    skills: ['AI Vedic Predictions', 'Instant Kundli Analysis', 'Dasha & Transits', 'Remedies'],
+    languages: ['English', 'Hindi', 'Bengali', 'Tamil', 'Telugu'],
+    experienceYears: 100, // Trained on ancient shastras
+    chatRatePerMin: 5,
+    callRatePerMin: 5,
+    rating: 4.99,
+    totalConsultations: 45200,
+    isOnline: true,
+    isAI: true,
+    specialty: '⚡ 24/7 Instant Vedic AI Engine (0s Wait Time)',
+    bio: 'Trained on 10,000+ Sanskrit astrological texts including Brihat Parashara Hora Shastra, Jaimini Upadesha, and modern NASA planetary ephemeris.'
+  },
+  {
+    id: 'astro_ai_02',
+    name: 'Aura AI (Tarot & Love Guide)',
+    avatar: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=256',
+    skills: ['AI Tarot Spread', 'Soulmate Connection', 'Daily Guidance', 'Aura Reading'],
+    languages: ['English', 'Hindi', 'Spanish', 'French'],
+    experienceYears: 50,
+    chatRatePerMin: 5,
+    callRatePerMin: 5,
+    rating: 4.97,
+    totalConsultations: 28900,
+    isOnline: true,
+    isAI: true,
+    specialty: '🔮 24/7 Instant Tarot & Intuitive Guide',
+    bio: 'Instant 3-card past-present-future tarot spreads and relationship compatibility assessments with zero waiting queue.'
+  },
+  {
     id: 'astro_101',
     name: 'Acharya Devrat Sharma',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256',

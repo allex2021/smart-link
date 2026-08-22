@@ -12,6 +12,7 @@ export interface Astrologer {
   isOnline: boolean;
   specialty: string;
   bio: string;
+  isAI?: boolean;
 }
 
 export interface KundliData {
