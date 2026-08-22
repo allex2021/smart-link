@@ -15,10 +15,11 @@ import { CallModal } from './components/CallModal';
 import { AIAstrologerModal } from './components/AIAstrologerModal';
 import { WalletModal } from './components/WalletModal';
 import { AuthModal } from './components/AuthModal';
+import { LifetimeVipModal } from './components/LifetimeVipModal';
 import { MOCK_ASTROLOGERS } from './data/mockData';
 import { Astrologer, Transaction, UserProfile } from './types';
 import { SupportedLanguageCode } from './data/languages';
-import { Search, Sparkles, Bot, Globe, Tag, Filter } from 'lucide-react';
+import { Search, Sparkles, Bot, Globe, Tag, Filter, Crown, ArrowRight, X } from 'lucide-react';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<AppNavTab>('astrologers');
@@ -29,6 +30,13 @@ export function App() {
   const [selectedLanguageFilter, setSelectedLanguageFilter] = useState('All');
   const [selectedSortBy, setSelectedSortBy] = useState<'recommended' | 'rating' | 'experience' | 'price_asc'>('recommended');
   const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguageCode>('bn');
+  const [showTopVipStrip, setShowTopVipStrip] = useState(true);
+
+  // VIP Lifetime State
+  const [isLifetimeVIP, setIsLifetimeVIP] = useState<boolean>(() => {
+    return localStorage.getItem('astrotalk_vip') === 'true';
+  });
+  const [isVipModalOpen, setIsVipModalOpen] = useState(false);
 
   // Theme State: Dark / Light Mode
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
@@ -92,6 +100,21 @@ export function App() {
   useEffect(() => {
     localStorage.setItem('astrotalk_wallet', walletBalance.toString());
   }, [walletBalance]);
+
+  const handleVipSuccess = () => {
+    setIsLifetimeVIP(true);
+    localStorage.setItem('astrotalk_vip', 'true');
+    setTransactions((prev) => [
+      {
+        id: `tx_${Date.now()}`,
+        amount: -99,
+        type: 'CONSULTATION_DEBIT',
+        description: 'Lifetime VIP Gold Pass Activation',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      },
+      ...prev
+    ]);
+  };
 
   // Filter Categories & Sub-Categories
   const mainCategories = ['All', 'Vedic Astrology', 'Tarot Cards', 'KP Astrology', 'Vastu Shastra', 'Palmistry', 'Numerology'];
@@ -191,6 +214,30 @@ export function App() {
     <div className={`min-h-screen flex flex-col font-sans transition-colors duration-300 ${
       isLight ? 'bg-slate-50 text-slate-900' : 'bg-slate-950 text-slate-100'
     }`}>
+      
+      {/* 👑 Top Sticky VIP Flash Announcement Bar */}
+      {showTopVipStrip && !isLifetimeVIP && (
+        <div className="bg-gradient-to-r from-amber-600 via-[#f7e034] to-amber-500 text-slate-950 py-1.5 px-4 text-xs font-black flex items-center justify-center gap-2 shadow-md relative z-50">
+          <Crown className="w-4 h-4 fill-slate-950 animate-bounce" />
+          <span>
+            <b>FLASH LAUNCH:</b> Get Lifetime VIP Pass (50+ Page Kundli PDF + 24/7 AI Astrologer) for just <b>₹99</b> only!
+          </span>
+          <button
+            onClick={() => setIsVipModalOpen(true)}
+            className="ml-2 px-2.5 py-0.5 rounded-full bg-slate-950 hover:bg-slate-900 text-[#f7e034] text-[10px] font-extrabold flex items-center gap-1 cursor-pointer transition-all shadow-sm"
+          >
+            <span>Unlock VIP ₹99</span>
+            <ArrowRight className="w-3 h-3" />
+          </button>
+          <button
+            onClick={() => setShowTopVipStrip(false)}
+            className="absolute right-3 p-1 text-slate-950/70 hover:text-slate-950"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* Navigation Bar with Sub-categories & Functional Theme Switcher */}
       <Navbar
         activeTab={activeTab}
@@ -211,6 +258,8 @@ export function App() {
         onLogout={handleLogout}
         theme={theme}
         onToggleTheme={toggleTheme}
+        isLifetimeVIP={isLifetimeVIP}
+        onOpenVipModal={() => setIsVipModalOpen(true)}
         onSelectSubCategory={(mainTab, sub) => {
           if (mainTab === 'astrologers' && sub) {
             const el = document.getElementById('astrologers-section');
@@ -414,7 +463,12 @@ export function App() {
 
         {activeTab === 'horoscope' && <DailyHoroscopeSection />}
 
-        {activeTab === 'kundli' && <KundliCalculator />}
+        {activeTab === 'kundli' && (
+          <KundliCalculator
+            isLifetimeVIP={isLifetimeVIP}
+            onOpenVipModal={() => setIsVipModalOpen(true)}
+          />
+        )}
 
         {activeTab === 'matchmaking' && <MatchmakingTool />}
 
@@ -431,6 +485,14 @@ export function App() {
         <Bot className="w-5 h-5 animate-pulse" />
         <span className="hidden sm:inline">Ask AI Astrologer 24/7</span>
       </button>
+
+      {/* 👑 Lifetime VIP Pass Modal for Rs 99 */}
+      <LifetimeVipModal
+        isOpen={isVipModalOpen}
+        onClose={() => setIsVipModalOpen(false)}
+        onSuccessPayment={handleVipSuccess}
+        isAlreadyVip={isLifetimeVIP}
+      />
 
       {/* Active Consultation Chat Modal */}
       {activeChatAstrologer && (
@@ -510,12 +572,12 @@ export function App() {
           </div>
 
           <div>
-            <h4 className={`font-bold text-sm mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Vedic Accuracy & Trust</h4>
+            <h4 className={`font-bold text-sm mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Lifetime VIP Pass</h4>
             <ul className="space-y-2">
-              <li className="hover:text-[#f7e034] cursor-pointer">NASA JPL Swiss Ephemeris</li>
-              <li className="hover:text-[#f7e034] cursor-pointer">1000+ Classical Yogas</li>
-              <li className="hover:text-[#f7e034] cursor-pointer">KP Cuspal Sub-Lords System</li>
-              <li className="hover:text-[#f7e034] cursor-pointer">100% Private & Encrypted</li>
+              <li className="text-amber-400 font-bold hover:underline cursor-pointer" onClick={() => setIsVipModalOpen(true)}>👑 Unlock Lifetime VIP for ₹99</li>
+              <li className="hover:text-[#f7e034] cursor-pointer">50+ Page PDF Kundli Report</li>
+              <li className="hover:text-[#f7e034] cursor-pointer">16 Shodashavarga Charts (D1-D60)</li>
+              <li className="hover:text-[#f7e034] cursor-pointer">100% Private & 256-Bit SSL Encrypted</li>
             </ul>
           </div>
         </div>

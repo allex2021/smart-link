@@ -3,7 +3,7 @@ import {
   Sparkles, Moon, Sun, ChevronDown, User, LogOut, CheckCircle2, 
   Calendar, Clock, MapPin, ArrowRight, MessageSquare, Phone, 
   Bot, Compass, HeartHandshake, Grid, Award, 
-  Heart, ShieldCheck, Flame, Star
+  Heart, ShieldCheck, Flame, Star, Crown
 } from 'lucide-react';
 import { LanguageSelector } from './LanguageSelector';
 import { SupportedLanguageCode } from '../data/languages';
@@ -24,6 +24,8 @@ interface NavbarProps {
   onSelectSubCategory?: (mainTab: AppNavTab, subCategory?: string) => void;
   theme?: 'dark' | 'light';
   onToggleTheme?: () => void;
+  isLifetimeVIP?: boolean;
+  onOpenVipModal?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -38,7 +40,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLogout,
   onSelectSubCategory,
   theme = 'dark',
-  onToggleTheme
+  onToggleTheme,
+  isLifetimeVIP = false,
+  onOpenVipModal
 }) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -416,9 +420,26 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </nav>
 
-          {/* 3. Right: Theme Toggle, Language, Profile & CTA */}
-          <div className="flex items-center gap-3">
+          {/* 3. Right: VIP Button, Theme Toggle, Language, Profile & CTA */}
+          <div className="flex items-center gap-2.5 sm:gap-3">
             
+            {/* Glowing VIP Pass Button */}
+            {isLifetimeVIP ? (
+              <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 text-xs font-black shadow-md border border-amber-300">
+                <Crown className="w-3.5 h-3.5 fill-slate-950" />
+                <span className="hidden sm:inline">VIP MEMBER</span>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={onOpenVipModal}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500 via-[#f7e034] to-amber-500 text-slate-950 text-xs font-black shadow-[0_0_20px_rgba(247,224,52,0.4)] hover:shadow-[0_0_28px_rgba(247,224,52,0.6)] transform hover:scale-105 active:scale-95 transition-all cursor-pointer"
+              >
+                <Crown className="w-3.5 h-3.5 fill-slate-950" />
+                <span>VIP Pass ₹99</span>
+              </button>
+            )}
+
             {/* Functional Dark / Light Theme Toggle Icon */}
             <button
               type="button"
@@ -437,7 +458,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </button>
 
-            {/* Language Selector (अ/A) */}
+            {/* Language Selector (অ/A) */}
             <LanguageSelector
               currentLanguage={currentLanguage}
               onSelectLanguage={onSelectLanguage}

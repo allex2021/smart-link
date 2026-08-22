@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Compass, Calendar, Clock, MapPin, Sparkles, User, AlertTriangle, 
   CheckCircle2, Sun, Award, BarChart3, Hash, ShieldCheck, Flame, 
-  Download, Printer, Bookmark, ChevronRight, Layers, Table, Loader2, Globe
+  Download, Printer, Bookmark, ChevronRight, Layers, Table, Loader2, Globe, Crown, Lock
 } from 'lucide-react';
 import { calculateKundliClient, calculateDailyPanchang } from '../utils/astrology';
 import { VedAstroEngine, VedicYoga, AshtakavargaScore, NumerologyReport } from '../utils/vedAstroEngine';
@@ -22,7 +22,15 @@ const CITY_COORDINATES: Record<string, { lat: number; lon: number }> = {
   'New York, USA': { lat: 40.7128, lon: -74.0060 }
 };
 
-export const KundliCalculator: React.FC = () => {
+interface KundliCalculatorProps {
+  isLifetimeVIP?: boolean;
+  onOpenVipModal?: () => void;
+}
+
+export const KundliCalculator: React.FC<KundliCalculatorProps> = ({
+  isLifetimeVIP = false,
+  onOpenVipModal
+}) => {
   const [name, setName] = useState('Rahul Sharma');
   const [dob, setDob] = useState('1998-05-15');
   const [tob, setTob] = useState('14:30');
@@ -170,6 +178,14 @@ export const KundliCalculator: React.FC = () => {
     window.print();
   };
 
+  const handleDownloadVipReport = () => {
+    if (!isLifetimeVIP && onOpenVipModal) {
+      onOpenVipModal();
+    } else {
+      window.print();
+    }
+  };
+
   const birthParts = dob.split('-');
   const birthYear = parseInt(birthParts[0], 10) || 1998;
   const birthMonth = parseInt(birthParts[1], 10) || 5;
@@ -228,13 +244,25 @@ export const KundliCalculator: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={handlePrintPDF}
-          className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-[#f7e034] text-slate-200 hover:text-white text-xs font-bold flex items-center gap-2 shadow-lg transition-all"
-        >
-          <Printer className="w-4 h-4 text-[#f7e034]" />
-          <span>Print / Save PDF Report</span>
-        </button>
+        <div className="flex items-center gap-2.5">
+          {/* Download 50-Page VIP PDF Button */}
+          <button
+            onClick={handleDownloadVipReport}
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-[#f7e034] to-amber-500 hover:from-amber-400 hover:to-amber-400 text-slate-950 text-xs font-black flex items-center gap-2 shadow-[0_0_20px_rgba(247,224,52,0.4)] transition-all cursor-pointer transform hover:scale-105 active:scale-95"
+          >
+            <Crown className="w-4 h-4 fill-slate-950" />
+            <span>50-Page VIP Kundli PDF (₹99)</span>
+            {!isLifetimeVIP && <Lock className="w-3.5 h-3.5 text-slate-900" />}
+          </button>
+
+          <button
+            onClick={handlePrintPDF}
+            className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-[#f7e034] text-slate-200 hover:text-white text-xs font-bold flex items-center gap-2 shadow-lg transition-all cursor-pointer"
+          >
+            <Printer className="w-4 h-4 text-[#f7e034]" />
+            <span>Print Quick Chart</span>
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
