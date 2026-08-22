@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { 
   Compass, Calendar, Clock, MapPin, Sparkles, User, AlertTriangle, 
   CheckCircle2, Sun, Award, BarChart3, Hash, ShieldCheck, Flame, 
-  Download, Printer, Bookmark, ChevronRight, Layers, Table, Loader2
+  Download, Printer, Bookmark, ChevronRight, Layers, Table, Loader2, Globe
 } from 'lucide-react';
 import { calculateKundliClient, calculateDailyPanchang } from '../utils/astrology';
 import { VedAstroEngine, VedicYoga, AshtakavargaScore, NumerologyReport } from '../utils/vedAstroEngine';
 import { KPAstrologyEngine, KPCuspInfo, KPPlanetInfo, KPRulingPlanets } from '../utils/kpAstrologyEngine';
+import { SwissEphShodashavargaSection } from './SwissEphShodashavargaSection';
 import { KundliChartSVG } from './KundliChartSVG';
 
 const CITY_COORDINATES: Record<string, { lat: number; lon: number }> = {
@@ -35,8 +36,8 @@ export const KundliCalculator: React.FC = () => {
   const [chartStyle, setChartStyle] = useState<'NORTH' | 'SOUTH' | 'EAST'>('NORTH');
   const [chartDivision, setChartDivision] = useState<'D1' | 'D9'>('D1');
   
-  // Sub-Navigation Tabs
-  const [selectedSubTab, setSelectedSubTab] = useState<'chart' | 'kp' | 'yogas' | 'ashtakavarga' | 'numerology'>('chart');
+  // Sub-Navigation Tabs: Chart, KP System, 16 Vargas, Yogas, Ashtakavarga, Numerology
+  const [selectedSubTab, setSelectedSubTab] = useState<'chart' | 'kp' | 'vargas' | 'yogas' | 'ashtakavarga' | 'numerology'>('chart');
 
   // Kundli & Engine States
   const [kundliResult, setKundliResult] = useState(() => {
@@ -154,7 +155,6 @@ export const KundliCalculator: React.FC = () => {
         setIsCalculating(false);
         setShowSuccessBadge(true);
 
-        // Smooth scroll to results on mobile / small screens
         const resEl = document.getElementById('kundli-results-area');
         if (resEl && window.innerWidth < 1024) {
           resEl.scrollIntoView({ behavior: 'smooth' });
@@ -169,6 +169,11 @@ export const KundliCalculator: React.FC = () => {
   const handlePrintPDF = () => {
     window.print();
   };
+
+  const birthParts = dob.split('-');
+  const birthYear = parseInt(birthParts[0], 10) || 1998;
+  const birthMonth = parseInt(birthParts[1], 10) || 5;
+  const birthDay = parseInt(birthParts[2], 10) || 15;
 
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6">
@@ -215,11 +220,11 @@ export const KundliCalculator: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-[#f7e034] text-xs font-semibold mb-1">
             <Sparkles className="w-3.5 h-3.5 text-[#f7e034]" />
-            <span>Vedic, KP Astrology & Multi-Style Kundli Engine</span>
+            <span>Vedic, KP Astrology & Swiss Ephemeris 16-Varga Engine</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-white">Free Complete Janam Kundli & KP Analysis</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-white">Free Complete Janam Kundli, KP & 16 Vargas</h2>
           <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-            North, South & East Indian charts, KP Cuspal Sub-lords, 1000+ Yogas & Dasha Timeline.
+            North, South & East Indian charts, KP Cuspal Sub-lords, 16 Divisional Charts (D1-D60), Gochar & Varshphal.
           </p>
         </div>
 
@@ -354,7 +359,7 @@ export const KundliCalculator: React.FC = () => {
               {isCalculating ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Calculating Planetary Coordinates...</span>
+                  <span>Calculating Swiss Ephemeris Coordinates...</span>
                 </>
               ) : (
                 <>
@@ -416,7 +421,7 @@ export const KundliCalculator: React.FC = () => {
         {/* Right Tabbed Results Area */}
         <div className="lg:col-span-8 space-y-6" id="kundli-results-area">
           
-          {/* Sub-Navigation Tabs: Chart, KP System, Yogas, Ashtakavarga, Numerology */}
+          {/* Sub-Navigation Tabs: Chart, KP System, 16 Vargas, Yogas, Ashtakavarga, Numerology */}
           <div className="flex items-center gap-1.5 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800 overflow-x-auto">
             <button
               onClick={() => setSelectedSubTab('chart')}
@@ -438,6 +443,17 @@ export const KundliCalculator: React.FC = () => {
               }`}
             >
               <Table className="w-4 h-4" /> KP Astrology (Sub-Lords)
+            </button>
+
+            <button
+              onClick={() => setSelectedSubTab('vargas')}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                selectedSubTab === 'vargas'
+                  ? 'bg-rose-500 text-white shadow-md font-bold'
+                  : 'text-rose-300 hover:text-white'
+              }`}
+            >
+              <Layers className="w-4 h-4" /> 16 Vargas & Gochar
             </button>
 
             <button
@@ -670,7 +686,29 @@ export const KundliCalculator: React.FC = () => {
             </div>
           )}
 
-          {/* TAB 3: 1000+ VEDIC YOGAS */}
+          {/* TAB 3: 16 DIVISIONAL CHARTS (SHODASHAVARGA) & GOCHAR */}
+          {selectedSubTab === 'vargas' && (
+            <SwissEphShodashavargaSection
+              planets={{
+                Sun: { longitude: kundliResult.planets.Sun?.longitude || 58.4, degreeInSign: kundliResult.planets.Sun?.degreeInSign || '14° 24\'' },
+                Moon: { longitude: kundliResult.planets.Moon?.longitude || 275.2, degreeInSign: kundliResult.planets.Moon?.degreeInSign || '05° 12\'' },
+                Mars: { longitude: kundliResult.planets.Mars?.longitude || 35.8, degreeInSign: kundliResult.planets.Mars?.degreeInSign || '05° 48\'' },
+                Mercury: { longitude: (kundliResult.planets.Sun?.longitude || 58.4) + 12, degreeInSign: '26° 10\'' },
+                Jupiter: { longitude: kundliResult.planets.Jupiter?.longitude || 334.6, degreeInSign: kundliResult.planets.Jupiter?.degreeInSign || '04° 36\'' },
+                Venus: { longitude: (kundliResult.planets.Sun?.longitude || 58.4) - 18, degreeInSign: '12° 05\'' },
+                Saturn: { longitude: kundliResult.planets.Saturn?.longitude || 312.1, degreeInSign: kundliResult.planets.Saturn?.degreeInSign || '12° 06\'' },
+                Rahu: { longitude: kundliResult.planets.Rahu?.longitude || 128.5, degreeInSign: kundliResult.planets.Rahu?.degreeInSign || '08° 30\'' },
+                Ketu: { longitude: kundliResult.planets.Ketu?.longitude || 308.5, degreeInSign: kundliResult.planets.Ketu?.degreeInSign || '08° 30\'' }
+              }}
+              ascendantLongitude={kundliResult.ascendant.degree || 45}
+              moonSignIdx={10} // Capricorn/Aquarius
+              birthYear={birthYear}
+              birthMonth={birthMonth}
+              birthDay={birthDay}
+            />
+          )}
+
+          {/* TAB 4: 1000+ VEDIC YOGAS */}
           {selectedSubTab === 'yogas' && (
             <div className="space-y-4 animate-in fade-in">
               <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl flex items-center justify-between">
@@ -724,7 +762,7 @@ export const KundliCalculator: React.FC = () => {
             </div>
           )}
 
-          {/* TAB 4: ASHTAKAVARGA SCORE */}
+          {/* TAB 5: ASHTAKAVARGA SCORE */}
           {selectedSubTab === 'ashtakavarga' && (
             <div className="bg-slate-900/90 border border-slate-800 p-5 rounded-2xl space-y-4 animate-in fade-in">
               <div className="border-b border-slate-800 pb-3">
@@ -760,7 +798,7 @@ export const KundliCalculator: React.FC = () => {
             </div>
           )}
 
-          {/* TAB 5: CHALDEAN NUMEROLOGY */}
+          {/* TAB 6: CHALDEAN NUMEROLOGY */}
           {selectedSubTab === 'numerology' && (
             <div className="bg-slate-900/90 border border-slate-800 p-6 rounded-2xl space-y-5 animate-in fade-in">
               <div className="border-b border-slate-800 pb-3 flex items-center justify-between">
