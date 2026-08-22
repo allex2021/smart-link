@@ -12,6 +12,7 @@ export interface ChatSessionState {
   topic?: string;
   preferredLanguage: SupportedLanguageCode;
   conversationHistoryCount?: number;
+  lastTopic?: string;
 }
 
 /**
@@ -41,7 +42,7 @@ export function extractBirthDetails(text: string): { dob?: string; tob?: string;
 }
 
 export function detectLanguageFromText(text: string, fallback: SupportedLanguageCode = 'bn'): SupportedLanguageCode {
-  if (/[\u0980-\u09FF]/.test(text) || /\b(amar|amr|kobe|hobe|biye|bibaho|chakri|taka|pabo|kemon|shob|korbo|bhalo|somporko|bidesh|rog|shastho|bacha|shontaan|babsah|porashona)\b/i.test(text)) {
+  if (/[\u0980-\u09FF]/.test(text) || /\b(amar|amr|kobe|hobe|biye|bibaho|chakri|taka|pabo|kemon|shob|korbo|bhalo|somporko|bidesh|rog|shastho|bacha|shontaan|babsah|porashona|kichu|bolun|bhai|dada|guruji|acharyaji)\b/i.test(text)) {
     return 'bn';
   }
   if (/[\u0B80-\u0BFF]/.test(text) || /\b(vanakkam|kalyanam|thirumanam|velai|eppothu|nalla|ennaku)\b/i.test(text)) {
@@ -57,12 +58,15 @@ export function detectLanguageFromText(text: string, fallback: SupportedLanguage
     if (/\b(ahe|kadhi|hoil|lagna|nokri|maza|kasa)\b/i.test(text)) return 'mr';
     return 'hi';
   }
-  if (/\b(mera|meri|kab|hoga|shadi|vivah|naukri|paise|kaisa|rahega|batao|bataiye)\b/i.test(text)) {
+  if (/\b(mera|meri|kab|hoga|shadi|vivah|naukri|paise|kaisa|rahega|batao|bataiye|punditji)\b/i.test(text)) {
     return 'hi';
   }
   return fallback;
 }
 
+/**
+ * Main Humanized Vedic Astrology Consultation Engine
+ */
 export function processHumanAstrologerChat(
   userMessage: string,
   stateOrName?: any,
@@ -71,11 +75,12 @@ export function processHumanAstrologerChat(
 ): { reply: string; replyText: string; updatedState: ChatSessionState; updatedSessionState: ChatSessionState } {
   const text = (userMessage || '').trim();
 
-  // Handle both argument orders gracefully: (msg, state, name) OR (msg, name, specialty, state)
+  // Normalize parameters
   let state: ChatSessionState = {
     hasCollectedBirthDetails: false,
     birthDetails: {},
-    preferredLanguage: 'bn'
+    preferredLanguage: 'bn',
+    conversationHistoryCount: 0
   };
   let astrologerName = 'মহর্ষি আর্যভট্ট';
 
@@ -92,365 +97,225 @@ export function processHumanAstrologerChat(
   }
 
   const lang: SupportedLanguageCode = state.preferredLanguage || detectLanguageFromText(text, 'bn');
-
   const historyCount = (state.conversationHistoryCount || 0) + 1;
+
+  // Extract any birth details if present
+  const extracted = extractBirthDetails(text);
   const newState: ChatSessionState = { 
     ...state, 
     preferredLanguage: lang,
-    conversationHistoryCount: historyCount
+    conversationHistoryCount: historyCount,
+    hasCollectedBirthDetails: state.hasCollectedBirthDetails || extracted.isBirthInfo
   };
 
-  let generatedReply = '';
-
-  // 1. Check if user is giving birth details
-  const extracted = extractBirthDetails(text);
-  if (extracted.isBirthInfo || (!state.hasCollectedBirthDetails && (text.length > 5 && /\d/.test(text)))) {
-    newState.hasCollectedBirthDetails = true;
+  if (extracted.isBirthInfo) {
     newState.birthDetails = {
       ...newState.birthDetails,
-      dob: extracted.dob || newState.birthDetails.dob || '15/05/1998',
-      tob: extracted.tob || newState.birthDetails.tob || '02:30 PM',
-      pob: extracted.pob || newState.birthDetails.pob || 'Noted City'
+      dob: extracted.dob || newState.birthDetails.dob,
+      tob: extracted.tob || newState.birthDetails.tob,
+      pob: extracted.pob || newState.birthDetails.pob
     };
-
-    const topic = newState.topic || detectTopic(text) || 'marriage';
-    generatedReply = getBirthDetailsAcknowledgedMessage(lang, astrologerName) + "\n\n" + getTopicSpecificReading(topic, lang, text, astrologerName);
-  } else if (!state.hasCollectedBirthDetails) {
-    // 2. If birth details NOT yet collected, politely request them
-    const topic = detectTopic(text);
-    if (topic) newState.topic = topic;
-    newState.pendingQuestion = text;
-
-    generatedReply = getAskBirthDetailsPrompt(lang, text);
-  } else {
-    // 3. User has already given birth details -> Give deep, context-specific tailored astrological analysis!
-    const topic = detectTopic(text) || newState.topic || 'general';
-    generatedReply = getTopicSpecificReading(topic, lang, text, astrologerName);
   }
 
+  // Detect detailed human topic
+  const topic = detectDeepTopic(text) || state.lastTopic || 'general';
+  newState.lastTopic = topic;
+
+  // Generate genuinely humanized, conversational reading
+  const responseText = generateHumanVedicConsultation(topic, text, lang, astrologerName, historyCount, newState.hasCollectedBirthDetails);
+
   return {
-    reply: generatedReply,
-    replyText: generatedReply,
+    reply: responseText,
+    replyText: responseText,
     updatedState: newState,
     updatedSessionState: newState
   };
 }
 
-function detectTopic(query: string): string {
+/**
+ * Deep Topic Classifier
+ */
+function detectDeepTopic(query: string): string {
   const q = query.toLowerCase();
 
-  // Marriage / Love / Relationship
-  if (q.includes('biye') || q.includes('marriage') || q.includes('shadi') || q.includes('kalyanam') || q.includes('pelli') || q.includes('lagn') || q.includes('বিয়ে') || q.includes('বিবাহ') || q.includes('বিয়ে')) {
-    return 'marriage';
+  // 1. Casual greetings & intro
+  if (/^(hi|hello|hey|namaste|nomoshkar|kemon|kemon acho|ki obostha|apni ke|who are you|shunchen|sunchen)$/i.test(q.trim())) {
+    return 'greeting';
   }
-  if (q.includes('love') || q.includes('prem') || q.includes('সম্পর্ক') || q.includes('পছন্দ') || q.includes('relationship') || q.includes('gf') || q.includes('bf') || q.includes('breakup') || q.includes('patchup') || q.includes('phire ashbe')) {
+
+  // 2. Love, Ex-partner, Relationship, Breakup
+  if (q.includes('breakup') || q.includes('patchup') || q.includes('phire ashbe') || q.includes('prem') || q.includes('love') || q.includes('valobashe') || q.includes('bhalobashe') || q.includes('সম্পর্ক') || q.includes('ভালোবাসে') || q.includes('gf') || q.includes('bf') || q.includes('crush')) {
     return 'love_relation';
   }
 
-  // Career / Job / Govt Job / Promotion
-  if (q.includes('govt job') || q.includes('bcs') || q.includes('sarkari') || q.includes('সরকারি চাকরি') || q.includes('exam') || q.includes('porikkha')) {
+  // 3. Marriage, Wedding Timing, Life Partner, Kundli Milan
+  if (q.includes('biye') || q.includes('marriage') || q.includes('shadi') || q.includes('vivah') || q.includes('বিয়ে') || q.includes('বিবাহ') || q.includes('বিয়ে') || q.includes('bou') || q.includes('shami') || q.includes('husband') || q.includes('wife') || q.includes('patro') || q.includes('patri')) {
+    return 'marriage';
+  }
+
+  // 4. Govt Job, BCS, UPSC, Competitive Exams
+  if (q.includes('govt job') || q.includes('bcs') || q.includes('sarkari') || q.includes('সরকারি চাকরি') || q.includes('upsc') || q.includes('wbcs') || q.includes('bank job') || q.includes('police') || q.includes('primary') || q.includes('exam') || q.includes('porikkha')) {
     return 'govt_job';
   }
-  if (q.includes('chakri') || q.includes('job') || q.includes('career') || q.includes('naukri') || q.includes('velai') || q.includes('udyogam') || q.includes('nokri') || q.includes('চাকরি') || q.includes('কর্ম')) {
+
+  // 5. General Career, Promotion, Job Switch, Workplace
+  if (q.includes('chakri') || q.includes('job') || q.includes('career') || q.includes('naukri') || q.includes('promotion') || q.includes('salary') || q.includes('boss') || q.includes('চাকরি') || q.includes('কর্ম')) {
     return 'career';
   }
 
-  // Business / Startup / Trade
-  if (q.includes('business') || q.includes('babsha') || q.includes('byabsha') || q.includes('ব্যবসা') || q.includes('vyapar') || q.includes('trade') || q.includes('dukan') || q.includes('দোকান')) {
+  // 6. Business, Startup, Profit, Trade, Dukaan
+  if (q.includes('business') || q.includes('babsha') || q.includes('byabsha') || q.includes('ব্যবসা') || q.includes('startup') || q.includes('trade') || q.includes('dukan') || q.includes('দোকান') || q.includes('invest') || q.includes('share market')) {
     return 'business';
   }
 
-  // Wealth / Money / Property / Stock Market
-  if (q.includes('taka') || q.includes('money') || q.includes('dhan') || q.includes('paisa') || q.includes('panam') || q.includes('dabbu') || q.includes('টাকা') || q.includes('অর্থ') || q.includes('সম্পত্তি') || q.includes('share') || q.includes('crypto') || q.includes('lottery') || q.includes('লটারি')) {
-    return 'finance_wealth';
+  // 7. Money, Wealth, Debt, Loans, Financial Crisis
+  if (q.includes('taka') || q.includes('money') || q.includes('wealth') || q.includes('loan') || q.includes('debt') || q.includes('rin') || q.includes('ধার') || q.includes('টাকা') || q.includes('অর্থ') || q.includes('poisha') || q.includes('khoroch') || q.includes('dhan')) {
+    return 'finance';
   }
 
-  // Foreign Travel / Visa / Settlement
-  if (q.includes('bidesh') || q.includes('foreign') || q.includes('visa') || q.includes('canada') || q.includes('usa') || q.includes('uk') || q.includes('travel') || q.includes('বিদেশ') || q.includes('ভিসা')) {
-    return 'foreign_travel';
+  // 8. Foreign Travel, Student Visa, PR, Abroad
+  if (q.includes('bidesh') || q.includes('foreign') || q.includes('visa') || q.includes('abroad') || q.includes('canada') || q.includes('usa') || q.includes('uk') || q.includes('australia') || q.includes('study abroad') || q.includes('বিদেশ') || q.includes('ভিসা')) {
+    return 'foreign';
   }
 
-  // Childbirth / Progeny / Family
-  if (q.includes('bacha') || q.includes('child') || q.includes('shontaan') || q.includes('baby') || q.includes('সন্তান') || q.includes('গর্ভ') || q.includes('progeny')) {
+  // 9. Childbirth, Pregnancy, Santana Yoga
+  if (q.includes('baccha') || q.includes('bacha') || q.includes('baby') || q.includes('child') || q.includes('shontan') || q.includes('shontaan') || q.includes('সন্তান') || q.includes('গর্ভ') || q.includes('pregnancy')) {
     return 'childbirth';
   }
 
-  // Health / Disease / Mental Stress
-  if (q.includes('health') || q.includes('rog') || q.includes('shastho') || q.includes('bimari') || q.includes('chinta') || q.includes('depression') || q.includes('স্বাস্থ্য') || q.includes('রোগ') || q.includes('অসুখ') || q.includes('মানসিক')) {
+  // 10. Health, Illness, Mental Peace, Depression
+  if (q.includes('shastho') || q.includes('health') || q.includes('rog') || q.includes('osukh') || q.includes('bimar') || q.includes('tension') || q.includes('chinta') || q.includes('depression') || q.includes('স্বাস্থ্য') || q.includes('অসুখ') || q.includes('মানসিক')) {
     return 'health';
   }
 
-  // Doshas: Shani Sade Sati, Manglik, Kaal Sarp
-  if (q.includes('shani') || q.includes('sade sati') || q.includes('সাড়ে সাতি') || q.includes('মঙ্গলী') || q.includes('manglik') || q.includes('kaal sarp') || q.includes('কাল সর্প') || q.includes('দোষ') || q.includes('dosha') || q.includes('rahu') || q.includes('ketu')) {
-    return 'dosha_remedy';
+  // 11. Shani Sade Sati, Manglik, Kaal Sarp, Doshas
+  if (q.includes('shani') || q.includes('sade sati') || q.includes('sadesati') || q.includes('manglik') || q.includes('mangal') || q.includes('kaal sarp') || q.includes('কাল সর্প') || q.includes('মাঙ্গলিক') || q.includes('শনি') || q.includes('দোষ')) {
+    return 'doshas';
   }
 
-  // Gemstones & Rudraksha
-  if (q.includes('gemstone') || q.includes('stone') || q.includes('ratna') || q.includes('রক্ত প্রবাল') || q.includes('পোখরাজ') || q.includes('পান্না') || q.includes('নীলা') || q.includes('রুদ্রাক্ষ') || q.includes('rudraksha') || q.includes('আংটি')) {
+  // 12. Gemstones, Rudraksha, Lucky Colors
+  if (q.includes('gemstone') || q.includes('stone') || q.includes('rotn') || q.includes('ratna') || q.includes('rudraksha') || q.includes('রত্ন') || q.includes('রুদ্রাক্ষ') || q.includes(' আংটি') || q.includes('পাথর')) {
     return 'gemstones';
   }
 
   return 'general';
 }
 
-function getAskBirthDetailsPrompt(lang: SupportedLanguageCode, question: string): string {
-  switch (lang) {
-    case 'bn':
-      return `নমস্কার! 🙏 আপনার প্রশ্নটি (${question}) আমি গভীর মনোযোগ দিয়ে শুনেছি।
-      
-বৈদিক জ্যোতিষশাস্ত্রের পরাশর সিদ্ধান্ত ও লগ্ন কুণ্ডলী নির্ভুলভাবে বিচার করে সুনির্দিষ্ট দিনক্ষণ ও প্রতিকার জানাতে আপনার **সঠিক জন্ম বিবরণ** প্রয়োজন:
-📌 **১. জন্ম তারিখ (Date of Birth)**
-📌 **২. জন্ম সময় (Time of Birth - যেমন: দুপুর ২:৩০ বা সকাল ৮টা)**
-📌 **৩. জন্ম স্থান (City / জেলা)**
+/**
+ * Truly Natural, Humanized Conversational Astrologer Generator
+ */
+function generateHumanVedicConsultation(
+  topic: string,
+  userQuery: string,
+  lang: SupportedLanguageCode,
+  astrologerName: string,
+  turnCount: number,
+  hasBirthDetails: boolean
+): string {
+  // Conversational openings (Varied & Empathetic)
+  const bengaliOpenings = [
+    `নমস্কার, আপনার প্রশ্নটি আমি অত্যন্ত মনোযোগ সহকারে দেখলাম।`,
+    `হ্যাঁ, আপনার মনের ব্যাকুলতা ও এই বিষয়ে জানার আগ্রহ আমি বুঝতে পারছি।`,
+    `খুবই গুরুত্বপূর্ণ একটি বিষয় নিয়ে আপনি জানতে চেয়েছেন। গ্রহের অবস্থান লক্ষ্য করে যা দেখা যাচ্ছে—`,
+    `আপনার এই প্রশ্নের উত্তরে জ্যোতিষ শাস্ত্রীয় গ্রহচক্র ও বর্তমান গোচর পর্যালোচনা করে বলছি—`,
+    `শান্ত হোন, জীবনের এমন সময়ে সঠিক দিকনির্দেশনা পাওয়া খুবই প্রয়োজন।`
+  ];
 
-দয়া করে এই ৩টি তথ্য লিখে পাঠান, আমি এক মিনিটের মধ্যে আপনার জন্মছক কষে বিস্তারিত উত্তর দিচ্ছি! 🌟`;
+  const opening = bengaliOpenings[turnCount % bengaliOpenings.length];
 
-    case 'hi':
-      return `नमस्ते! 🙏 आपके प्रश्न का पूर्ण वैदिक समाधान निकालने के लिए आपकी जन्म कुंडली का अध्ययन आवश्यक है।
-      
-कृपया अपना सही जन्म विवरण साझा करें:
-📌 **१. जन्म तिथि (DOB)**
-📌 **२. जन्म समय (Time of Birth - जैसे दोपहर 2:30)**
-📌 **३. जन्म स्थान (Birth City / जिला)**
-
-यह विवरण भेजते ही मैं आपकी कुंडली का सूक्ष्म परीक्षण करके सटीक समय व उपाय बताऊंगा। 🌟`;
-
-    case 'ta':
-      return `வணக்கம்! 🙏 உங்கள் கேள்விக்கு துல்லியமான ஜோதிட விடை பெற உங்கள் பிறப்பு விவரங்களை பகிரவும்:
-📌 **1. பிறந்த தேதி (Date of Birth)**
-📌 **2. பிறந்த நேரம் (Time of Birth)**
-📌 **3. பிறந்த இடம் (City / District)**`;
-
-    case 'te':
-      return `నమస్కారం! 🙏 మీ జాతక చక్రాన్ని కచ్చితంగా గణించడానికి మీ జనన వివరాలు పంపండి:
-📌 **1. పుట్టిన తేదీ (DOB)**
-📌 **2. పుట్టిన సమయం (Time of Birth)**
-📌 **3. పుట్టిన ఊరు (City / Place)**`;
-
-    case 'en':
-    default:
-      return `Namaste! 🙏 I have noted your question: "${question}".
-
-To calculate your exact Lagna, planetary Dasha, and provide a 100% accurate timeframe, please share your **birth details**:
-📌 **1. Date of Birth (DD-MM-YYYY)**
-📌 **2. Time of Birth (e.g. 2:30 PM)**
-📌 **3. Place of Birth (City / Country)**
-
-I will analyze your planetary chart immediately upon receiving these details! 🌟`;
-  }
-}
-
-function getBirthDetailsAcknowledgedMessage(lang: SupportedLanguageCode, name: string): string {
-  switch (lang) {
-    case 'bn':
-      return `ধন্যবাদ! আপনার জন্ম বিবরণ লিপিবদ্ধ করা হয়েছে। 🙏\nআমি আপনার লগ্ন (D1), নবাংশ (D9), দশাংশ (D10) এবং বর্তমান বিংশোত্তরী মহাদশাচক্র বিচার করে বিশ্লেষণ করছি...`;
-    case 'hi':
-      return `धन्यवाद! आपका जन्म विवरण प्राप्त हुआ। 🙏\nमैं आपकी लग्न कुंडली (D1), नवमांश (D9), और विंशोत्तरी दशा का सूक्ष्म अध्ययन कर रहा हूँ...`;
-    case 'ta':
-      return `நன்றி! உங்கள் பிறந்த விவரங்கள் பெறப்பட்டன. நான் உங்கள் லக்னம் மற்றும் தசா-புக்தி அமைப்பை கணிக்கிறேன்... 🙏`;
-    case 'te':
-      return `ధన్యవాదాలు! మీ జనన వివరాలు నమోదయ్యాయి. మీ లగ్నం మరియు దశా చక్రాన్ని విశ్లేషిస్తున్నాను... 🙏`;
-    case 'en':
-    default:
-      return `Thank you! Your birth details have been recorded. 🙏\nI am now casting your D1 Lagna, D9 Navamsha, and current Mahadasha timeline...`;
-  }
-}
-
-function getTopicSpecificReading(topic: string, lang: SupportedLanguageCode, userText: string, astrologerName: string): string {
-  const isBengali = lang === 'bn';
-  const isHindi = lang === 'hi';
-
-  // 1. Marriage
-  if (topic === 'marriage') {
-    if (isBengali) {
-      return `💍 **বিবাহের সময় ও জীবনসঙ্গী বিচার (৭ম ভাব ও শুক্র বিশ্লেষণ):**
-• **কবে বিয়ে হবে**: আপনার ৭ম ভাব (বিবাহ স্থান) ও বৃহস্পতির বর্তমান ট্রানজিট দেখে বোঝা যাচ্ছে আগামী **৮ থেকে ১৪ মাসের মধ্যে (বিশেষ করে নভেম্বর থেকে মে মাসের শুভ লগ্নে)** বিয়ের সবচেয়ে মজবুত যোগ তৈরি হয়েছে।
-• **কেমন জীবনসঙ্গী পাবেন**: আপনার জীবনসঙ্গী হবে সংবেদনশীল, পারিবারিক মূল্যবোধসম্পন্ন এবং দায়িত্বশীল স্বভাবের। তার দিক থেকে সংসারে আর্থিক ও মানসিক সৌভাগ্য আসবে।
-• **পারিবারিক নাকি পছন্দের বিয়ে**: আপনার শুক্র ও চন্দ্রের অবস্থান অনুসারে **পারিবারিক সম্মতিতেই পছন্দের মানুষের সাথে বিয়ে (Love-cum-Arranged)** হওয়ার যোগ ৮০% উজ্জ্বল।
-
-🌟 **বিবাহে বাধা কাটাতে বৈদিক প্রতিকার (Remedies):**
-১. প্রতি বৃহস্পতিবার স্নানের জলে সামান্য খাঁটি হলুদ মিশিয়ে স্নান করুন এবং বিষ্ণু সহস্রনাম শ্রবণ করুন।
-২. শুক্রবার মা লক্ষ্মীকে ঘিয়ের প্রদীপ ও সাদা মিষ্টি নিবেদন করুন।`;
+  // Specific Deep Topics
+  if (topic === 'greeting') {
+    if (lang === 'bn') {
+      return `নমস্কার! 🙏 আমি ${astrologerName}। আপনি ভালো আছেন তো?\n\nআপনার জীবন, বিবাহ, চাকরি, ক্যারিয়ার, আর্থিক স্থিতি বা প্রেম সংক্রান্ত যেকোনো বিষয় নিয়ে দ্বিধাহীনভাবে কথা বলতে পারেন। আজ আপনার মনে কোন বিষয়টি নিয়ে সবচেয়ে বেশি চিন্তা চলছে বলুন?`;
+    } else if (lang === 'hi') {
+      return `नमस्ते! 🙏 मैं ${astrologerName}। आप कैसे हैं?\n\nआप अपने जीवन, विवाह, करियर, नौकरी, धन या पारिवारिक स्थिति से जुड़ा कोई भी सवाल पूछ सकते हैं। बताइए आज आपके मन में क्या चल रहा है?`;
+    } else {
+      return `Namaste! 🙏 I am ${astrologerName}. How are you doing today?\n\nPlease feel free to discuss anything about your career, marriage, relationships, finance, or future roadmap. What is on your mind today?`;
     }
-    if (isHindi) {
-      return `💍 **विवाह योग एवं जीवनसाथी विश्लेषण (सप्तम भाव):**
-• **विवाह का समय**: आगामी **८ से १४ महीनों में** गुरु के गोचर से प्रबल विवाह योग बन रहा है।
-• **जीवनसाथी का स्वभाव**: जीवनसाथी संस्कारी, समझदार और आर्थिक रूप से सहयोगी होगा।
-• **उपाय**: गुरुवार को पीले वस्त्र पहनें और शुक्रवार को महालक्ष्मी को सफेद मिष्ठान्न अर्पित करें।`;
-    }
-    return `💍 **Marriage Timing & Spouse Prediction (7th House Analysis):**
-• **Timeline**: Favorable Jupiter aspect opens an auspicious marriage window within the next **8 to 14 months**.
-• **Spouse Traits**: Your partner will be loving, well-grounded, and bring financial stability to the household.
-• **Remedy**: Wear yellow on Thursdays and offer white sweets to Goddess Lakshmi on Fridays.`;
   }
 
-  // 2. Love & Relationships
   if (topic === 'love_relation') {
-    if (isBengali) {
-      return `💖 **প্রেম, রোমান্স ও সম্পর্ক বিশ্লেষণ (৫ম ভাব ও শুক্র বিচার):**
-• **সম্পর্কের বর্তমান পরিস্থিতি**: আপনার ৫ম ভাবের অধিপতির ওপর কিছুটা রাহু বা পাপগ্রহের ছায়া থাকায় মাঝে মাঝে ভুল বোঝাবুঝি বা দূরত্বের সৃষ্টি হচ্ছে।
-• **প্রেম কি টিকবে / মনের মানুষ কি ফিরে আসবে**: আগামী **৪৫ থেকে ৬০ দিনের মধ্যে** চন্দ্র ও শুক্রের অনুকূল গোচরের ফলে সম্পর্কের তিক্ততা দূর হয়ে পুনরায় সুসম্পর্ক ও ঘনিষ্ঠতা ফিরে আসার উজ্জ্বল সম্ভাবনা রয়েছে।
-• **উপদেশ**: কোনো প্রকার রাগ বা সন্দেহের বশে হঠকারী সিদ্ধান্ত নেবেন না; শান্তভাবে আলোচনার পথ বেছে নিন।
-
-🌟 **সম্পর্ক মধুর করার সহজ উপায়:**
-১. প্রতি সোমবার শিবলিঙ্গে কাঁচা দুধ ও জল অর্পণ করে 'ওম নমঃ শিবায়' ১০৮ বার জপ করুন।
-২. আপনার বেডরুমে একটি রোজ কোয়ার্টজ (Rose Quartz) পাথর বা স্ফটিক রাখুন।`;
+    if (lang === 'bn') {
+      return `${opening}\n\nপ্রেম ও সম্পর্কের ক্ষেত্রে জন্মকুণ্ডলীর **৫ম ভাব (প্রেম-রোমান্স)** ও **শুক্র-চন্দ্রের সংযোগ** প্রধান ভূমিকা পালন করে।\n\nবর্তমান গ্রহ গোচরে রাহু বা কেতুর সূক্ষ্ম প্রভাবে আপনাদের মধ্যে সাময়িক ভুল বোঝাবুঝি বা দূরত্বের সৃষ্টি হয়েছে। তবে আশার কথা হলো—\n\n• **সম্পর্কের মোড় ঘোরার সময়**: আগামী **৪৫ থেকে ৬০ দিনের মধ্যে** সঙ্গীর মনোভাবে ইতিবাচক পরিবর্তন ও পুনরায় ঘনিষ্ঠ যোগাযোগ তৈরি হওয়ার জোরালো সম্ভাবনা রয়েছে।\n• **ভালোবাসার ভিত্তি**: সম্পর্কটিতে আন্তরিক টান রয়েছে, শুধু অহংকার বা তৃতীয় কোনো ব্যক্তির কথার প্রভাব এড়িয়ে চলা জরুরি।\n\n🌿 **বৈদিক প্রতিকার**:\n১. প্রতি সোমবার শিবলিঙ্গে সামান্য কাঁচা দুধ ও জল অর্পণ করে *"ওঁ নমঃ শিবায়"* জপ করুন।\n২. শুক্রবার সামান্য সাদা মিষ্টি বা মিছরি দরিদ্র কাউকে দান করুন।\n\nআপনার সঙ্গীর নাম বা জন্মতারিখ জানা থাকলে আরও সূক্ষ্ম মিলন বিচার করে দিতে পারি।`;
+    } else if (lang === 'hi') {
+      return `${opening}\n\nप्रेम संबंधों में कुंडली का **पंचम भाव** और **शुक्र देव** की स्थिति सबसे महत्वपूर्ण होती है।\n\nवर्तमान गोचर के अनुसार राहु-केतु के प्रभाव से कुछ गलतफहमियां या संवादहीनता बनी हुई है।\n\n• **समय**: अगले **४५ से ६० दिनों में** स्थिति में सकारात्मक सुधार और बातचीत शुरू होने के प्रबल योग हैं।\n• **सलाह**: आपसी अहंकार को बीच में न आने दें।\n\n🌿 **उपाय**: सोमवार को शिवलिंग पर जल और कच्चा दूध अर्पित करें तथा शुक्रवार को सफेद वस्तुओं का दान करें।`;
+    } else {
+      return `${opening}\n\nIn relationship matters, the **5th House of Romance** and the placement of **Venus & Moon** govern emotional bonding.\n\nPlanetary transits indicate a temporary phase of miscommunication influenced by Rahu's aspect. However:\n\n• **Reconciliation Window**: A strong positive breakthrough is visible within the next **45 to 60 days**.\n• **Relationship Core**: The emotional bond is genuine; patience and honest communication will dissolve external misunderstandings.\n\n🌿 **Remedies**: Offer water and raw milk to Lord Shiva on Mondays and practice forgiveness.`;
     }
-    return `💖 **Love & Relationship Harmony Analysis (5th House):**
-• **Current Situation**: Minor misunderstandings due to temporary transit afflictions will clear within 45 to 60 days.
-• **Future Outlook**: Venus alignment restores mutual intimacy and deep emotional reconciliation.
-• **Remedy**: Chant 'Om Namah Shivaya' on Mondays and keep a Rose Quartz crystal in your room.`;
   }
 
-  // 3. Govt Job / Competitive Exams
+  if (topic === 'marriage') {
+    if (lang === 'bn') {
+      return `${opening}\n\nবিবাহ ও দাম্পত্য সুখের ক্ষেত্রে কুণ্ডলীর **৭ম ভাব (দাম্পত্য ক্ষেত্র)** এবং দেবগুরু **বৃহস্পতি ও শুক্রের** কৃপা সবচেয়ে তাৎপর্যপূর্ণ।\n\nআপনার গ্রহের অবস্থান বিশ্লেষণ করে যা স্পষ্ট দেখতে পাচ্ছি:\n\n• **শুভ বিবাহের সময়কাল**: আপনার জন্মকুণ্ডলীতে বৃহস্পতির শুভ গোচরে আগামী **৮ থেকে ১৪ মাসের মধ্যে (২০২৬-এর শেষ থেকে ২০২৭-এর প্রথমার্ধ)** সানাই বাজার ও শুভ সম্বন্ধ পাকা হওয়ার অত্যন্ত জোরালো যোগ তৈরি হয়েছে।\n• **জীবনসঙ্গীর বৈশিষ্ট্য**: আপনার জীবনসঙ্গী হবেন সুশিক্ষিত, ধৈর্যশীল, রুচিশীল এবং পারিবারিক মূল্যবোধসম্পন্ন ব্যক্তিত্ব। কর্মক্ষেত্রে তিনি কোনো প্রতিষ্ঠিত পেশা বা ব্যবসার সাথে যুক্ত থাকবেন।\n• **প্রেম না পারিবারিক**: আপনার ক্ষেত্রে পারিবারিকভাবে সমর্থিত বা পরিচিত মহলের মাধ্যমেই বিয়ের সম্বন্ধ চূড়ান্ত হওয়ার যোগ বেশি।\n\n🌿 **বৈদিক প্রতিকার**:\n১. প্রতি বৃহস্পতিবার শ্রী বিষ্ণুর উদ্দেশ্যে হলুদ ফুল ও এক চিমটি হলুদ গুঁড়ো জলে মিশিয়ে স্নান করুন।\n২. *"ওঁ বৃহস্পতয়ে নমঃ"* মন্ত্রটি প্রতিদিন ১০৮ বার পাঠ করলে শুভ সম্বন্ধ দ্রুত চলে আসে।`;
+    } else if (lang === 'hi') {
+      return `${opening}\n\nविवाह के मामले में कुंडली का **सप्तम भाव** तथा **देवगुरु बृहस्पति और शुक्र** की दृष्टि सबसे प्रमुख होती है।\n\n• **विवाह का समय**: आने वाले **८ से १४ महीनों के भीतर** शुभ विवाह का पक्का योग बन रहा है।\n• **जीवनसाथी**: आपका जीवनसाथी संस्कारी, शिक्षित और सहयोगी स्वभाव का होगा।\n• **उपाय**: गुरुवार को केले के वृक्ष में जल दें और हल्दी का तिलक लगाएं। ॐ नमो भगवते वासुदेवाय का नित्य जप करें।`;
+    } else {
+      return `${opening}\n\nMarriage and matrimonial harmony are governed by the **7th House** and the divine blessings of **Jupiter and Venus**.\n\n• **Marriage Timing**: A very powerful matrimonial transit window is opening in the next **8 to 14 months**.\n• **Spouse Traits**: Your future life partner will be cultured, supportive, and emotionally grounded with good familial backing.\n• **Remedy**: Worship Lord Vishnu on Thursdays and chant the Brihaspati mantra for swift alignment.`;
+    }
+  }
+
   if (topic === 'govt_job') {
-    if (isBengali) {
-      return `🏛️ **সরকারি চাকরি ও প্রতিযোগিতামূলক পরীক্ষা যোগ (১০ম ও সূর্য বিচার):**
-• **সরকারি চাকরির যোগ**: আপনার জন্মছকে রবি (সূর্য) এবং বৃহস্পতি দেবের অবস্থান শক্তিশালী, যা প্রশাসনিক ক্ষমতা ও সরকারি স্বীকৃতির অনুকূল।
-• **কবে সাফল্যের সম্ভাবনা**: আগামী **৬ থেকে ৯ মাসের মধ্যে** আপনি যে পরীক্ষা বা ইন্টারভিউ দেবেন, তাতে শীর্ষস্থান বা সিলেক্ট হওয়ার অতি শুভ যোগ দেখা যাচ্ছে।
-• **কোন ক্ষেত্রে উন্নতি**: প্রশাসন, ব্যাংকিং, রেলওয়ে, শিক্ষকতা বা সরকারি পাবলিক সেক্টরে আপনার অগ্রগতি নিশ্চিত।
-
-🌟 **সূর্যদেবের কৃপা লাভের বিশেষ প্রতিকার:**
-১. প্রতিদিন ভোরে ঘুম থেকে উঠে একটি তামার পাত্রে সামান্য লাল চন্দন, গুড় ও জল মিশিয়ে উদীয়মান সূর্যকে অর্ঘ্য দিন।
-২. রবিবার আমিষ খাবার এড়িয়ে চলুন এবং পিতা বা গুরুজনদের চরণ স্পর্শ করে আশীর্বাদ নিন।`;
+    if (lang === 'bn') {
+      return `${opening}\n\nসরকারি চাকরি, প্রশাসনিক পদ (BCS / WBCS / UPSC / Banking) এবং উচ্চ সামাজিক সম্মানের কারক গ্রহ হলেন **সূর্যদেব** এবং কর্মস্থানের **১০ম ভাব**।\n\nগ্রহসমাহার পর্যালোচনা করে যা দেখা যাচ্ছে:\n\n• **সফলতার সময়কাল**: আপনার কুণ্ডলীতে ১০ম ভাবে রবি ও মঙ্গলের ইতিবাচক প্রভাবে আগামী **৬ থেকে ১০ মাসের মধ্যে** অনুষ্ঠিত যেকোনো প্রতিযোগিতামূলক পরীক্ষায় অভূতপূর্ব ফলাফল ও চূড়ান্ত তালিকায় নাম আসার প্রবল যোগ রয়েছে।\n• **সতর্কতা**: অলসতা বা শেষ মুহূর্তের আত্মতুষ্টি পরিহার করতে হবে। আপনার মেধা যথেষ্ট, কেবল ধারাবাহিকতা রক্ষা করতে হবে।\n\n🌿 **সূর্যদেবের আশীর্বাদ পাওয়ার উপায়**:\n১. প্রতিদিন সকালে একটি তামার পাত্রে জল, সামান্য লাল চন্দন ও লাল ফুল নিয়ে উদিত সূর্যকে অর্ঘ্য দিন এবং *"ওঁ ঘৃণিঃ সূর্যায় নমঃ"* পাঠ করুন।\n২. পিতা ও গুরুজনদের সম্মান ও আশীর্বাদ গ্রহণ করুন।`;
+    } else {
+      return `${opening}\n\nGovernment service, competitive exams (BCS / UPSC / SSC / Banking), and administrative authority are ruled by the **Sun** and the **10th House (Karma Bhava)**.\n\n• **Success Timeline**: A golden planetary phase for competitive examinations is active over the next **6 to 10 months**.\n• **Key Strategy**: Consistency in revision is vital. Avoid mental distractions.\n\n🌿 **Remedies**: Offer Arghya (water) to the rising Sun daily from a copper vessel with the Aditya Hridayam Stotram.`;
     }
-    return `🏛️ **Government Job & Competitive Exam Analysis (10th House & Sun):**
-• **Prospects**: Strong Sun-Jupiter alignment shows a high probability of securing a prestigious government or public sector post within 6 to 9 months.
-• **Remedy**: Offer water (Arghya) in a copper vessel to the rising Sun every morning while chanting the Surya Gayatri Mantra.`;
   }
 
-  // 4. Career & General Job
   if (topic === 'career') {
-    if (isBengali) {
-      return `💼 **চাকরি, প্রমোশন ও কর্মক্ষেত্র বিশ্লেষণ (১০ম ও দশাংশ D10 বিচার):**
-• **চাকরিতে প্রমোশন / পরিবর্তন**: আপনার বর্তমান দশা ও বুধের অবস্থান অনুযায়ী আগামী **৩ থেকে ৬ মাসের মধ্যে (বিশেষ করে ৩-৪ মাসের মধ্যে)** একটি বড় ইনক্রিমেন্ট, পদোন্নতি বা কাঙ্ক্ষিত কোম্পানিতে চাকরি পরিবর্তনের নিশ্চিত সুযোগ আসবে।
-• **অফিস পলিটিক্স থেকে মুক্তি**: কর্মক্ষেত্রে যারা আপনার বিরুদ্ধে চক্রান্ত করছিল, তাদের প্রভাব দ্রুত বিনষ্ট হবে এবং উর্ধ্বতন কর্মকর্তারা আপনার কাজের ভূয়সী প্রশংসা করবেন।
-
-🌟 **কর্মোন্নতির বৈদিক প্রতিকার:**
-১. প্রতি শনিবার অশ্বত্থ গাছের গোড়ায় সর্ষের তেলের প্রদীপ জ্বালান।
-২. প্রতিদিন কর্মস্থলে যাওয়ার আগে কপালে সামান্য চন্দনের তিলক লাগান।`;
+    if (lang === 'bn') {
+      return `${opening}\n\nকর্মজীবন ও পেশাগত অগ্রগতির ক্ষেত্রে **১০ম ভাব (দশম ভাব)** এবং **দশা লর্ড** অত্যন্ত গুরুত্বপূর্ণ।\n\n• **পদোন্নতি ও ইনক্রিমেন্ট**: বর্তমান গ্রহের সঞ্চার অনুসারে আগামী **৩ থেকে ৬ মাসের মধ্যে** আপনার বর্তমান কর্মক্ষেত্রে ভালো পদোন্নতি (Promotion), প্রজেক্ট লিড বা আকর্ষণীয় প্যাকেজে নতুন জব অফার পাওয়ার শুভ যোগ রয়েছে।\n• **অফিস পলিটিক্স**: সহকর্মীদের সাথে অপ্রয়োজনীয় তর্কে জড়াবেন না, নিজের কাজ দিয়ে জবাব দিন।\n\n🌿 **পেশাগত উন্নতির প্রতিকার**:\n১. কর্মক্ষেত্রে বের হওয়ার আগে মুখে একটু মিষ্টি বা তুলসী পাতা দিয়ে বের হবেন।\n২. শনিবার দরিদ্র কাউকে অন্ন বা সরিষার তেল দান করলে কর্মক্ষেত্রের সমস্ত বাধা কেটে যায়।`;
+    } else {
+      return `${opening}\n\nProfessional growth and promotions are driven by your **10th House Lord** and D10 Dashamsha chart.\n\n• **Career Breakthrough**: A significant career advancement or favorable job switch is indicated within the next **3 to 6 months**.\n• **Remedy**: Feed birds or street animals on Saturdays and maintain ethical integrity at the workplace.`;
     }
-    return `💼 **Career & Promotion Outlook (10th House & D10 Dashamsha):**
-• **Timeline**: Breakthrough job promotion or lucrative new offer arriving within **3 to 6 months**.
-• **Remedy**: Light a mustard oil lamp under a Peepal tree on Saturday evenings for career stability.`;
   }
 
-  // 5. Business & Trade
   if (topic === 'business') {
-    if (isBengali) {
-      return `🏢 **ব্যবসা নাকি চাকরি / নতুন ব্যবসার সম্ভাবনা (৭ম ও ১১শ ভাব বিচার):**
-• **আপনার জন্য কোনটি সেরা**: আপনার জন্মছকে বুধ ও শুক্রের অবস্থান দেখে স্পষ্ট বোঝা যায় যে স্বাধীন ব্যবসা বা ট্রেডিংয়ে আপনি প্রভূত সাফল্য অর্জন করবেন।
-• **নতুন ব্যবসা শুরুর শুভ সময়**: নতুন পার্টনারশিপ বা ইনভেস্টমেন্টের জন্য আগামী **অক্টোবর থেকে ফেব্রুয়ারি মাস** সবচেয়ে লাভজনক।
-• **লাভের ক্ষেত্র**: আমদানি-রপ্তানি, আইটি/টেক, কনসালটেন্সি, বস্ত্র বা খাদ্যদ্রব্য সংক্রান্ত ব্যবসায় বহুগুণ মুনাফা হবে।
-
-🌟 **ব্যবসার লক্ষ্মী বৃদ্ধির প্রতিকার:**
-১. আপনার ক্যাশবাক্স বা লকারে একটি সিদ্ধ শ্রীযন্ত্র (Shree Yantra) স্থাপন করুন।
-২. প্রতি বুধবার সকালে পাখিদের বা গরুকে সবুজ ঘাস/শাক খাওয়ান।`;
+    if (lang === 'bn') {
+      return `${opening}\n\nব্যবসা, বাণিজ্য ও স্বাধীন উদ্যোগের প্রধান চালিকাশক্তি হলো **বুধদেব (বুদ্ধি ও ট্রেডিং)** এবং **৭ম ও ১১শ ভাব (লাভ স্থান)**।\n\n• **ব্যবসার সম্ভাবনা**: চাকরি থেকে ব্যবসা করার ইচ্ছা আপনার মধ্যে প্রবল। বর্তমান সময়টি নতুন স্টার্টআপ বা স্বাধীন ব্যবসা শুরু করার জন্য অনুকুল।\n• **লাভজনক ক্ষেত্র**: তথ্যপ্রযুক্তি, ফুড/রেস্টুরেন্ট, কনসালটেন্সি, ই-কমার্স বা সাপ্লাই চেন ব্যবসায় আপনি অসাধারণ সাফল্য পেতে পারেন।\n• **অংশীদারি (Partnership)**: পার্টনারশিপে কোনো কাজ করলে সমস্ত চুক্তিপত্র স্পষ্টভাবে লিখিত রাখবেন।\n\n🌿 **শ্রী লক্ষ্মী-কুবের প্রতিকার**:\nঘরে বা ব্যবসা প্রতিষ্ঠানে একটি 'শ্রীযন্ত্র' স্থাপন করুন এবং শুক্রবার ঘিয়ের প্রদীপ প্রজ্জ্বলন করুন।`;
+    } else {
+      return `${opening}\n\nBusiness acumen and trade are steered by **Mercury (Budha)** and the **11th House of Gains**.\n\n• **Entrepreneurial Outlook**: Your chart shows strong independent trading capabilities.\n• **Key Sectors**: Tech, retail, consultancy, and digital services are highly auspicious.\n• **Remedy**: Place a Shree Yantra at your workspace and chant Kanakadhara Stotram on Fridays.`;
     }
-    return `🏢 **Business & Entrepreneurship Forecast:**
-• **Verdict**: Independent business and trade will yield high prosperity for you.
-• **Auspicious Timing**: Launching new ventures between October and February will multiply returns.
-• **Remedy**: Keep a consecrated Shree Yantra in your safe and feed green grass to cows on Wednesdays.`;
   }
 
-  // 6. Wealth & Finance
-  if (topic === 'finance_wealth') {
-    if (isBengali) {
-      return `💰 **আর্থিক স্থিতি, ধনযোগ ও ঋণমুক্তি বিচার (২য় ও ১১শ ভাব):**
-• **ধনপ্রাপ্তির সময়**: আপনার জন্মছকে 'ধনযোগ' ও 'লক্ষ্মী যোগ' বিদ্যমান। আগামী **৪ থেকে ৮ মাসের মধ্যে** আটকে থাকা পাওনা টাকা উদ্ধার হবে এবং আয়ের একাধিক নতুন উৎস তৈরি হবে।
-• **শেয়ার মার্কেট / বিনিয়োগ**: দীর্ঘমেয়াদী ইনভেস্টমেন্টে লাভ হবে; তবে কোনো প্রকার ফটকা বা অনভিজ্ঞ জুয়ায় ঝুঁকি নেবেন না।
-
-🌟 **ধন বৃদ্ধির সিদ্ধ প্রতিকার:**
-১. প্রতি শুক্রবার সন্ধ্যায় ঘরে কর্পূরের ধোঁয়া দিন এবং কনকধারা স্তোত্র পাঠ করুন।
-২. একটি রুপার কয়েন বা রুপার টুকরো আপনার ওয়ালেটে সবসময় সাথে রাখুন।`;
+  if (topic === 'finance') {
+    if (lang === 'bn') {
+      return `${opening}\n\nআর্থিক সমৃদ্ধি, সঞ্চয় ও ঋণমুক্তির ক্ষেত্রে কুণ্ডলীর **২য় ভাব (ধন ভাব)** এবং **১১শ ভাব (আয় ভাব)** নির্দেশক।\n\n• **ধনলাভের শুভ সময়**: আগামী কয়েক মাসে আপনার আয়ের একাধিক নতুন উৎস (Multiple Income Streams) তৈরি হওয়ার সম্ভাবনা রয়েছে। পুরানো কোনো আটকে থাকা টাকা বা বকেয়া ফেরত পাওয়ার যোগ আসছে।\n• **ঋণমুক্তি**: আগামী ৬-৮ মাসের মধ্যে পরিকল্পিতভাবে ঋণের বোঝা উল্লেখযোগ্যভাবে লাঘব করতে পারবেন।\n\n🌿 **ধন যোগ জাগ্রত করার উপায়**:\n১. ঘরের উত্তর-পূর্ব দিক সবসময় পরিষ্কার ও আলোকিত রাখুন।\n২. শুক্রবার মা লক্ষ্মীর চরণে ক্ষীর বা মিষ্টান্ন ভোগ নিবেদন করুন।`;
+    } else {
+      return `${opening}\n\nFinancial stability and wealth accumulation are governed by the **2nd (Dhana)** and **11th (Labha)** houses.\n\n• **Financial Recovery**: New avenues of cash flow and clearance of old dues will materialize over the coming **4 to 8 months**.\n• **Remedy**: Keep your cash locker in the North direction and practice charitable giving on Fridays.`;
     }
-    return `💰 **Wealth & Financial Prosperity Forecast (2nd & 11th Houses):**
-• **Outlook**: Strong Dhana Yogas indicate cash recovery and multi-stream earnings opening in 4 to 8 months.
-• **Remedy**: Recite Kanakadhara Stotram on Fridays and carry a small pure silver piece in your wallet.`;
   }
 
-  // 7. Foreign Travel & Visa
-  if (topic === 'foreign_travel') {
-    if (isBengali) {
-      return `✈️ **বিদেশ যাত্রা, ভিসা ও স্থায়ী বসবাসের যোগ (৯ম ও ১২শ ভাব বিচার):**
-• **ভিসা ও বিদেশ গমন**: আপনার জন্মছকের ১২শ ভাব (বিদেশ স্থান) এবং রাহুর অনুকূল অবস্থানের কারণে আপনার **বিদেশে উচ্চশিক্ষা, চাকরি বা স্থায়ীভাবে সেটেল হওয়ার (PR) অত্যন্ত প্রবল যোগ** রয়েছে।
-• **শুভ সময়**: আগামী **৫ থেকে ১০ মাসের মধ্যে** আপনার ভিসা মঞ্জুর বা বিদেশযাত্রার টিকিট কনফার্ম হওয়ার সুবর্ণ সময়।
-
-🌟 **বিদেশযাত্রার বাধা দূর করার প্রতিকার:**
-১. হনুমান চালিসা প্রতিদিন পাঠ করুন এবং লাল রঙের মিষ্টি বিতরণ করুন।
-২. জলে সামান্য কাঁচা দুধ ঢেলে বুধবার প্রবাহিত করুন।`;
+  if (topic === 'foreign') {
+    if (lang === 'bn') {
+      return `${opening}\n\nবিদেশ যাত্রা, ভিসা, উচ্চশিক্ষা ও প্রবাসে বসবাসের কারক হলো **৯ম ভাব (ভাগ্য ও দূরপাল্লার ভ্রমণ)**, **১২শ ভাব (বিদেশ স্থান)** এবং **রাহু-বৃহস্পতির সংযোগ**।\n\n• **ভিসা ও যাত্রা যোগ**: আপনার কুণ্ডলীতে বিদেশ গমনের অত্যন্ত সুস্পষ্ট যোগ বিদ্যমান। আগামী **৫ থেকে ৯ মাসের মধ্যে** ভিসা অনুমোদন বা বিদেশযাত্রার কাগজপত্রে সবুজ সংকেত পাওয়ার দারুণ সম্ভাবনা রয়েছে।\n\n🌿 **প্রতিকার**: নিয়মিত পাখিদের শস্যদানা ও জল খেতে দিন। এটি বিদেশ সংক্রান্ত সমস্ত কাগজপত্র দ্রুত প্রস্তুত হতে সাহায্য করে।`;
+    } else {
+      return `${opening}\n\nForeign relocation and visa approval are governed by the **9th & 12th houses** along with Rahu's transit.\n\n• **Visa Timeline**: High probability of visa sanction and foreign movement within **5 to 9 months**.\n• **Remedy**: Feed birds and chant the Rahu Beej Mantra on Wednesday evenings.`;
     }
-    return `✈️ **Foreign Settlement & Visa Opportunities (9th & 12th Houses):**
-• **Prospects**: Strong 12th house alignment guarantees foreign education, job visa, or PR approval within **5 to 10 months**.
-• **Remedy**: Chant Hanuman Chalisa daily and offer jaggery-sweets on Tuesdays.`;
   }
 
-  // 8. Childbirth & Family
-  if (topic === 'childbirth') {
-    if (isBengali) {
-      return `👶 **সন্তান ভাগ্য ও গর্ভধারণ যোগ (৫ম ভাব ও সপ্তাংশ D7 বিচার):**
-• **সন্তান যোগ**: আপনার ৫ম ভাব (সন্তান স্থান) এবং দেবগুরু বৃহস্পতির দৃষ্টি শুভ। চিকিৎসকের পরামর্শের পাশাপাশি শাস্ত্রীয় মতে আগামী **৯ থেকে ১৫ মাসের মধ্যে** ঘরে নতুন অতিথি ও সন্তান সুখের অত্যন্ত মঙ্গলময় যোগ রয়েছে।
-• **সন্তানের স্বাস্থ্য ও মেধা**: আপনার সন্তান হবে অত্যন্ত মেধাবী ও পরিবারে সৌভাগ্য আনয়নকারী।
-
-🌟 **সন্তান প্রাপ্তির মহৌষধ প্রতিকার:**
-১. বাড়িতে গোপাল মূর্তি স্থাপন করে তাকে মাখন ও মিছরি ভোগ দিন।
-২. প্রতি বৃহস্পতিবার সন্তান গোপাল মন্ত্র পাঠ করুন: 'ওম ক্লীং দেবকীসুত গোবিন্দ বাসুদেব জগৎপতে'।`;
+  if (topic === 'doshas') {
+    if (lang === 'bn') {
+      return `${opening}\n\nশনিদেবের সাড়ে সাতি বা মাঙ্গলিক দোষকে ভয় পাওয়ার কোনো কারণ নেই। শনিদেব হলেন ন্যায়ের প্রতীক—তিনি ধৈর্য ও আত্মশুদ্ধির শিক্ষা দেন।\n\n• **বর্তমান পরিস্থিতি**: আপনার গ্রহদশার প্রভাবে মানসিক চাপ বা কাজে সামান্য বিলম্ব হতে পারে, তবে কোনো স্থায়ী ক্ষতি হবে না।\n\n🌿 **সহজ ও খাঁটি বৈদিক প্রতিকার**:\n১. প্রতি শনিবার অশ্বত্থ (পিপল) গাছের গোড়ায় সর্ষের তেলের প্রদীপ জ্বালান।\n২. কালো কুকুর বা কোনো অভাবী মানুষকে শনিবার রুটি বা খাবার দিন।\n৩. হনুমান চালিসা বা মহামৃত্যুঞ্জয় মন্ত্র প্রতিদিন পাঠ করুন—সমস্ত অমঙ্গল দূর হয়ে যাবে।`;
+    } else {
+      return `${opening}\n\nSaturn's transit (Sade Sati) and Mangal aspects are meant for spiritual discipline, not fear.\n\n🌿 **Vedic Remedies**:\n1. Light a mustard oil lamp under a Peepal tree on Saturday evenings.\n2. Recite the Hanuman Chalisa daily.\n3. Feed black dogs or birds on Saturdays for peace and protection.`;
     }
-    return `👶 **Childbirth & Family Expansion (5th House & D7 Saptamsha):**
-• **Timeline**: Auspicious Jupiter transit opens a blessed pregnancy and progeny window in **9 to 15 months**.
-• **Remedy**: Chant Santana Gopala Mantra on Thursdays and offer butter-mishri to Lord Krishna.`;
   }
 
-  // 9. Health & Wellness
-  if (topic === 'health') {
-    if (isBengali) {
-      return `🩺 **স্বাস্থ্য, রোগমুক্তি ও দীর্ঘায়ু বিচার (৬ষ্ঠ ও ৮ম ভাব):**
-• **বর্তমান শারীরিক অবস্থা**: শনির ট্রানজিটের কারণে শরীর কিছুটা দুর্বল বা ক্লান্তি লাগতে পারে, বিশেষ করে পেটের সমস্যা, কোমর/হাঁটুর ব্যথা বা অনিদ্রার লক্ষণ দেখা দিতে পারে।
-• **সুস্থতার সময়**: সঠিক খাদ্যাভ্যাস ও যোগাসনের মাধ্যমে আগামী **১-২ মাসের মধ্যে** রোগ ব্যাধি থেকে পূর্ণ মুক্তি মিলবে এবং জীবনীশক্তি ফিরে পাবেন।
-
-🌟 **স্বাস্থ্য রক্ষার মহৌষধ প্রতিকার:**
-১. প্রতিদিন সকালে স্নানের পর মহামৃত্যুঞ্জয় মন্ত্র ১১ বার জপ করুন।
-২. তামার পাত্রে সারারাত রাখা জল সকালে খালি পেটে পান করুন।`;
-    }
-    return `🩺 **Health & Vitality Forecast (6th & 8th Houses):**
-• **Guidance**: Minor fatigue or digestive sluggishness will vanish within 30-60 days with clean diet and gentle pranayama.
-• **Remedy**: Recite the Mahamrityunjaya Mantra 11 times every morning.`;
-  }
-
-  // 10. Shani Sade Sati & Doshas
-  if (topic === 'dosha_remedy') {
-    if (isBengali) {
-      return `🪐 **শনি সাড়ে সাতি, মাঙ্গলিক ও কাল সর্প দোষ নিবারণ:**
-• **দোষের স্বরূপ**: গ্রহের বর্তমান অবস্থানের কারণে জীবনে হঠাৎ বাধা, বিলম্ব বা মানসিক চাপের সৃষ্টি হয়। তবে শাস্ত্র বলে—সঠিক উপায়ে গ্রহের শান্তি করলে এই দোষই মহা রাজযোগে রূপান্তরিত হয়।
-• **শুভ ফল কবে থেকে**: নিয়মিত প্রতিকার পালন করলে আগামী **৩ মাসের মধ্যে** সমস্ত স্থবির কাজ দ্রুতগতিতে সম্পন্ন হতে শুরু করবে।
-
-🌟 **দোষ কাটার সিদ্ধ প্রতিকার:**
-১. প্রতি শনিবার সন্ধ্যায় একটি কাঁচা মাটির প্রদীপে সর্ষের তেল দিয়ে শনিদেবের উদ্দেশ্যে একটি লোহার পেরেক দান করুন।
-২. অনাথ বা দুস্থ ব্যক্তিদের কালো কম্বল, ছাতা বা জুতো দান করুন।`;
-    }
-    return `🪐 **Shani Sade Sati & Planetary Dosha Remedies:**
-• **Relief Timeline**: Active remedies will dismantle obstacles within 90 days, turning delays into solid success.
-• **Remedy**: Donate black sesame seeds, umbrella, or footwear to the needy on Saturdays.`;
-  }
-
-  // 11. Gemstones & Lucky Charms
   if (topic === 'gemstones') {
-    if (isBengali) {
-      return `💎 **আপনার জন্য সবচেয়ে শুভ রত্ন ও রুদ্রাক্ষের সুপারিশ:**
-• **ভাগ্যোন্নতির রত্ন**: আপনার লগ্ন ও রাশির শুভ গ্রহ অনুযায়ী **হলুদ পোখরাজ (Yellow Sapphire)** অথবা **খাঁটি পান্না (Emerald)** ধারণ করলে মেধা, অর্থ ও বাকপটুতা বহুগুণ বৃদ্ধি পাবে।
-• **রুদ্রাক্ষ**: মানসিক শান্তি ও সর্ববিঘ্ন নাশের জন্য একটি **৫-মুখী বা ৭-মুখী পঞ্চমুখী রুদ্রাক্ষের মালা** ধারণ করা শ্রেষ্ঠ ফলদায়ক।
-• **ধারণের নিয়ম**: শুক্লপক্ষের শুভ তিথিতে গঙ্গাজল ও কাঁচা দুধে শুদ্ধ করে সোনার বা রুপার আংটিতে অনামিকা বা তর্জনী আঙুলে পরবেন।`;
+    if (lang === 'bn') {
+      return `${opening}\n\nরত্নধারণের মূল উদ্দেশ্য হলো কুণ্ডলীর শুভ কারক গ্রহকে অতিরিক্ত তেজ ও শক্তি প্রদান করা।\n\n• **মূল রত্ন সুপারিশ**: আপনার ভাগ্য ও জ্ঞানের জন্য **পোখরাজ (হলুদ রত্ন)** অথবা বুদ্ধিমত্তা ও ব্যবসার উন্নতির জন্য **পান্না (Emerald)** অত্যন্ত ফলপ্রসূ হতে পারে।\n• **রুদ্রাক্ষ**: আধ্যাত্মিক শান্তি ও সার্বিক নিরাপত্তার জন্য একটি **৫-মুখী পঞ্চমুখী রুদ্রাক্ষ** ধারণ করা সর্বশ্রেষ্ঠ ও নিরাপদ।\n\n🌿 **সতর্কতা**: কোনো খাঁটি রত্ন ধারণ করার আগে উপযুক্ত তিথিতে শোধন ও প্রাণপ্রতিষ্ঠা করিয়ে নেওয়া বাঞ্ছনীয়।`;
+    } else {
+      return `${opening}\n\nGemstones amplify the benefic energies of your chart's yogakaraka planets.\n\n• **Recommended**: **Yellow Sapphire** for luck and expansion, or **Emerald** for intellect and business.\n• **Rudraksha**: A 5-Mukhi Nepali Rudraksha is universally auspicious for mental tranquility and vitality.`;
     }
-    return `💎 **Personalized Lucky Gemstones & Rudraksha:**
-• **Recommended**: Natural Yellow Sapphire (Pukhraj) or Green Emerald for wisdom and wealth expansion.
-• **Rudraksha**: 5-Mukhi or 7-Mukhi Nepali Rudraksha for spiritual tranquility and focus.`;
   }
 
   // General Fallback
-  if (isBengali) {
-    return `✨ **আপনার সামগ্রিক গ্রহাবস্থান ও ভাগ্য বিচার:**
-আপনার কুণ্ডলীতে গ্রহদের স্থানান্তর অত্যন্ত ইতিবাচক দিশায় এগোচ্ছে। আপনি যে সৎ ইচ্ছা বা লক্ষ্যের পেছনে ছুটছেন, তাতে ধৈর্য সহকারে লেগে থাকুন। ঈশ্বর ও গ্রহের কৃপায় শীঘ্রই কাঙ্ক্ষিত ফলাফল পাবেন। আপনার আরও কোনো নির্দিষ্ট বিষয় জানার থাকলে নির্দ্বিধায় প্রশ্ন করুন! 🙏`;
+  if (lang === 'bn') {
+    return `${opening}\n\nআপনার কুণ্ডলীতে বর্তমানে শুভ গ্রহের গোচর ধীরে ধীরে অনুকূল হচ্ছে। কোনো বিষয়ে অতিরিক্ত হতাশা বা দুঃশ্চিন্তা করবেন না।\n\nআপনার যদি কোনো সুনির্দিষ্ট বিষয় (যেমন: বিয়ের সুনির্দিষ্ট মাস, চাকরির অফার, কোনো নির্দিষ্ট ব্যক্তির সাথে ভবিষ্যৎ) নিয়ে জানার থাকে, তবে স্পষ্টভাবে লিখে জানান—আমি বিস্তারিত গণনা করে জানিয়ে দিচ্ছি! 🙏✨`;
+  } else if (lang === 'hi') {
+    return `${opening}\n\nआपकी कुंडली में ग्रहों की स्थिति धीरे-धीरे अनुकूल हो रही है। किसी भी बात को लेकर अत्यधिक तनाव न लें।\n\nयदि आपके मन में कोई विशेष प्रश्न है, तो कृपया बताएं—मैं शास्त्रीय गणना के साथ आपको पूरा मार्गदर्शन दूंगा। 🙏✨`;
+  } else {
+    return `${opening}\n\nYour planetary transits are progressively aligning in your favor. Maintain disciplined focus and trust divine timing.\n\nIf you have any specific query regarding marriage timing, career path, or relationship clarity, feel free to ask! 🙏✨`;
   }
-  return `✨ **General Astrological Reading:**
-Your planetary transits are steadily aligning in your favor. Maintain disciplined focus and trust your hard work. Divine blessings are supporting your journey. Feel free to ask any specific question! 🙏`;
 }
