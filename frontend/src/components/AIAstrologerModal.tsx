@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Bot, Send, Sparkles, X, MessageSquare, Compass, Zap } from 'lucide-react';
+import { Bot, Send, Sparkles, X, Zap } from 'lucide-react';
+import { generateAstrologicalAIResponse } from '../utils/aiAstrologyResponse';
 
 interface AIAstrologerModalProps {
   onClose: () => void;
@@ -9,17 +10,17 @@ export const AIAstrologerModal: React.FC<AIAstrologerModalProps> = ({ onClose })
   const [messages, setMessages] = useState<Array<{ sender: 'ai' | 'user'; text: string }>>([
     {
       sender: 'ai',
-      text: 'Namaste! I am your 24/7 AI Vedic Astrologer. Ask me anything about your Horoscope, Zodiac sign, Mahadasha, Sade Sati, or remedies!'
+      text: 'নমস্কার! আমি আপনার ২৪/৭ এআই বৈদিক জ্যোতিষী (AI Vedic Astrologer)। আপনার বিয়ে, চাকরি, প্রেম, সাড়ে সাতি বা প্রতিকার সংক্রান্ত যেকোনো প্রশ্ন বাংলায় বা ইংরেজিতে করতে পারেন!'
     }
   ]);
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
 
   const quickPrompts = [
-    'How will 2026 be for Aries?',
-    'What are the remedies for Shani Sade Sati?',
-    'Which gemstone is best for career growth?',
-    'How to check if I have Mangal Dosha?'
+    'আমার বিয়ে কবে হবে?',
+    'আমার চাকরি বা ক্যারিয়ার কেমন যাবে?',
+    'শনি সাড়ে সাতির সহজ প্রতিকার কি?',
+    'আমার আর্থিক স্থিতি ও ধনলাভ কবে হবে?'
   ];
 
   const handleAsk = (userQuery: string) => {
@@ -30,19 +31,10 @@ export const AIAstrologerModal: React.FC<AIAstrologerModalProps> = ({ onClose })
     setLoading(true);
 
     setTimeout(() => {
-      let response = `Based on classical Vedic principles, planetary alignments for ${userQuery} indicate strong supportive influences from Jupiter. Focus on disciplined efforts and wear silver/pearl for mental serenity.`;
-
-      if (userQuery.toLowerCase().includes('sade sati') || userQuery.toLowerCase().includes('shani')) {
-        response = `Shani (Saturn) tests discipline and integrity. To mitigate Sade Sati effects: 1) Light a mustard oil lamp under a Peepal tree on Saturdays, 2) Recite Hanuman Chalisa daily, 3) Donate black sesame seeds or black blankets to the needy.`;
-      } else if (userQuery.toLowerCase().includes('gemstone') || userQuery.toLowerCase().includes('career')) {
-        response = `For career elevation, astrologers generally evaluate the 10th house and the Sun/Mercury. Blue Sapphire (Neelam) or Emerald (Panna) are powerful, but must only be worn after calculating the exact degree of your Lagna lord.`;
-      } else if (userQuery.toLowerCase().includes('mangal') || userQuery.toLowerCase().includes('dosha')) {
-        response = `Mangal Dosha occurs when Mars is placed in the 1st, 4th, 7th, 8th, or 12th house from the Lagna or Moon. However, if Mars is in its own sign (Aries/Scorpio) or exalted in Capricorn, the dosha gets cancelled (Dosha Bhanga).`;
-      }
-
+      const response = generateAstrologicalAIResponse(userQuery, 'AI Vedic Astrologer', false);
       setLoading(false);
       setMessages((prev) => [...prev, { sender: 'ai', text: response }]);
-    }, 1500);
+    }, 1200);
   };
 
   return (
@@ -61,7 +53,7 @@ export const AIAstrologerModal: React.FC<AIAstrologerModalProps> = ({ onClose })
                   Instant Answers
                 </span>
               </h3>
-              <p className="text-[11px] text-slate-400">Trained on Parashara Hora & Jaimini Sutras</p>
+              <p className="text-[11px] text-slate-400">Trained on Parashara Hora & Jaimini Sutras (Multilingual)</p>
             </div>
           </div>
 
@@ -81,7 +73,7 @@ export const AIAstrologerModal: React.FC<AIAstrologerModalProps> = ({ onClose })
               className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'}`}
             >
               <div
-                className={`max-w-[85%] rounded-2xl px-4 py-3 text-xs sm:text-sm leading-relaxed ${
+                className={`max-w-[85%] rounded-2xl px-4 py-3 text-xs sm:text-sm leading-relaxed whitespace-pre-line ${
                   m.sender === 'user'
                     ? 'bg-purple-600 text-white font-medium rounded-br-none'
                     : 'bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700'
@@ -95,7 +87,7 @@ export const AIAstrologerModal: React.FC<AIAstrologerModalProps> = ({ onClose })
           {loading && (
             <div className="flex items-center gap-2 text-purple-300 text-xs italic bg-purple-950/40 px-3 py-2 rounded-full w-fit border border-purple-500/30">
               <Sparkles className="w-4 h-4 text-purple-400 animate-spin" />
-              <span>Analyzing Vedic scriptures & astronomical ephemeris...</span>
+              <span>বৈদিক শাস্ত্র ও গ্রহগোচর বিশ্লেষণ করা হচ্ছে...</span>
             </div>
           )}
         </div>
@@ -126,7 +118,7 @@ export const AIAstrologerModal: React.FC<AIAstrologerModalProps> = ({ onClose })
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Ask your astrology question..."
+            placeholder="আপনার প্রশ্ন লিখুন (যেমন: আমার বিয়ে কবে হবে?)..."
             className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
           />
           <button

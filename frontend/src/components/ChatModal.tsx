@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Send, Clock, Wallet, AlertCircle, Sparkles, Phone, Video, CheckCircle2 } from 'lucide-react';
+import { X, Send, Clock, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react';
 import { Astrologer, ChatMessage } from '../types';
+import { generateAstrologicalAIResponse } from '../utils/aiAstrologyResponse';
 
 interface ChatModalProps {
   astrologer: Astrologer;
@@ -17,17 +18,23 @@ export const ChatModal: React.FC<ChatModalProps> = ({
   onClose,
   onOpenRecharge
 }) => {
+  const isAI = astrologer.isAI;
+
+  const initialGreeting = isAI
+    ? `নমস্কার! আমি ${astrologer.name}। আপনার জন্ম বিবরণ (তারিখ, সময়, স্থান) এবং কী বিষয়ে জানতে চান বলুন। (বাংলা, English বা যেকোনো ভাষায় জিজ্ঞেস করতে পারেন!)`
+    : `নমস্কার! আমি ${astrologer.name} (${astrologer.specialty})। বলুন আজ আপনাকে কীভাবে সাহায্য করতে পারি?`;
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
       sender: 'system',
-      text: `Consultation session connected with ${astrologer.name} (${astrologer.specialty}). Rate: ₹${astrologer.chatRatePerMin}/min.`,
+      text: `Connected with ${astrologer.name}. Rate: ₹${astrologer.chatRatePerMin}/min.`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     },
     {
       id: '2',
       sender: 'astrologer',
-      text: `Namaste! I am ${astrologer.name}. Please share your birth details (Date, Time, Place) and what question is on your mind today?`,
+      text: initialGreeting,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -94,14 +101,10 @@ export const ChatModal: React.FC<ChatModalProps> = ({
     setInput('');
     setIsTyping(true);
 
-    // Dynamic Astrological Automated Responses
+    // Dynamic Intelligent Multilingual Astrological Responses
     setTimeout(() => {
-      let reply = `Analyzing your query regarding "${query}". Based on your 10th house and planetary transit, Jupiter is forming an auspicious trine (Drishti).`;
-      if (query.toLowerCase().includes('career') || query.toLowerCase().includes('job')) {
-        reply = `Looking at your planetary Dasha, your 10th house lord of career is moving into a strong quadrant. Expect positive career growth and job changes within 3 to 6 months. A small remedy: Chant Gayatri Mantra daily.`;
-      } else if (query.toLowerCase().includes('marriage') || query.toLowerCase().includes('love')) {
-        reply = `For your relationship and 7th house analysis, Venus transit brings harmony. If there were misunderstandings, they will clear up after the next new moon cycle.`;
-      }
+      const isTarot = astrologer.skills.some((s) => s.toLowerCase().includes('tarot'));
+      const reply = generateAstrologicalAIResponse(query, astrologer.name, isTarot);
 
       setIsTyping(false);
       setMessages((prev) => [
@@ -113,7 +116,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
-    }, 2000);
+    }, isAI ? 1200 : 2000);
   };
 
   return (
@@ -191,7 +194,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({
                 className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
               >
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm leading-relaxed ${
+                  className={`max-w-[85%] rounded-2xl px-4 py-3 text-xs sm:text-sm leading-relaxed whitespace-pre-line ${
                     isUser
                       ? 'bg-amber-500 text-slate-950 font-medium rounded-br-none shadow-md shadow-amber-500/10'
                       : 'bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700'
@@ -207,7 +210,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({
           {isTyping && (
             <div className="flex items-center gap-2 text-slate-400 text-xs italic bg-slate-800/40 px-3 py-1.5 rounded-full w-fit border border-slate-800">
               <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin" />
-              <span>{astrologer.name} is studying your chart...</span>
+              <span>{astrologer.name} আপনার জন্মছক ও প্রশ্ন পর্যবেক্ষণ করছেন...</span>
             </div>
           )}
 
@@ -220,7 +223,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your question (e.g. When will I get a job promotion?)..."
+            placeholder="আপনার প্রশ্ন লিখুন (যেমন: আমার বিয়ে কবে হবে? বা চাকরি কবে পাব?)..."
             className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
           />
           <button
