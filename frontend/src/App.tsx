@@ -477,13 +477,13 @@ export function App() {
         {activeTab === 'tarot' && <TarotReadingSection />}
       </main>
 
-      {/* Floating AI Astrologer Trigger Button */}
+      {/* Floating AI Acharya Trigger Button */}
       <button
         onClick={() => setIsAIOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white font-bold text-xs shadow-2xl shadow-purple-600/40 hover:scale-105 active:scale-95 transition-all glow-amber cursor-pointer"
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-amber-500 via-[#f7e034] to-amber-500 text-slate-950 font-black text-xs shadow-2xl shadow-amber-500/40 hover:scale-105 active:scale-95 transition-all glow-amber cursor-pointer"
       >
-        <Bot className="w-5 h-5 animate-pulse" />
-        <span className="hidden sm:inline">Ask AI Astrologer 24/7</span>
+        <Sparkles className="w-5 h-5 fill-slate-950 animate-pulse" />
+        <span className="hidden sm:inline">Ask AI Acharya 24/7</span>
       </button>
 
       {/* 👑 Lifetime VIP Pass Modal for Rs 99 */}

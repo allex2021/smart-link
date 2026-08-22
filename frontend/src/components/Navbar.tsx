@@ -162,15 +162,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                       isLight ? 'hover:bg-purple-50' : 'hover:bg-purple-950/40'
                     }`}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-600 flex items-center justify-center group-hover:scale-105 transition-transform">
-                      <Bot className="w-4 h-4" />
+                    <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+                      <Sparkles className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className={`text-xs font-bold flex items-center gap-1 ${isLight ? 'text-purple-700' : 'text-white'}`}>
-                        AI Astrologer 24/7
-                        <span className="text-[9px] bg-purple-500 text-white font-bold px-1.5 rounded">NEW</span>
+                      <div className={`text-xs font-bold flex items-center gap-1 ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                        Vedic AI Acharya 24/7
+                        <span className="text-[9px] bg-amber-500 text-slate-950 font-black px-1.5 rounded">NEW</span>
                       </div>
-                      <div className="text-[10px] text-slate-500">Instant answers in 7 languages</div>
+                      <div className="text-[10px] text-slate-500">Maharshi Aryabhata (Instant Guidance)</div>
                     </div>
                   </div>
                 </div>
@@ -397,12 +397,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span>Panchang</span>
             </button>
 
-            {/* 6. AI Astro 24/7 */}
+            {/* 6. AI Acharya 24/7 */}
             <button
               onClick={() => handleSubItemClick('ai-astro')}
-              className="px-3.5 py-1.5 rounded-full text-xs font-bold text-purple-400 bg-purple-950/40 border border-purple-800/60 hover:bg-purple-900/60 transition-all cursor-pointer shadow-sm"
+              className="px-3.5 py-1.5 rounded-full text-xs font-bold text-amber-300 bg-amber-950/40 border border-amber-800/60 hover:bg-amber-900/60 transition-all cursor-pointer shadow-sm flex items-center gap-1"
             >
-              AI Astro 24/7
+              <Sparkles className="w-3 h-3 text-[#f7e034]" />
+              <span>AI Acharya</span>
             </button>
 
             {/* 7. Tarot Reading */}
@@ -593,10 +594,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={() => handleSubItemClick('ai-astro')}
             className={`px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap ${
-              activeTab === 'ai-astro' ? 'bg-purple-600 text-white' : 'text-purple-400'
+              activeTab === 'ai-astro' ? 'bg-amber-400 text-slate-950 font-bold' : 'text-amber-300'
             }`}
           >
-            AI Astro
+            AI Acharya
           </button>
           <button
             onClick={() => handleSubItemClick('tarot')}

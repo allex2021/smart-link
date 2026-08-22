@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, MessageCircle, Phone, CheckCircle, Clock, Globe2, Bot, Sparkles, Crown } from 'lucide-react';
+import { Star, MessageCircle, Phone, CheckCircle, Clock, Globe2, Sparkles, Crown } from 'lucide-react';
 import { Astrologer } from '../types';
 
 interface AstrologerCardProps {
@@ -18,7 +18,7 @@ export const AstrologerCard: React.FC<AstrologerCardProps> = ({
   return (
     <div className={`bg-slate-900/90 border rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between group ${
       isAI 
-        ? 'border-purple-500/50 hover:border-purple-400 shadow-lg shadow-purple-500/10' 
+        ? 'border-amber-400/40 hover:border-amber-400 shadow-lg shadow-amber-400/10' 
         : 'border-slate-800 hover:border-amber-500/50 hover:shadow-xl hover:shadow-amber-500/5'
     }`}>
       <div>
@@ -29,12 +29,12 @@ export const AstrologerCard: React.FC<AstrologerCardProps> = ({
               src={astrologer.avatar}
               alt={astrologer.name}
               className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 transition-colors ${
-                isAI ? 'border-purple-500 group-hover:border-purple-300' : 'border-slate-700 group-hover:border-amber-500/60'
+                isAI ? 'border-amber-400 group-hover:border-yellow-300 shadow-md' : 'border-slate-700 group-hover:border-amber-500/60'
               }`}
             />
             {isAI ? (
-              <span className="absolute -bottom-1 -right-1 flex h-5 w-5 rounded-full bg-purple-600 border-2 border-slate-900 items-center justify-center text-white">
-                <Bot className="w-3 h-3" />
+              <span className="absolute -bottom-1 -right-1 flex h-5 w-5 rounded-full bg-amber-500 border-2 border-slate-900 items-center justify-center text-slate-950 shadow-sm">
+                <Sparkles className="w-3 h-3 stroke-[2.5]" />
               </span>
             ) : astrologer.isOnline ? (
               <span className="absolute -bottom-1 -right-1 flex h-4 w-4">
@@ -50,15 +50,15 @@ export const AstrologerCard: React.FC<AstrologerCardProps> = ({
             <div className="flex items-center gap-1.5 flex-wrap">
               <h3 className="text-sm sm:text-base font-bold text-white truncate">{astrologer.name}</h3>
               {isAI ? (
-                <span className="bg-purple-500/20 text-purple-300 text-[10px] font-black px-1.5 py-0.5 rounded border border-purple-500/30 flex items-center gap-0.5">
-                  <Sparkles className="w-2.5 h-2.5" /> AI BOT
+                <span className="bg-amber-500/20 text-amber-300 text-[10px] font-black px-1.5 py-0.5 rounded border border-amber-500/40 flex items-center gap-0.5 shadow-sm">
+                  <Crown className="w-2.5 h-2.5 fill-amber-300" /> AI ACHARYA
                 </span>
               ) : (
                 <CheckCircle className="w-4 h-4 text-sky-400 shrink-0" />
               )}
             </div>
 
-            <p className={`text-xs font-medium truncate mt-0.5 ${isAI ? 'text-purple-300' : 'text-amber-400'}`}>
+            <p className={`text-xs font-medium truncate mt-0.5 ${isAI ? 'text-amber-300' : 'text-amber-400'}`}>
               {astrologer.specialty}
             </p>
 
@@ -66,16 +66,16 @@ export const AstrologerCard: React.FC<AstrologerCardProps> = ({
             <div className="flex items-center gap-2 mt-1.5 text-xs text-slate-400">
               <span className={`flex items-center gap-1 font-bold px-2 py-0.5 rounded-md border ${
                 isAI 
-                  ? 'text-purple-200 bg-purple-950/40 border-purple-800'
+                  ? 'text-amber-200 bg-amber-950/40 border-amber-800'
                   : 'text-slate-200 bg-slate-800 border-slate-700'
               }`}>
-                <Star className={`w-3.5 h-3.5 ${isAI ? 'fill-purple-400 text-purple-400' : 'fill-amber-400 text-amber-400'}`} />
+                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                 {astrologer.rating.toFixed(2)}
               </span>
               <span>•</span>
               <span className="flex items-center gap-1 text-[11px]">
                 <Clock className="w-3 h-3 text-slate-500" />
-                {isAI ? '0s Queue (Instant)' : `${astrologer.experienceYears} Yrs Exp`}
+                {isAI ? 'Instant (0s Queue)' : `${astrologer.experienceYears} Yrs Exp`}
               </span>
             </div>
           </div>
@@ -89,7 +89,7 @@ export const AstrologerCard: React.FC<AstrologerCardProps> = ({
                 key={index}
                 className={`text-[10px] font-medium px-2 py-0.5 rounded-md border ${
                   isAI
-                    ? 'bg-purple-950/30 text-purple-300 border-purple-800/50'
+                    ? 'bg-amber-950/30 text-amber-300 border-amber-800/50'
                     : 'bg-slate-800 text-slate-300 border-slate-700/60'
                 }`}
               >
@@ -111,7 +111,7 @@ export const AstrologerCard: React.FC<AstrologerCardProps> = ({
 
       {/* Pricing & CTA Action Buttons (₹99 VIP Included Model) */}
       <div className={`mt-4 pt-3.5 border-t flex items-center justify-between gap-2 ${
-        isAI ? 'border-purple-900/60' : 'border-slate-800'
+        isAI ? 'border-amber-900/60' : 'border-slate-800'
       }`}>
         <div className="text-left">
           <span className="text-[10px] text-amber-400/90 font-bold flex items-center gap-1">
@@ -125,14 +125,14 @@ export const AstrologerCard: React.FC<AstrologerCardProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={() => onInitiateChat(astrologer)}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold text-xs shadow-md transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold text-xs shadow-md transition-all cursor-pointer ${
               isAI
-                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-purple-600/20'
+                ? 'bg-gradient-to-r from-amber-500 via-[#f7e034] to-amber-500 text-slate-950 shadow-amber-500/30 hover:scale-105'
                 : 'bg-[#f7e034] hover:bg-[#ffe838] text-slate-950 shadow-amber-500/20'
             }`}
           >
-            {isAI ? <Bot className="w-3.5 h-3.5" /> : <MessageCircle className="w-3.5 h-3.5" />}
-            {isAI ? 'Chat AI (VIP)' : 'Chat (VIP)'}
+            {isAI ? <Sparkles className="w-3.5 h-3.5" /> : <MessageCircle className="w-3.5 h-3.5" />}
+            {isAI ? 'Consult VIP (Instant)' : 'Chat (VIP)'}
           </button>
 
           {!isAI && (
