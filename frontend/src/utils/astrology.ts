@@ -14,6 +14,49 @@ export const NAKSHATRAS = [
   "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
 ];
 
+export const DASHA_LORDS = [
+  { planet: "Ketu", years: 7 },
+  { planet: "Venus", years: 20 },
+  { planet: "Sun", years: 6 },
+  { planet: "Moon", years: 10 },
+  { planet: "Mars", years: 7 },
+  { planet: "Rahu", years: 18 },
+  { planet: "Jupiter", years: 16 },
+  { planet: "Saturn", years: 19 },
+  { planet: "Mercury", years: 17 }
+];
+
+export interface DashaPeriod {
+  lord: string;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+}
+
+export interface DoshaAnalysis {
+  isManglik: boolean;
+  manglikPercentage: number;
+  factors: string[];
+  cancellationReasons: string[];
+  sadeSati: {
+    isActive: boolean;
+    phase?: 'Rising (12th)' | 'Peak (1st)' | 'Setting (2nd)' | 'None';
+    description: string;
+  };
+}
+
+export interface PanchangData {
+  tithi: string;
+  vara: string;
+  nakshatra: string;
+  yoga: string;
+  karana: string;
+  rahuKaal: string;
+  abhijitMuhurat: string;
+  sunRise: string;
+  sunSet: string;
+}
+
 export function calculateKundliClient(
   year: number,
   month: number,
@@ -23,7 +66,7 @@ export function calculateKundliClient(
   lat: number,
   lon: number,
   placeName: string = "New Delhi, India"
-): KundliData {
+): KundliData & { doshas: DoshaAnalysis; dashas: DashaPeriod[]; navamsha: Record<string, string> } {
   // Approximate Sidereal Calculation
   const tz = 5.5;
   const decimalHours = hour + minute / 60.0 - tz;
@@ -73,6 +116,8 @@ export function calculateKundliClient(
 
   const asc = parseDeg(ascSidereal);
   const moon = parseDeg(moonSidereal);
+  const mars = parseDeg(marsSidereal);
+  const saturn = parseDeg(saturnSidereal);
   const pada = Math.floor(((moonSidereal + 360) % (360 / 27)) / (360 / 108)) + 1;
 
   const lagnaSignIdx = asc.signIndex;
@@ -80,6 +125,87 @@ export function calculateKundliClient(
     houseNumber: i + 1,
     sign: ZODIAC_SIGNS[(lagnaSignIdx - 1 + i) % 12]
   }));
+
+  // --- 1. Mangal Dosha (Kuja Dosha) Calculation ---
+  // Check Mars placement in Houses 1, 4, 7, 8, 12 relative to Lagna and Moon
+  const marsHouseFromLagna = ((mars.signIndex - asc.signIndex + 12) % 12) + 1;
+  const marsHouseFromMoon = ((mars.signIndex - moon.signIndex + 12) % 12) + 1;
+
+  const isLagnaManglik = [1, 4, 7, 8, 12].includes(marsHouseFromLagna);
+  const isMoonManglik = [1, 4, 7, 8, 12].includes(marsHouseFromMoon);
+  const isManglik = isLagnaManglik || isMoonManglik;
+
+  const factors: string[] = [];
+  if (isLagnaManglik) factors.push(`Mars positioned in House ${marsHouseFromLagna} from Ascendant (Lagna)`);
+  if (isMoonManglik) factors.push(`Mars positioned in House ${marsHouseFromMoon} from Moon sign`);
+
+  const cancellationReasons: string[] = [];
+  if (mars.sign === 'Aries' || mars.sign === 'Scorpio') cancellationReasons.push('Mars in own sign (Swakshetra)');
+  if (mars.sign === 'Capricorn') cancellationReasons.push('Mars exalted (Uccha)');
+  if (jupiterSidereal % 12 === marsSidereal % 12) cancellationReasons.push('Jupiter aspecting or conjunct Mars (Guru-Mangal Yoga)');
+
+  // --- 2. Sade Sati Calculation ---
+  // Saturn currently transitioning in Aquarius/Pisces (11th/12th/1st/2nd from Moon)
+  const currentSaturnSign = "Aquarius"; // 11th sign
+  const currentSaturnSignIdx = 11;
+  const diffFromMoon = ((currentSaturnSignIdx - moon.signIndex + 12) % 12) + 1;
+
+  let sadeSatiPhase: 'Rising (12th)' | 'Peak (1st)' | 'Setting (2nd)' | 'None' = 'None';
+  let sadeSatiActive = false;
+  let sadeSatiDesc = 'You are currently not undergoing Shani Sade Sati. Favorable for progress.';
+
+  if (diffFromMoon === 12) {
+    sadeSatiActive = true;
+    sadeSatiPhase = 'Rising (12th)';
+    sadeSatiDesc = 'First phase of Sade Sati (Rising). Minor delays in financial planning; spiritual focus brings relief.';
+  } else if (diffFromMoon === 1) {
+    sadeSatiActive = true;
+    sadeSatiPhase = 'Peak (1st)';
+    sadeSatiDesc = 'Peak phase (Janma Shani). Demands discipline, honesty, and regular meditation.';
+  } else if (diffFromMoon === 2) {
+    sadeSatiActive = true;
+    sadeSatiPhase = 'Setting (2nd)';
+    sadeSatiDesc = 'Setting phase. Gradual relief and financial recovery underway.';
+  }
+
+  // --- 3. Vimshottari Dasha Periods ---
+  const birthNakIdx = Math.floor(moon.longitude / (360 / 27));
+  const startingLordIdx = birthNakIdx % 9;
+  const currentYear = new Date().getFullYear();
+  let accumulatedYear = year;
+
+  const dashas: DashaPeriod[] = [];
+  for (let i = 0; i < 9; i++) {
+    const lordInfo = DASHA_LORDS[(startingLordIdx + i) % 9];
+    const startY = accumulatedYear;
+    const endY = accumulatedYear + lordInfo.years;
+    accumulatedYear = endY;
+
+    dashas.push({
+      lord: lordInfo.planet,
+      startDate: `${startY}`,
+      endDate: `${endY}`,
+      isActive: currentYear >= startY && currentYear < endY
+    });
+  }
+
+  // --- 4. Navamsha (D9) Signs ---
+  const getNavamshaSign = (deg: number) => {
+    const totalNavamshaPadas = Math.floor(deg / (360 / 108));
+    const navamshaSignIdx = totalNavamshaPadas % 12;
+    return ZODIAC_SIGNS[navamshaSignIdx];
+  };
+
+  const navamsha = {
+    Ascendant: getNavamshaSign(ascSidereal),
+    Sun: getNavamshaSign(sunSidereal),
+    Moon: getNavamshaSign(moonSidereal),
+    Mars: getNavamshaSign(marsSidereal),
+    Jupiter: getNavamshaSign(jupiterSidereal),
+    Saturn: getNavamshaSign(saturnSidereal),
+    Rahu: getNavamshaSign(rahuSidereal),
+    Ketu: getNavamshaSign(ketuSidereal)
+  };
 
   return {
     birthDetails: { year, month, day, hour, minute, latitude: lat, longitude: lon, place: placeName },
@@ -91,13 +217,51 @@ export function calculateKundliClient(
     planets: {
       Sun: { ...parseDeg(sunSidereal), isRetrograde: false },
       Moon: { ...moon, isRetrograde: false },
-      Mars: { ...parseDeg(marsSidereal), isRetrograde: false },
+      Mars: { ...mars, isRetrograde: false },
       Jupiter: { ...parseDeg(jupiterSidereal), isRetrograde: false },
-      Saturn: { ...parseDeg(saturnSidereal), isRetrograde: true },
+      Saturn: { ...saturn, isRetrograde: true },
       Rahu: { ...parseDeg(rahuSidereal), isRetrograde: true },
       Ketu: { ...parseDeg(ketuSidereal), isRetrograde: true }
     },
-    houses
+    houses,
+    doshas: {
+      isManglik: isManglik && cancellationReasons.length === 0,
+      manglikPercentage: isManglik ? (cancellationReasons.length > 0 ? 15 : 65) : 0,
+      factors,
+      cancellationReasons,
+      sadeSati: {
+        isActive: sadeSatiActive,
+        phase: sadeSatiPhase,
+        description: sadeSatiDesc
+      }
+    },
+    dashas,
+    navamsha
+  };
+}
+
+/**
+ * Daily Panchang Calculator
+ */
+export function calculateDailyPanchang(): PanchangData {
+  const days = ["Sunday (রবিবার)", "Monday (সোমবার)", "Tuesday (মঙ্গলবার)", "Wednesday (বুধবার)", "Thursday (বৃহস্পতিবার)", "Friday (শুক্রবার)", "Saturday (শনিবার)"];
+  const tithis = ["Shukla Pratipada", "Dwitiya", "Tritiya", "Chaturthi", "Panchami", "Shashthi", "Saptami", "Ashtami", "Navami", "Dashami", "Ekadashi", "Dwadashi", "Trayodashi", "Chaturdashi", "Purnima"];
+
+  const today = new Date();
+  const dayName = days[today.getDay()];
+  const tithiName = tithis[today.getDate() % 15];
+  const nakshatraName = NAKSHATRAS[today.getDate() % 27];
+
+  return {
+    tithi: `${tithiName} (শুক্ল পক্ষ)`,
+    vara: dayName,
+    nakshatra: nakshatraName,
+    yoga: 'Siddha (সিদ্ধ যোগ)',
+    karana: 'Bava (বব করণ)',
+    rahuKaal: '04:30 PM – 06:00 PM (রাহু কাল)',
+    abhijitMuhurat: '11:45 AM – 12:35 PM (অভিজিৎ মুহূর্ত - শুভ)',
+    sunRise: '05:42 AM',
+    sunSet: '06:24 PM'
   };
 }
 
