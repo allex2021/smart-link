@@ -1,9 +1,5 @@
 import React from 'react';
-import { 
-  Sparkles, MessageSquare, Phone, Compass, HeartHandshake, 
-  ShoppingBag, Bot, ShieldCheck, Star, Users, Flame, ArrowRight, 
-  CheckCircle2, Clock
-} from 'lucide-react';
+import { Sparkles, Check, ArrowRight, Star } from 'lucide-react';
 import { AppNavTab } from './Navbar';
 
 interface HeroBannerProps {
@@ -15,211 +11,184 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   onStartConsultation,
   onNavigateTab
 }) => {
-  const quickServices = [
-    {
-      id: 'chat',
-      title: 'Chat with Astrologer',
-      subtitle: 'First 5 Mins Free',
-      icon: MessageSquare,
-      color: 'from-amber-500 to-orange-500',
-      badge: 'POPULAR',
-      action: () => {
-        const el = document.getElementById('astrologers-section');
-        el?.scrollIntoView({ behavior: 'smooth' });
-      }
-    },
-    {
-      id: 'call',
-      title: 'Talk / Audio Call',
-      subtitle: 'Instant Connect',
-      icon: Phone,
-      color: 'from-emerald-500 to-teal-500',
-      badge: 'LIVE',
-      action: () => {
-        const el = document.getElementById('astrologers-section');
-        el?.scrollIntoView({ behavior: 'smooth' });
-      }
-    },
-    {
-      id: 'horoscope',
-      title: 'Today Horoscope',
-      subtitle: '12 Zodiac Signs',
-      icon: Sparkles,
-      color: 'from-amber-400 to-yellow-500',
-      badge: 'FREE',
-      action: () => onNavigateTab('horoscope')
-    },
-    {
-      id: 'kundli',
-      title: 'Free Janam Kundli',
-      subtitle: 'Detailed Chart & Dasha',
-      icon: Compass,
-      color: 'from-blue-500 to-indigo-500',
-      badge: 'FREE',
-      action: () => onNavigateTab('kundli')
-    },
-    {
-      id: 'matchmaking',
-      title: 'Kundli Milan',
-      subtitle: '36 Guna Matching',
-      icon: HeartHandshake,
-      color: 'from-rose-500 to-pink-500',
-      badge: 'FREE',
-      action: () => onNavigateTab('matchmaking')
-    },
-    {
-      id: 'ai-astro',
-      title: 'AI Astrologer 24/7',
-      subtitle: 'Zero Waiting Queue',
-      icon: Bot,
-      color: 'from-purple-500 to-violet-600',
-      badge: 'NEW',
-      action: () => onNavigateTab('ai-astro')
-    },
-    {
-      id: 'shop',
-      title: 'AstroShop',
-      subtitle: 'Certified Gemstones',
-      icon: ShoppingBag,
-      color: 'from-orange-500 to-amber-600',
-      badge: 'OFFER',
-      action: () => onNavigateTab('shop')
-    }
-  ];
-
   return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 border-b border-slate-800">
-      {/* Glow Effects */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-tr from-amber-500/10 via-orange-500/15 to-purple-600/10 blur-3xl pointer-events-none rounded-full" />
+    <div className="relative min-h-[620px] lg:min-h-[680px] bg-[#07080b] overflow-hidden flex flex-col justify-between pt-6 pb-12">
+      {/* 1. Astrological Geometric Chart / Zodiac Wheel Background Watermark (Right side) */}
+      <div className="absolute right-[-10%] top-[-10%] w-[750px] h-[750px] lg:w-[900px] lg:h-[900px] pointer-events-none opacity-[0.14]">
+        <svg viewBox="0 0 800 800" className="w-full h-full stroke-amber-400" fill="none">
+          <circle cx="400" cy="400" r="380" strokeWidth="1.5" strokeDasharray="4 6" />
+          <circle cx="400" cy="400" r="340" strokeWidth="1" />
+          <circle cx="400" cy="400" r="270" strokeWidth="1" />
+          <circle cx="400" cy="400" r="180" strokeWidth="1.5" strokeDasharray="3 3" />
+          <circle cx="400" cy="400" r="90" strokeWidth="1" />
+          
+          {/* 12 Zodiac Radial Sectors */}
+          {Array.from({ length: 12 }).map((_, i) => {
+            const angle = (i * 30 * Math.PI) / 180;
+            const x1 = 400 + 180 * Math.cos(angle);
+            const y1 = 400 + 180 * Math.sin(angle);
+            const x2 = 400 + 380 * Math.cos(angle);
+            const y2 = 400 + 380 * Math.sin(angle);
+            return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} strokeWidth="1" />;
+          })}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-10 relative z-10">
-        {/* Main Hero Header */}
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 mb-10">
-          <div className="max-w-2xl text-center lg:text-left space-y-4">
-            {/* Offer Tag */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-300 text-xs font-bold shadow-sm animate-pulse">
-              <Flame className="w-4 h-4 text-amber-400" />
-              <span>FIRST 5 MINUTES FREE CONSULTATION</span>
+          {/* Geometric Diamond Kundli Lines */}
+          <polygon points="400,130 670,400 400,670 130,400" strokeWidth="1" />
+          <polygon points="400,220 580,400 400,580 220,400" strokeWidth="0.8" />
+          <line x1="130" y1="130" x2="670" y2="670" strokeWidth="0.8" strokeDasharray="4 4" />
+          <line x1="130" y1="670" x2="670" y2="130" strokeWidth="0.8" strokeDasharray="4 4" />
+        </svg>
+      </div>
+
+      {/* 2. Golden Ambient Glows */}
+      <div className="absolute top-1/4 left-[-10%] w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-1/3 w-[600px] h-[300px] bg-amber-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/3 right-[15%] w-[450px] h-[450px] bg-amber-400/8 rounded-full blur-[130px] pointer-events-none" />
+
+      {/* 3. Twinkling Golden Dust Stars */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-16 left-[12%] w-1 h-1 bg-amber-200/80 rounded-full shadow-sm shadow-amber-300 animate-pulse" />
+        <div className="absolute top-28 left-[35%] w-1.5 h-1.5 bg-amber-300/90 rounded-full shadow-md shadow-amber-400" />
+        <div className="absolute top-44 left-[20%] w-1 h-1 bg-white/70 rounded-full" />
+        <div className="absolute top-64 left-[48%] w-1 h-1 bg-amber-200/80 rounded-full animate-pulse" />
+        <div className="absolute top-20 right-[42%] w-1.5 h-1.5 bg-amber-400/90 rounded-full" />
+        <div className="absolute top-52 right-[28%] w-1 h-1 bg-amber-100/80 rounded-full animate-ping opacity-60" />
+        <div className="absolute top-80 right-[10%] w-1.5 h-1.5 bg-amber-300/80 rounded-full" />
+        <div className="absolute bottom-28 left-[18%] w-1.5 h-1.5 bg-amber-300/90 rounded-full shadow-sm shadow-amber-400" />
+        <div className="absolute bottom-36 right-[35%] w-1 h-1 bg-white/80 rounded-full animate-pulse" />
+      </div>
+
+      {/* Main Hero Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full pt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          
+          {/* Left Column: Headline, Pill, Checkmarks & CTA */}
+          <div className="lg:col-span-6 space-y-6 text-left">
+            
+            {/* Online Astrologers Pill */}
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-slate-800 backdrop-blur-md shadow-lg shadow-black/40">
+              <span className="flex h-2.5 w-2.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+              </span>
+              <span className="text-xs font-semibold text-slate-300">
+                <b className="text-emerald-400 font-bold">1,240</b> astrologers online now
+              </span>
+              {/* Overlapping small avatar circles */}
+              <div className="flex items-center -space-x-2 ml-1">
+                <img
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=50"
+                  alt="Astro"
+                  className="w-5 h-5 rounded-full object-cover border border-slate-900"
+                />
+                <img
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50"
+                  alt="Astro"
+                  className="w-5 h-5 rounded-full object-cover border border-slate-900"
+                />
+                <img
+                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=50"
+                  alt="Astro"
+                  className="w-5 h-5 rounded-full object-cover border border-slate-900"
+                />
+              </div>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-[1.15]">
-              Talk to India's Best <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-400 bg-clip-text text-transparent">
-                Vedic Astrologers Online
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-black text-white tracking-tight leading-[1.12]">
+              India's most accurate <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-400 to-orange-400">
+                astrology platform
               </span>
             </h1>
 
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-              Get genuine, confidential answers for <b className="text-white">Love, Marriage, Career, Health & Wealth</b> from 15,000+ verified Vedic experts. Available 24/7 in English, বাংলা, हिन्दी & 5+ languages.
-            </p>
+            {/* Bullet Checkmarks */}
+            <div className="space-y-3 pt-1">
+              <div className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full bg-amber-400 flex items-center justify-center text-slate-950 shrink-0 shadow-sm shadow-amber-400/40">
+                  <Check className="w-3.5 h-3.5 stroke-[3]" />
+                </div>
+                <span className="text-sm sm:text-base text-slate-300 font-medium">
+                  Get Free detailed kundli
+                </span>
+              </div>
 
-            {/* CTA Button & Trust Badges */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+              <div className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full bg-amber-400 flex items-center justify-center text-slate-950 shrink-0 shadow-sm shadow-amber-400/40">
+                  <Check className="w-3.5 h-3.5 stroke-[3]" />
+                </div>
+                <span className="text-sm sm:text-base text-slate-300 font-medium">
+                  Average reply under <b className="text-white font-bold">12 seconds</b>
+                </span>
+              </div>
+            </div>
+
+            {/* Big Glowing Yellow CTA Button */}
+            <div className="pt-3">
               <button
                 onClick={onStartConsultation}
-                className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black text-sm sm:text-base shadow-2xl shadow-amber-500/30 flex items-center justify-center gap-2.5 transform hover:scale-105 active:scale-95 transition-all"
+                className="px-7 py-3.5 rounded-2xl bg-[#f7e034] hover:bg-[#ffe838] text-slate-950 font-black text-sm sm:text-base shadow-[0_0_30px_rgba(247,224,52,0.45)] hover:shadow-[0_0_40px_rgba(247,224,52,0.65)] flex items-center gap-2.5 transition-all transform hover:scale-[1.03] active:scale-[0.98]"
               >
-                <Sparkles className="w-5 h-5" />
-                <span>Chat with Astrologer (₹150 Free)</span>
-                <ArrowRight className="w-5 h-5" />
+                <span>Start Free Chat</span>
+                <ArrowRight className="w-4 h-4 stroke-[3]" />
               </button>
-
-              <div className="flex items-center gap-3 text-xs text-slate-300 bg-slate-900/80 border border-slate-800 px-4 py-3 rounded-2xl">
-                <div className="flex items-center text-amber-400 font-bold">
-                  <Star className="w-4 h-4 fill-amber-400" />
-                  <span className="ml-1 text-sm font-black text-white">4.8</span>/5
-                </div>
-                <span className="text-slate-600">|</span>
-                <div className="flex items-center gap-1.5 text-slate-300">
-                  <Users className="w-4 h-4 text-emerald-400" />
-                  <span>50 Million+ Consultations</span>
-                </div>
-              </div>
             </div>
           </div>
 
-          {/* Right Hero Live Astrologer Showcase Card */}
-          <div className="w-full lg:w-96 bg-gradient-to-b from-slate-800/90 to-slate-900/90 border border-amber-500/30 rounded-3xl p-5 shadow-2xl relative overflow-hidden backdrop-blur-md">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
-                </span>
-                <span className="text-xs font-bold text-emerald-400">1,240+ Astrologers Online Now</span>
-              </div>
-              <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold border border-amber-500/30">
-                Live Queue: 0s
-              </span>
+          {/* Right Column: 3 Overlapping Astrologer Portraits */}
+          <div className="lg:col-span-6 relative flex items-center justify-center lg:justify-end min-h-[380px] sm:min-h-[440px] pt-4 lg:pt-0">
+            
+            {/* Left Astrologer Oval */}
+            <div className="absolute left-[5%] sm:left-[15%] lg:left-[10%] top-[18%] z-10 w-36 h-48 sm:w-44 sm:h-56 rounded-[100px] overflow-hidden border border-amber-500/30 shadow-2xl bg-slate-900 group transform -rotate-3 hover:rotate-0 transition-transform">
+              <img
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400"
+                alt="Vedic Astrologer"
+                className="w-full h-full object-cover"
+              />
             </div>
 
-            <div className="py-4 flex items-center gap-3.5">
-              <div className="relative">
-                <img
-                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200"
-                  alt="Top Astrologer"
-                  className="w-16 h-16 rounded-2xl object-cover border-2 border-amber-400 shadow-md"
-                />
-                <span className="absolute -bottom-1 -right-1 bg-emerald-500 w-4 h-4 rounded-full border-2 border-slate-900" />
-              </div>
-              <div>
-                <div className="flex items-center gap-1">
-                  <h4 className="text-sm font-bold text-white">Acharya Sunita Sharma</h4>
-                  <CheckCircle2 className="w-4 h-4 text-sky-400" />
-                </div>
-                <p className="text-xs text-amber-400 font-medium">Vedic & Marriage Expert</p>
-                <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-1">
-                  <span className="text-slate-300 font-semibold">16 Yrs Exp</span>
-                  <span>•</span>
-                  <span className="text-amber-300 font-bold">₹25/min</span>
-                </div>
-              </div>
+            {/* Center Hero Astrologer (Large Circle with Glowing Border) */}
+            <div className="relative z-20 w-52 h-52 sm:w-64 sm:h-64 rounded-full overflow-hidden border-[3px] border-[#f7e034] shadow-[0_0_45px_rgba(247,224,52,0.35)] bg-slate-900 transform hover:scale-105 transition-transform duration-300">
+              <img
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600"
+                alt="Acharya Guru"
+                className="w-full h-full object-cover object-top"
+              />
             </div>
 
-            <button
-              onClick={onStartConsultation}
-              className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
-            >
-              <MessageSquare className="w-4 h-4" />
-              <span>Connect Live Consultation</span>
-            </button>
+            {/* Right Astrologer Oval */}
+            <div className="absolute right-[5%] sm:right-[15%] lg:right-[-2%] top-[25%] z-10 w-36 h-48 sm:w-44 sm:h-56 rounded-[100px] overflow-hidden border border-amber-500/30 shadow-2xl bg-slate-900 group transform rotate-3 hover:rotate-0 transition-transform">
+              <img
+                src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=400"
+                alt="Acharya Astrologer"
+                className="w-full h-full object-cover"
+              />
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Quick Astrotalk Services Strip (Icons Row) */}
-        <div className="pt-2">
-          <div className="text-center sm:text-left mb-3">
-            <span className="text-[11px] uppercase tracking-wider font-bold text-slate-400">
-              Popular Astrotalk Services
-            </span>
+      {/* 4. Bottom Stats Bar (Exact Astrotalk Numbers) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full pt-14">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 pt-6 border-t border-slate-800/80 text-left">
+          <div>
+            <div className="text-3xl sm:text-4xl font-black text-white tracking-tight">5Cr+</div>
+            <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">Users guided</div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-            {quickServices.map((srv) => {
-              const Icon = srv.icon;
-              return (
-                <button
-                  key={srv.id}
-                  onClick={srv.action}
-                  className="bg-slate-900/90 border border-slate-800/90 hover:border-amber-500/50 hover:bg-slate-800/80 p-3.5 rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-200 group hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/10 relative"
-                >
-                  <span className="absolute top-2 right-2 text-[8px] font-black px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    {srv.badge}
-                  </span>
+          <div>
+            <div className="text-3xl sm:text-4xl font-black text-white tracking-tight">50,000+</div>
+            <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">Verified astrologers</div>
+          </div>
 
-                  <div className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${srv.color} flex items-center justify-center text-white shadow-md mb-2 group-hover:scale-110 transition-transform`}>
-                    <Icon className="w-5 h-5" />
-                  </div>
+          <div>
+            <div className="text-3xl sm:text-4xl font-black text-white tracking-tight">13+</div>
+            <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">Languages</div>
+          </div>
 
-                  <span className="text-xs font-bold text-white group-hover:text-amber-400 transition-colors leading-tight">
-                    {srv.title}
-                  </span>
-                  <span className="text-[10px] text-slate-400 mt-0.5">
-                    {srv.subtitle}
-                  </span>
-                </button>
-              );
-            })}
+          <div>
+            <div className="text-3xl sm:text-4xl font-black text-white tracking-tight">60+</div>
+            <div className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">Countries</div>
           </div>
         </div>
       </div>
