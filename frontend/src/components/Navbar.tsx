@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, Wallet, Flame, MessageSquare, Compass, HeartHandshake, Bot, User, LogOut, CheckCircle2, ChevronDown, Calendar, Clock, MapPin } from 'lucide-react';
+import { Sparkles, Wallet, Flame, MessageSquare, Compass, HeartHandshake, Bot, User, LogOut, CheckCircle2, ChevronDown, Calendar, Clock, MapPin, ShoppingBag, Grid, Heart, Award } from 'lucide-react';
 import { LanguageSelector } from './LanguageSelector';
 import { SupportedLanguageCode } from '../data/languages';
 import { UserProfile } from '../types';
 
+export type AppNavTab = 'astrologers' | 'kundli' | 'matchmaking' | 'horoscope' | 'calculators' | 'shop' | 'ai-astro';
+
 interface NavbarProps {
-  activeTab: 'astrologers' | 'kundli' | 'matchmaking' | 'ai-astro';
-  setActiveTab: (tab: 'astrologers' | 'kundli' | 'matchmaking' | 'ai-astro') => void;
+  activeTab: AppNavTab;
+  setActiveTab: (tab: AppNavTab) => void;
   walletBalance: number;
   openWallet: () => void;
   currentLanguage: SupportedLanguageCode;
@@ -69,53 +71,89 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Desktop Nav Tabs */}
-          <nav className="hidden md:flex items-center gap-1 bg-slate-950/60 p-1 rounded-xl border border-slate-800/80">
+          <nav className="hidden lg:flex items-center gap-1 bg-slate-950/60 p-1 rounded-xl border border-slate-800/80">
             <button
               onClick={() => setActiveTab('astrologers')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === 'astrologers'
                   ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
               }`}
             >
-              <MessageSquare className="w-4 h-4" />
+              <MessageSquare className="w-3.5 h-3.5" />
               Talk to Astrologer
             </button>
 
             <button
+              onClick={() => setActiveTab('horoscope')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeTab === 'horoscope'
+                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              Horoscope
+            </button>
+
+            <button
               onClick={() => setActiveTab('kundli')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === 'kundli'
                   ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
               }`}
             >
-              <Compass className="w-4 h-4" />
+              <Compass className="w-3.5 h-3.5" />
               Free Kundli
             </button>
 
             <button
               onClick={() => setActiveTab('matchmaking')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === 'matchmaking'
                   ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
               }`}
             >
-              <HeartHandshake className="w-4 h-4" />
-              Matchmaking (Kundli Milan)
+              <HeartHandshake className="w-3.5 h-3.5" />
+              Matchmaking
+            </button>
+
+            <button
+              onClick={() => setActiveTab('calculators')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeTab === 'calculators'
+                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+              }`}
+            >
+              <Grid className="w-3.5 h-3.5" />
+              Calculators
+            </button>
+
+            <button
+              onClick={() => setActiveTab('shop')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeTab === 'shop'
+                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+              }`}
+            >
+              <ShoppingBag className="w-3.5 h-3.5" />
+              AstroShop
             </button>
 
             <button
               onClick={() => setActiveTab('ai-astro')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === 'ai-astro'
                   ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md shadow-purple-500/20'
                   : 'text-purple-300 hover:text-purple-200 hover:bg-purple-950/40'
               }`}
             >
-              <Bot className="w-4 h-4" />
-              AI Astrologer 24/7
+              <Bot className="w-3.5 h-3.5" />
+              AI Astro 24/7
             </button>
           </nav>
 
@@ -220,38 +258,46 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Mobile Navigation Row */}
-        <div className="flex md:hidden items-center justify-around py-2 border-t border-slate-800/80 gap-1 overflow-x-auto">
+        <div className="flex lg:hidden items-center justify-around py-2 border-t border-slate-800/80 gap-1 overflow-x-auto">
           <button
             onClick={() => setActiveTab('astrologers')}
             className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap ${
-              activeTab === 'astrologers' ? 'bg-amber-500 text-slate-950' : 'text-slate-400'
+              activeTab === 'astrologers' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400'
             }`}
           >
             Astrologers
           </button>
           <button
+            onClick={() => setActiveTab('horoscope')}
+            className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap ${
+              activeTab === 'horoscope' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400'
+            }`}
+          >
+            Horoscope
+          </button>
+          <button
             onClick={() => setActiveTab('kundli')}
             className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap ${
-              activeTab === 'kundli' ? 'bg-amber-500 text-slate-950' : 'text-slate-400'
+              activeTab === 'kundli' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400'
             }`}
           >
             Kundli
           </button>
           <button
-            onClick={() => setActiveTab('matchmaking')}
+            onClick={() => setActiveTab('calculators')}
             className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap ${
-              activeTab === 'matchmaking' ? 'bg-amber-500 text-slate-950' : 'text-slate-400'
+              activeTab === 'calculators' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400'
             }`}
           >
-            Matchmaking
+            Calculators
           </button>
           <button
-            onClick={() => setActiveTab('ai-astro')}
+            onClick={() => setActiveTab('shop')}
             className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap ${
-              activeTab === 'ai-astro' ? 'bg-purple-600 text-white' : 'text-purple-300'
+              activeTab === 'shop' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400'
             }`}
           >
-            AI Astro
+            Shop
           </button>
         </div>
       </div>

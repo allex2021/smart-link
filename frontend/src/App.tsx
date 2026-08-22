@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar } from './components/Navbar';
+import { Navbar, AppNavTab } from './components/Navbar';
 import { HeroBanner } from './components/HeroBanner';
 import { AstrologerCard } from './components/AstrologerCard';
 import { KundliCalculator } from './components/KundliCalculator';
 import { MatchmakingTool } from './components/MatchmakingTool';
+import { DailyHoroscopeSection } from './components/DailyHoroscopeSection';
+import { AstroShopSection } from './components/AstroShopSection';
+import { CalculatorsHub } from './components/CalculatorsHub';
 import { ChatModal } from './components/ChatModal';
 import { CallModal } from './components/CallModal';
 import { AIAstrologerModal } from './components/AIAstrologerModal';
@@ -12,10 +15,10 @@ import { AuthModal } from './components/AuthModal';
 import { MOCK_ASTROLOGERS } from './data/mockData';
 import { Astrologer, Transaction, UserProfile } from './types';
 import { SupportedLanguageCode } from './data/languages';
-import { Search, Sparkles, Bot, Globe, MessageSquare, Phone } from 'lucide-react';
+import { Search, Sparkles, Bot, Globe } from 'lucide-react';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<'astrologers' | 'kundli' | 'matchmaking' | 'ai-astro'>('astrologers');
+  const [activeTab, setActiveTab] = useState<AppNavTab>('astrologers');
   const [astrologers] = useState<Astrologer[]>(MOCK_ASTROLOGERS);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSkillFilter, setSelectedSkillFilter] = useState('All');
@@ -128,7 +131,6 @@ export function App() {
     return true;
   };
 
-  // Direct instant access for both guests and logged-in users
   const handleInitiateChat = (astro: Astrologer) => {
     setActiveChatAstrologer(astro);
   };
@@ -174,6 +176,28 @@ export function App() {
               }}
             />
 
+            {/* Daily Horoscope Quick Preview Row */}
+            <div className="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-950 border-y border-slate-800 py-6 px-4">
+              <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    Read Today's Free Horoscope (আজকের রাশিফল)
+                  </h3>
+                  <p className="text-xs text-slate-400">Discover today's love, career & lucky numbers for all 12 zodiac signs.</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setActiveTab('horoscope');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition-all whitespace-nowrap"
+                >
+                  View 12 Zodiacs Horoscope →
+                </button>
+              </div>
+            </div>
+
             {/* Astrologers Directory Section */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" id="astrologers-section">
               {/* Filter and Search Bar */}
@@ -184,7 +208,7 @@ export function App() {
                     Talk to Top Astrologers
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-400">
-                    Connect 1-on-1 with experts via Chat or Call (English, বাংলা, हिन्दी, தமிழ், తెలుగు)
+                    Connect 1-on-1 with verified experts via Chat or Call (English, বাংলা, हिन्दी, தமிழ், తెలుగు)
                   </p>
                 </div>
 
@@ -273,9 +297,15 @@ export function App() {
           </div>
         )}
 
+        {activeTab === 'horoscope' && <DailyHoroscopeSection />}
+
         {activeTab === 'kundli' && <KundliCalculator />}
 
         {activeTab === 'matchmaking' && <MatchmakingTool />}
+
+        {activeTab === 'calculators' && <CalculatorsHub />}
+
+        {activeTab === 'shop' && <AstroShopSection />}
       </main>
 
       {/* Floating AI Astrologer Trigger Button */}
@@ -333,12 +363,50 @@ export function App() {
       )}
 
       {/* Footer */}
-      <footer className="bg-slate-900 border-t border-slate-800 py-8 px-4 sm:px-6 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="bg-slate-900 border-t border-slate-800 py-10 px-4 sm:px-6 text-xs text-slate-400">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-8 pb-8 border-b border-slate-800">
+          <div>
+            <h4 className="font-bold text-white text-sm mb-3">Consultations</h4>
+            <ul className="space-y-2">
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('astrologers')}>Chat with Astrologer</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('astrologers')}>Call with Astrologer</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setIsAIOpen(true)}>AI Astrologer 24/7</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-white text-sm mb-3">Horoscope & Kundli</h4>
+            <ul className="space-y-2">
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('horoscope')}>Daily Horoscope (12 Signs)</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('kundli')}>Free Janam Kundli</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('matchmaking')}>Kundli Milan (Matching)</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-white text-sm mb-3">Calculators Hub</h4>
+            <ul className="space-y-2">
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('calculators')}>Love Match Calculator</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('calculators')}>Lo Shu Grid Numerology</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('calculators')}>Today's Shubh Muhurat</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-white text-sm mb-3">AstroShop</h4>
+            <ul className="space-y-2">
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('shop')}>Certified Gemstones</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('shop')}>Rudraksha Malas</li>
+              <li className="hover:text-amber-400 cursor-pointer" onClick={() => setActiveTab('shop')}>Shree Yantras</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-center text-slate-500">
           <div className="flex items-center gap-2">
-            <span className="font-black text-slate-300">ASTROTALK WEB</span>
+            <span className="font-black text-slate-300">ASTROTALK WEB PLATFORM</span>
             <span>•</span>
-            <span>Accurate Multilingual Vedic Astrology & Instant Guidance</span>
+            <span>Accurate Multilingual Vedic Astrology & Instant 24/7 Guidance</span>
           </div>
           <p>© 2026 AstroTalk Platform. English • বাংলা • हिन्दी • தமிழ் • తెలుగు • ગુજરાતી • मराठी</p>
         </div>
