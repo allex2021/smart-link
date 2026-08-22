@@ -74,21 +74,21 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               <span className="text-xs font-semibold text-slate-300">
                 <b className="text-emerald-400 font-bold">1,240</b> astrologers online now
               </span>
-              {/* Overlapping small avatar circles */}
+              {/* Overlapping Sadhu avatars */}
               <div className="flex items-center -space-x-2 ml-1">
                 <img
-                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=60&auto=format&fit=crop&q=80"
-                  alt="Astro"
+                  src="/sadhu_acharya_left.jpg"
+                  alt="Astro Sadhu"
                   className="w-5 h-5 rounded-full object-cover border border-slate-900"
                 />
                 <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&auto=format&fit=crop&q=80"
-                  alt="Astro"
+                  src="/sadhu_maharaj_center.jpg"
+                  alt="Astro Maharaj"
                   className="w-5 h-5 rounded-full object-cover border border-slate-900"
                 />
                 <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&auto=format&fit=crop&q=80"
-                  alt="Astro"
+                  src="/sadhu_guruji_right.jpg"
+                  alt="Astro Guruji"
                   className="w-5 h-5 rounded-full object-cover border border-slate-900"
                 />
               </div>
@@ -109,7 +109,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                   <Check className="w-3.5 h-3.5 stroke-[3]" />
                 </div>
                 <span className="text-sm sm:text-base text-slate-300 font-medium">
-                  Get Free detailed kundli
+                  Get Free detailed kundli & 1000+ Yogas
                 </span>
               </div>
 
@@ -135,50 +135,50 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             </div>
           </div>
 
-          {/* Right Column: 3 Authentic Indian Sadhu / Vedic Rishi / Acharya Portraits */}
+          {/* Right Column: 3 Authentic AI Sadhu / Vedic Rishi / Acharya Portraits */}
           <div className="lg:col-span-6 flex items-center justify-center lg:justify-end py-6 lg:py-0">
             <div className="relative w-full max-w-[500px] h-[340px] sm:h-[390px] flex items-center justify-center">
               
-              {/* Left Capsule/Arch: Authentic Indian Sadhu / Rishi in Saffron Attire */}
-              <div className="absolute left-[4%] sm:left-[8%] top-[10%] z-10 w-[140px] sm:w-[170px] h-[220px] sm:h-[270px] rounded-[90px] overflow-hidden border border-[#f7e034]/40 shadow-2xl bg-slate-900 group transform -rotate-2 hover:rotate-0 transition-transform duration-300">
+              {/* Left Capsule: AI Sadhu Acharya in Saffron Attire */}
+              <div className="absolute left-[4%] sm:left-[8%] top-[10%] z-10 w-[140px] sm:w-[170px] h-[220px] sm:h-[270px] rounded-[90px] overflow-hidden border-2 border-[#f7e034]/50 shadow-2xl bg-slate-900 group transform -rotate-3 hover:rotate-0 transition-transform duration-300">
                 <img
-                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=400"
-                  alt="Vedic Sadhu Maharaj"
-                  className="w-full h-full object-cover object-top filter brightness-95 group-hover:brightness-105 transition-all"
+                  src="/sadhu_acharya_left.jpg"
+                  alt="Vedic Sadhu Acharya"
+                  className="w-full h-full object-cover object-center filter brightness-100 group-hover:scale-105 transition-all duration-300"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                <div className="absolute bottom-2 inset-x-0 text-center">
-                  <span className="text-[10px] font-bold text-amber-300 bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                <div className="absolute bottom-2.5 inset-x-0 text-center">
+                  <span className="text-[11px] font-black text-[#f7e034] bg-slate-950/80 border border-amber-500/30 px-2.5 py-0.5 rounded-full backdrop-blur-sm shadow-md">
                     আচার্য দেব
                   </span>
                 </div>
               </div>
 
-              {/* Center Main Acharya Circle: Senior Vedic Rishi / Pandit with Glowing Ring */}
-              <div className="relative z-20 w-[200px] sm:w-[250px] h-[200px] sm:h-[250px] rounded-full overflow-hidden border-[4px] border-[#f7e034] shadow-[0_0_45px_rgba(247,224,52,0.45)] bg-slate-950 transform hover:scale-105 transition-transform duration-300">
+              {/* Center Main Circle: AI Revered Sadhu Pandit Maharaj with Radiant Glowing Ring */}
+              <div className="relative z-20 w-[200px] sm:w-[250px] h-[200px] sm:h-[250px] rounded-full overflow-hidden border-[4px] border-[#f7e034] shadow-[0_0_55px_rgba(247,224,52,0.55)] bg-slate-950 transform hover:scale-105 transition-transform duration-300">
                 <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=500"
-                  alt="Chief Vedic Pandit Ji"
-                  className="w-full h-full object-cover object-top"
+                  src="/sadhu_maharaj_center.jpg"
+                  alt="Chief Sadhu Pandit Maharaj"
+                  className="w-full h-full object-cover object-center scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
                 <div className="absolute bottom-3 inset-x-0 text-center pointer-events-none">
-                  <span className="text-xs font-black text-[#f7e034] bg-slate-950/80 border border-amber-400/40 px-3 py-0.5 rounded-full shadow-lg">
+                  <span className="text-xs font-black text-slate-950 bg-[#f7e034] border border-amber-300 px-3.5 py-1 rounded-full shadow-xl tracking-wide">
                     পণ্ডিত মহারাজ
                   </span>
                 </div>
               </div>
 
-              {/* Right Capsule/Arch: Traditional Vedic Acharya */}
-              <div className="absolute right-[4%] sm:right-[8%] top-[14%] z-10 w-[140px] sm:w-[170px] h-[220px] sm:h-[270px] rounded-[90px] overflow-hidden border border-[#f7e034]/40 shadow-2xl bg-slate-900 group transform rotate-2 hover:rotate-0 transition-transform duration-300">
+              {/* Right Capsule: AI Vedic Yogi Sadhu Guruji */}
+              <div className="absolute right-[4%] sm:right-[8%] top-[14%] z-10 w-[140px] sm:w-[170px] h-[220px] sm:h-[270px] rounded-[90px] overflow-hidden border-2 border-[#f7e034]/50 shadow-2xl bg-slate-900 group transform rotate-3 hover:rotate-0 transition-transform duration-300">
                 <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400"
-                  alt="Vedic Guru"
-                  className="w-full h-full object-cover object-top filter brightness-95 group-hover:brightness-105 transition-all"
+                  src="/sadhu_guruji_right.jpg"
+                  alt="Vedic Sadhu Guruji"
+                  className="w-full h-full object-cover object-center filter brightness-100 group-hover:scale-105 transition-all duration-300"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                <div className="absolute bottom-2 inset-x-0 text-center">
-                  <span className="text-[10px] font-bold text-amber-300 bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                <div className="absolute bottom-2.5 inset-x-0 text-center">
+                  <span className="text-[11px] font-black text-[#f7e034] bg-slate-950/80 border border-amber-500/30 px-2.5 py-0.5 rounded-full backdrop-blur-sm shadow-md">
                     গুরুজী
                   </span>
                 </div>
