@@ -1,7 +1,8 @@
-import React from 'react';
-import { Sparkles, Wallet, Flame, MessageSquare, Compass, HeartHandshake, Bot } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Sparkles, Wallet, Flame, MessageSquare, Compass, HeartHandshake, Bot, User, LogOut, CheckCircle2, ChevronDown, Calendar, Clock, MapPin } from 'lucide-react';
 import { LanguageSelector } from './LanguageSelector';
 import { SupportedLanguageCode } from '../data/languages';
+import { UserProfile } from '../types';
 
 interface NavbarProps {
   activeTab: 'astrologers' | 'kundli' | 'matchmaking' | 'ai-astro';
@@ -10,6 +11,9 @@ interface NavbarProps {
   openWallet: () => void;
   currentLanguage: SupportedLanguageCode;
   onSelectLanguage: (code: SupportedLanguageCode) => void;
+  user: UserProfile | null;
+  onOpenAuth: () => void;
+  onLogout: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -18,8 +22,24 @@ export const Navbar: React.FC<NavbarProps> = ({
   walletBalance,
   openWallet,
   currentLanguage,
-  onSelectLanguage
+  onSelectLanguage,
+  user,
+  onOpenAuth,
+  onLogout
 }) => {
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
     <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
       {/* Top Announcement Bar */}
@@ -99,7 +119,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </nav>
 
-          {/* Right Actions: Language, Wallet & Add */}
+          {/* Right Actions: Language, Wallet & User Profile */}
           <div className="flex items-center gap-2.5">
             {/* Language Selector */}
             <LanguageSelector
@@ -110,19 +130,92 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Wallet Button */}
             <button
               onClick={openWallet}
-              className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 transition-all hover:border-amber-500/50 group shadow-sm"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 transition-all hover:border-amber-500/50 group shadow-sm"
             >
               <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
                 <Wallet className="w-4 h-4" />
               </div>
               <div className="text-left hidden sm:block">
                 <span className="block text-[10px] text-slate-400 font-medium leading-none">Wallet</span>
-                <span className="text-sm font-bold text-amber-400 leading-tight">₹{walletBalance.toFixed(2)}</span>
+                <span className="text-xs font-bold text-amber-400 leading-tight">₹{walletBalance.toFixed(2)}</span>
               </div>
-              <span className="text-[10px] bg-amber-500 text-slate-950 font-bold px-2 py-0.5 rounded-full hover:bg-amber-400">
-                + Add
+              <span className="text-[10px] bg-amber-500 text-slate-950 font-bold px-1.5 py-0.5 rounded-full hover:bg-amber-400">
+                +
               </span>
             </button>
+
+            {/* User Profile / Login Button */}
+            {user ? (
+              <div className="relative" ref={profileMenuRef}>
+                <button
+                  onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                  className="flex items-center gap-2 p-1 pl-2 pr-2.5 rounded-xl bg-slate-800 border border-slate-700 hover:border-amber-500/50 transition-all text-xs font-semibold text-slate-200"
+                >
+                  <img
+                    src={user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'}
+                    alt={user.name}
+                    className="w-7 h-7 rounded-lg object-cover border border-amber-400"
+                  />
+                  <span className="max-w-20 sm:max-w-28 truncate">{user.name}</span>
+                  <ChevronDown className="w-3 h-3 text-slate-400" />
+                </button>
+
+                {isProfileMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-slate-900 border border-slate-700 shadow-2xl p-3 z-50 animate-in fade-in">
+                    <div className="flex items-center gap-2.5 pb-3 border-b border-slate-800">
+                      <img
+                        src={user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'}
+                        alt={user.name}
+                        className="w-10 h-10 rounded-xl object-cover border border-amber-400"
+                      />
+                      <div className="min-w-0">
+                        <h4 className="text-xs font-bold text-white truncate flex items-center gap-1">
+                          {user.name}
+                          <CheckCircle2 className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                        </h4>
+                        <p className="text-[10px] text-slate-400 truncate">{user.phone}</p>
+                      </div>
+                    </div>
+
+                    {/* Saved Birth Details */}
+                    {user.dateOfBirth && (
+                      <div className="py-2.5 space-y-1 text-[11px] text-slate-300 border-b border-slate-800/80">
+                        <div className="flex items-center gap-1.5 text-slate-400 text-[10px] font-semibold uppercase tracking-wider">
+                          <Sparkles className="w-3 h-3 text-amber-400" /> Saved Birth Details
+                        </div>
+                        <div className="flex items-center gap-1.5 text-slate-300">
+                          <Calendar className="w-3 h-3 text-slate-500" /> {user.dateOfBirth}
+                        </div>
+                        <div className="flex items-center gap-1.5 text-slate-300">
+                          <Clock className="w-3 h-3 text-slate-500" /> {user.timeOfBirth || '12:00 PM'}
+                        </div>
+                        <div className="flex items-center gap-1.5 text-slate-300 truncate">
+                          <MapPin className="w-3 h-3 text-slate-500 shrink-0" /> {user.placeOfBirth || 'Not set'}
+                        </div>
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => {
+                        setIsProfileMenuOpen(false);
+                        onLogout();
+                      }}
+                      className="w-full mt-2.5 py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                    >
+                      <LogOut className="w-3.5 h-3.5" /> Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={onOpenAuth}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 transition-all transform hover:scale-105 active:scale-95"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>Login</span>
+              </button>
+            )}
           </div>
         </div>
 

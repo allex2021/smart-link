@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { HeroBanner } from './components/HeroBanner';
 import { AstrologerCard } from './components/AstrologerCard';
@@ -7,8 +7,9 @@ import { MatchmakingTool } from './components/MatchmakingTool';
 import { ChatModal } from './components/ChatModal';
 import { AIAstrologerModal } from './components/AIAstrologerModal';
 import { WalletModal } from './components/WalletModal';
+import { AuthModal } from './components/AuthModal';
 import { MOCK_ASTROLOGERS } from './data/mockData';
-import { Astrologer, Transaction } from './types';
+import { Astrologer, Transaction, UserProfile } from './types';
 import { SupportedLanguageCode } from './data/languages';
 import { Search, Sparkles, Bot, Globe } from 'lucide-react';
 
@@ -20,8 +21,18 @@ export function App() {
   const [selectedLanguageFilter, setSelectedLanguageFilter] = useState('All');
   const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguageCode>('bn');
 
+  // User Authentication State
+  const [user, setUser] = useState<UserProfile | null>(() => {
+    const saved = localStorage.getItem('astrotalk_user');
+    return saved ? JSON.parse(saved) : null;
+  });
+
   // Wallet State
-  const [walletBalance, setWalletBalance] = useState(150.0);
+  const [walletBalance, setWalletBalance] = useState<number>(() => {
+    const saved = localStorage.getItem('astrotalk_wallet');
+    return saved ? parseFloat(saved) : 150.0;
+  });
+
   const [transactions, setTransactions] = useState<Transaction[]>([
     {
       id: 'tx_1',
@@ -36,6 +47,20 @@ export function App() {
   const [activeChatAstrologer, setActiveChatAstrologer] = useState<Astrologer | null>(null);
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const [isAIOpen, setIsAIOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+
+  // Sync state with LocalStorage
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('astrotalk_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('astrotalk_user');
+    }
+  }, [user]);
+
+  useEffect(() => {
+    localStorage.setItem('astrotalk_wallet', walletBalance.toString());
+  }, [walletBalance]);
 
   const filterSkills = ['All', 'Vedic Astrology', 'Tarot Cards', 'KP Astrology', 'Vastu Shastra', 'Palmistry'];
   const languageFilters = ['All', 'English', 'Hindi', 'Bengali', 'Tamil', 'Telugu', 'Gujarati'];
@@ -54,6 +79,17 @@ export function App() {
 
     return matchesSearch && matchesSkill && matchesLang;
   });
+
+  const handleLoginSuccess = (newUser: UserProfile) => {
+    setUser(newUser);
+    setWalletBalance(newUser.walletBalance);
+    setIsAuthOpen(false);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setWalletBalance(150.0);
+  };
 
   const handleRechargeWallet = (amount: number) => {
     setWalletBalance((prev) => prev + amount);
@@ -87,6 +123,15 @@ export function App() {
     return true;
   };
 
+  const handleInitiateChat = (astro: Astrologer) => {
+    // If not logged in, prompt login first
+    if (!user) {
+      setIsAuthOpen(true);
+      return;
+    }
+    setActiveChatAstrologer(astro);
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
       {/* Navigation Bar */}
@@ -103,6 +148,9 @@ export function App() {
         openWallet={() => setIsWalletOpen(true)}
         currentLanguage={currentLanguage}
         onSelectLanguage={setCurrentLanguage}
+        user={user}
+        onOpenAuth={() => setIsAuthOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Main View Area */}
@@ -112,7 +160,7 @@ export function App() {
             <HeroBanner
               onStartConsultation={() => {
                 const onlineAstro = astrologers.find((a) => a.isOnline) || astrologers[0];
-                setActiveChatAstrologer(onlineAstro);
+                handleInitiateChat(onlineAstro);
               }}
               onOpenKundli={() => setActiveTab('kundli')}
             />
@@ -191,8 +239,8 @@ export function App() {
                   <AstrologerCard
                     key={astro.id}
                     astrologer={astro}
-                    onInitiateChat={(a) => setActiveChatAstrologer(a)}
-                    onInitiateCall={(a) => setActiveChatAstrologer(a)}
+                    onInitiateChat={handleInitiateChat}
+                    onInitiateCall={handleInitiateChat}
                   />
                 ))}
               </div>
@@ -237,6 +285,14 @@ export function App() {
           transactions={transactions}
           onRecharge={handleRechargeWallet}
           onClose={() => setIsWalletOpen(false)}
+        />
+      )}
+
+      {/* User Login/Signup Modal */}
+      {isAuthOpen && (
+        <AuthModal
+          onClose={() => setIsAuthOpen(false)}
+          onLoginSuccess={handleLoginSuccess}
         />
       )}
 

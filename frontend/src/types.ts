@@ -1,3 +1,16 @@
+export interface UserProfile {
+  id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  gender?: 'male' | 'female' | 'other';
+  dateOfBirth?: string;
+  timeOfBirth?: string;
+  placeOfBirth?: string;
+  avatar?: string;
+  walletBalance: number;
+}
+
 export interface Astrologer {
   id: string;
   name: string;
