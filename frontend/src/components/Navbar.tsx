@@ -1,18 +1,24 @@
 import React from 'react';
 import { Sparkles, Wallet, Flame, MessageSquare, Compass, HeartHandshake, Bot } from 'lucide-react';
+import { LanguageSelector } from './LanguageSelector';
+import { SupportedLanguageCode } from '../data/languages';
 
 interface NavbarProps {
   activeTab: 'astrologers' | 'kundli' | 'matchmaking' | 'ai-astro';
   setActiveTab: (tab: 'astrologers' | 'kundli' | 'matchmaking' | 'ai-astro') => void;
   walletBalance: number;
   openWallet: () => void;
+  currentLanguage: SupportedLanguageCode;
+  onSelectLanguage: (code: SupportedLanguageCode) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
   walletBalance,
-  openWallet
+  openWallet,
+  currentLanguage,
+  onSelectLanguage
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
@@ -93,8 +99,15 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </nav>
 
-          {/* Right Actions: Wallet & Login */}
-          <div className="flex items-center gap-3">
+          {/* Right Actions: Language, Wallet & Add */}
+          <div className="flex items-center gap-2.5">
+            {/* Language Selector */}
+            <LanguageSelector
+              currentLanguage={currentLanguage}
+              onSelectLanguage={onSelectLanguage}
+            />
+
+            {/* Wallet Button */}
             <button
               onClick={openWallet}
               className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 transition-all hover:border-amber-500/50 group shadow-sm"
@@ -102,11 +115,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
                 <Wallet className="w-4 h-4" />
               </div>
-              <div className="text-left">
+              <div className="text-left hidden sm:block">
                 <span className="block text-[10px] text-slate-400 font-medium leading-none">Wallet</span>
                 <span className="text-sm font-bold text-amber-400 leading-tight">₹{walletBalance.toFixed(2)}</span>
               </div>
-              <span className="text-[10px] bg-amber-500 text-slate-950 font-bold px-2 py-0.5 rounded-full ml-1 hover:bg-amber-400">
+              <span className="text-[10px] bg-amber-500 text-slate-950 font-bold px-2 py-0.5 rounded-full hover:bg-amber-400">
                 + Add
               </span>
             </button>

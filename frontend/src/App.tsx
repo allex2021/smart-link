@@ -9,13 +9,16 @@ import { AIAstrologerModal } from './components/AIAstrologerModal';
 import { WalletModal } from './components/WalletModal';
 import { MOCK_ASTROLOGERS } from './data/mockData';
 import { Astrologer, Transaction } from './types';
-import { Search, Filter, Sparkles, MessageSquare, PhoneCall, Bot, Shield, Award, Heart } from 'lucide-react';
+import { SupportedLanguageCode } from './data/languages';
+import { Search, Sparkles, Bot, Globe } from 'lucide-react';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<'astrologers' | 'kundli' | 'matchmaking' | 'ai-astro'>('astrologers');
   const [astrologers] = useState<Astrologer[]>(MOCK_ASTROLOGERS);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSkillFilter, setSelectedSkillFilter] = useState('All');
+  const [selectedLanguageFilter, setSelectedLanguageFilter] = useState('All');
+  const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguageCode>('bn');
 
   // Wallet State
   const [walletBalance, setWalletBalance] = useState(150.0);
@@ -35,6 +38,7 @@ export function App() {
   const [isAIOpen, setIsAIOpen] = useState(false);
 
   const filterSkills = ['All', 'Vedic Astrology', 'Tarot Cards', 'KP Astrology', 'Vastu Shastra', 'Palmistry'];
+  const languageFilters = ['All', 'English', 'Hindi', 'Bengali', 'Tamil', 'Telugu', 'Gujarati'];
 
   const filteredAstrologers = astrologers.filter((astro) => {
     const matchesSearch =
@@ -45,7 +49,10 @@ export function App() {
     const matchesSkill =
       selectedSkillFilter === 'All' || astro.skills.includes(selectedSkillFilter);
 
-    return matchesSearch && matchesSkill;
+    const matchesLang =
+      selectedLanguageFilter === 'All' || astro.languages.includes(selectedLanguageFilter);
+
+    return matchesSearch && matchesSkill && matchesLang;
   });
 
   const handleRechargeWallet = (amount: number) => {
@@ -94,6 +101,8 @@ export function App() {
         }}
         walletBalance={walletBalance}
         openWallet={() => setIsWalletOpen(true)}
+        currentLanguage={currentLanguage}
+        onSelectLanguage={setCurrentLanguage}
       />
 
       {/* Main View Area */}
@@ -111,14 +120,14 @@ export function App() {
             {/* Astrologers Directory Section */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
               {/* Filter and Search Bar */}
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-8">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-6">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-amber-400" />
                     Talk to Top Astrologers
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-400">
-                    Select an expert for live 1-on-1 audio call or chat
+                    Connect with experts in your preferred language (English, বাংলা, हिन्दी, தமிழ், తెలుగు)
                   </p>
                 </div>
 
@@ -136,21 +145,44 @@ export function App() {
                 </div>
               </div>
 
-              {/* Category Pills */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 scrollbar-none">
-                {filterSkills.map((skill) => (
-                  <button
-                    key={skill}
-                    onClick={() => setSelectedSkillFilter(skill)}
-                    className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
-                      selectedSkillFilter === skill
-                        ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md shadow-amber-500/20'
-                        : 'bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-white'
-                    }`}
-                  >
-                    {skill}
-                  </button>
-                ))}
+              {/* Skills Filter & Language Filter */}
+              <div className="space-y-3 mb-6">
+                {/* Category Pills */}
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+                  {filterSkills.map((skill) => (
+                    <button
+                      key={skill}
+                      onClick={() => setSelectedSkillFilter(skill)}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
+                        selectedSkillFilter === skill
+                          ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md shadow-amber-500/20'
+                          : 'bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-white'
+                      }`}
+                    >
+                      {skill}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Language Filter Pills */}
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+                  <span className="text-xs text-slate-500 font-semibold flex items-center gap-1 shrink-0">
+                    <Globe className="w-3.5 h-3.5" /> Language:
+                  </span>
+                  {languageFilters.map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => setSelectedLanguageFilter(lang)}
+                      className={`px-3 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap transition-all border ${
+                        selectedLanguageFilter === lang
+                          ? 'bg-purple-600 text-white border-purple-500 shadow-sm'
+                          : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-slate-200'
+                      }`}
+                    >
+                      {lang}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Astrologers Grid */}
@@ -190,6 +222,8 @@ export function App() {
           onDeductBalance={handleDeductBalance}
           onClose={() => setActiveChatAstrologer(null)}
           onOpenRecharge={() => setIsWalletOpen(true)}
+          currentLanguage={currentLanguage}
+          onSelectLanguage={setCurrentLanguage}
         />
       )}
 
@@ -212,9 +246,9 @@ export function App() {
           <div className="flex items-center gap-2">
             <span className="font-black text-slate-300">ASTROTALK WEB</span>
             <span>•</span>
-            <span>Accurate Vedic Astrology & Instant Guidance</span>
+            <span>Accurate Multilingual Vedic Astrology & Instant Guidance</span>
           </div>
-          <p>© 2026 AstroTalk Platform. Built for high-speed astrology consultations.</p>
+          <p>© 2026 AstroTalk Platform. English • বাংলা • हिन्दी • தமிழ் • తెలుగు • ગુજરાતી • मराठी</p>
         </div>
       </footer>
     </div>
