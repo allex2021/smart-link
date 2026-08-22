@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Bot, Send, Sparkles, X, Zap } from 'lucide-react';
-import { generateAstrologicalAIResponse } from '../utils/aiAstrologyResponse';
+import { processHumanAstrologerChat, ChatSessionState } from '../utils/aiAstrologyResponse';
 
 interface AIAstrologerModalProps {
   onClose: () => void;
@@ -10,11 +10,15 @@ export const AIAstrologerModal: React.FC<AIAstrologerModalProps> = ({ onClose })
   const [messages, setMessages] = useState<Array<{ sender: 'ai' | 'user'; text: string }>>([
     {
       sender: 'ai',
-      text: 'নমস্কার! আমি আপনার ২৪/৭ এআই বৈদিক জ্যোতিষী (AI Vedic Astrologer)। আপনার বিয়ে, চাকরি, প্রেম, সাড়ে সাতি বা প্রতিকার সংক্রান্ত যেকোনো প্রশ্ন বাংলায় বা ইংরেজিতে করতে পারেন!'
+      text: 'নমস্কার! 🙏 আমি আপনার ২৪/৭ এআই বৈদিক জ্যোতিষী। আপনার বিয়ে, চাকরি, প্রেম বা ভবিষ্যৎ নিয়ে যে কোনো প্রশ্ন বাংলায় বা ইংরেজিতে করতে পারেন!'
     }
   ]);
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
+  const [sessionState, setSessionState] = useState<ChatSessionState>({
+    hasCollectedBirthDetails: false,
+    birthDetails: {}
+  });
 
   const quickPrompts = [
     'আমার বিয়ে কবে হবে?',
@@ -31,9 +35,10 @@ export const AIAstrologerModal: React.FC<AIAstrologerModalProps> = ({ onClose })
     setLoading(true);
 
     setTimeout(() => {
-      const response = generateAstrologicalAIResponse(userQuery, 'AI Vedic Astrologer', false);
+      const { reply, updatedState } = processHumanAstrologerChat(userQuery, sessionState, 'AI Vedic Astrologer', false);
+      setSessionState(updatedState);
       setLoading(false);
-      setMessages((prev) => [...prev, { sender: 'ai', text: response }]);
+      setMessages((prev) => [...prev, { sender: 'ai', text: reply }]);
     }, 1200);
   };
 
@@ -50,7 +55,7 @@ export const AIAstrologerModal: React.FC<AIAstrologerModalProps> = ({ onClose })
               <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
                 AI Vedic Astrologer 24/7
                 <span className="text-[10px] bg-purple-500/20 text-purple-300 font-bold px-2 py-0.5 rounded-full border border-purple-500/30">
-                  Instant Answers
+                  Human Touch
                 </span>
               </h3>
               <p className="text-[11px] text-slate-400">Trained on Parashara Hora & Jaimini Sutras (Multilingual)</p>
@@ -87,7 +92,7 @@ export const AIAstrologerModal: React.FC<AIAstrologerModalProps> = ({ onClose })
           {loading && (
             <div className="flex items-center gap-2 text-purple-300 text-xs italic bg-purple-950/40 px-3 py-2 rounded-full w-fit border border-purple-500/30">
               <Sparkles className="w-4 h-4 text-purple-400 animate-spin" />
-              <span>বৈদিক শাস্ত্র ও গ্রহগোচর বিশ্লেষণ করা হচ্ছে...</span>
+              <span>বৈদিক শাস্ত্র ও আপনার জন্ম বিবরণ পর্যবেক্ষণ করা হচ্ছে...</span>
             </div>
           )}
         </div>
@@ -118,7 +123,7 @@ export const AIAstrologerModal: React.FC<AIAstrologerModalProps> = ({ onClose })
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="আপনার প্রশ্ন লিখুন (যেমন: আমার বিয়ে কবে হবে?)..."
+            placeholder="আপনার প্রশ্ন বা জন্ম বিবরণ লিখুন..."
             className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
           />
           <button

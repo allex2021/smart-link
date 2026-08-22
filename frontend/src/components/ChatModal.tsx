@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Clock, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react';
 import { Astrologer, ChatMessage } from '../types';
-import { generateAstrologicalAIResponse } from '../utils/aiAstrologyResponse';
+import { processHumanAstrologerChat, ChatSessionState } from '../utils/aiAstrologyResponse';
 
 interface ChatModalProps {
   astrologer: Astrologer;
@@ -21,8 +21,8 @@ export const ChatModal: React.FC<ChatModalProps> = ({
   const isAI = astrologer.isAI;
 
   const initialGreeting = isAI
-    ? `নমস্কার! আমি ${astrologer.name}। আপনার জন্ম বিবরণ (তারিখ, সময়, স্থান) এবং কী বিষয়ে জানতে চান বলুন। (বাংলা, English বা যেকোনো ভাষায় জিজ্ঞেস করতে পারেন!)`
-    : `নমস্কার! আমি ${astrologer.name} (${astrologer.specialty})। বলুন আজ আপনাকে কীভাবে সাহায্য করতে পারি?`;
+    ? `নমস্কার! 🙏 আমি ${astrologer.name}। বলুন আজ আপনাকে কীভাবে সাহায্য করতে পারি? আপনার কি বিয়ে, চাকরি, প্রেম বা ভবিষ্যৎ নিয়ে কোনো প্রশ্ন আছে?`
+    : `নমস্কার! আমি ${astrologer.name} (${astrologer.specialty})। বলুন ভাই/বোন, আপনার কী বিষয় নিয়ে জানার আছে?`;
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -43,6 +43,12 @@ export const ChatModal: React.FC<ChatModalProps> = ({
   const [secondsElapsed, setSecondsElapsed] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Stateful conversational tracking
+  const [sessionState, setSessionState] = useState<ChatSessionState>({
+    hasCollectedBirthDetails: false,
+    birthDetails: {}
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -97,14 +103,15 @@ export const ChatModal: React.FC<ChatModalProps> = ({
     };
 
     setMessages((prev) => [...prev, userMsg]);
-    const query = input;
+    const currentInput = input;
     setInput('');
     setIsTyping(true);
 
-    // Dynamic Intelligent Multilingual Astrological Responses
+    // Human-like natural delay and response generation
     setTimeout(() => {
       const isTarot = astrologer.skills.some((s) => s.toLowerCase().includes('tarot'));
-      const reply = generateAstrologicalAIResponse(query, astrologer.name, isTarot);
+      const { reply, updatedState } = processHumanAstrologerChat(currentInput, sessionState, astrologer.name, isTarot);
+      setSessionState(updatedState);
 
       setIsTyping(false);
       setMessages((prev) => [
@@ -116,7 +123,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
-    }, isAI ? 1200 : 2000);
+    }, isAI ? 1400 : 2200);
   };
 
   return (
@@ -138,7 +145,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({
                 {astrologer.name}
                 <CheckCircle2 className="w-3.5 h-3.5 text-sky-400" />
               </h3>
-              <p className="text-[11px] text-amber-400 font-medium">₹{astrologer.chatRatePerMin}/min • Live Chat</p>
+              <p className="text-[11px] text-amber-400 font-medium">₹{astrologer.chatRatePerMin}/min • Live Human & AI Consultation</p>
             </div>
           </div>
 
@@ -158,7 +165,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({
           </div>
         </div>
 
-        {/* Low Balance Alert Banner if balance is low */}
+        {/* Low Balance Alert Banner */}
         {walletBalance < astrologer.chatRatePerMin * 2 && (
           <div className="bg-amber-500/10 border-b border-amber-500/20 px-4 py-2 flex items-center justify-between text-xs text-amber-300">
             <div className="flex items-center gap-1.5">
@@ -210,7 +217,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({
           {isTyping && (
             <div className="flex items-center gap-2 text-slate-400 text-xs italic bg-slate-800/40 px-3 py-1.5 rounded-full w-fit border border-slate-800">
               <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin" />
-              <span>{astrologer.name} আপনার জন্মছক ও প্রশ্ন পর্যবেক্ষণ করছেন...</span>
+              <span>{astrologer.name} টাইপ করছেন ও গ্রহ গণনা করছেন...</span>
             </div>
           )}
 
@@ -223,7 +230,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="আপনার প্রশ্ন লিখুন (যেমন: আমার বিয়ে কবে হবে? বা চাকরি কবে পাব?)..."
+            placeholder="আপনার প্রশ্ন বা জন্ম বিবরণ লিখুন (DOB, Time, Place)..."
             className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
           />
           <button
