@@ -65,11 +65,32 @@ export function detectLanguageFromText(text: string, fallback: SupportedLanguage
 
 export function processHumanAstrologerChat(
   userMessage: string,
-  state: ChatSessionState,
-  astrologerName: string = 'পণ্ডিত মহারাজ',
+  stateOrName?: any,
+  astrologerNameOrState?: any,
   isTarot: boolean = false
-): { reply: string; updatedState: ChatSessionState } {
-  const text = userMessage.trim();
+): { reply: string; replyText: string; updatedState: ChatSessionState; updatedSessionState: ChatSessionState } {
+  const text = (userMessage || '').trim();
+
+  // Handle both argument orders gracefully: (msg, state, name) OR (msg, name, specialty, state)
+  let state: ChatSessionState = {
+    hasCollectedBirthDetails: false,
+    birthDetails: {},
+    preferredLanguage: 'bn'
+  };
+  let astrologerName = 'মহর্ষি আর্যভট্ট';
+
+  if (stateOrName && typeof stateOrName === 'object') {
+    state = { ...state, ...stateOrName };
+    if (typeof astrologerNameOrState === 'string') {
+      astrologerName = astrologerNameOrState;
+    }
+  } else if (typeof stateOrName === 'string') {
+    astrologerName = stateOrName;
+    if (astrologerNameOrState && typeof astrologerNameOrState === 'object') {
+      state = { ...state, ...astrologerNameOrState };
+    }
+  }
+
   const lang: SupportedLanguageCode = state.preferredLanguage || detectLanguageFromText(text, 'bn');
 
   const historyCount = (state.conversationHistoryCount || 0) + 1;
@@ -78,6 +99,8 @@ export function processHumanAstrologerChat(
     preferredLanguage: lang,
     conversationHistoryCount: historyCount
   };
+
+  let generatedReply = '';
 
   // 1. Check if user is giving birth details
   const extracted = extractBirthDetails(text);
@@ -91,29 +114,25 @@ export function processHumanAstrologerChat(
     };
 
     const topic = newState.topic || detectTopic(text) || 'marriage';
-    return {
-      reply: getBirthDetailsAcknowledgedMessage(lang, astrologerName) + "\n\n" + getTopicSpecificReading(topic, lang, text, astrologerName),
-      updatedState: newState
-    };
-  }
-
-  // 2. If birth details NOT yet collected, politely request them
-  if (!state.hasCollectedBirthDetails) {
+    generatedReply = getBirthDetailsAcknowledgedMessage(lang, astrologerName) + "\n\n" + getTopicSpecificReading(topic, lang, text, astrologerName);
+  } else if (!state.hasCollectedBirthDetails) {
+    // 2. If birth details NOT yet collected, politely request them
     const topic = detectTopic(text);
     if (topic) newState.topic = topic;
     newState.pendingQuestion = text;
 
-    return {
-      reply: getAskBirthDetailsPrompt(lang, text),
-      updatedState: newState
-    };
+    generatedReply = getAskBirthDetailsPrompt(lang, text);
+  } else {
+    // 3. User has already given birth details -> Give deep, context-specific tailored astrological analysis!
+    const topic = detectTopic(text) || newState.topic || 'general';
+    generatedReply = getTopicSpecificReading(topic, lang, text, astrologerName);
   }
 
-  // 3. User has already given birth details -> Give deep, context-specific tailored astrological analysis!
-  const topic = detectTopic(text) || newState.topic || 'general';
   return {
-    reply: getTopicSpecificReading(topic, lang, text, astrologerName),
-    updatedState: newState
+    reply: generatedReply,
+    replyText: generatedReply,
+    updatedState: newState,
+    updatedSessionState: newState
   };
 }
 
