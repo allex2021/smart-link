@@ -77,7 +77,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               {/* Overlapping small avatar circles */}
               <div className="flex items-center -space-x-2 ml-1">
                 <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&auto=format&fit=crop&q=80"
+                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=60&auto=format&fit=crop&q=80"
                   alt="Astro"
                   className="w-5 h-5 rounded-full object-cover border border-slate-900"
                 />
@@ -87,7 +87,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                   className="w-5 h-5 rounded-full object-cover border border-slate-900"
                 />
                 <img
-                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=60&auto=format&fit=crop&q=80"
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&auto=format&fit=crop&q=80"
                   alt="Astro"
                   className="w-5 h-5 rounded-full object-cover border border-slate-900"
                 />
@@ -127,7 +127,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             <div className="pt-3">
               <button
                 onClick={onStartConsultation}
-                className="px-7 py-3.5 rounded-2xl bg-[#f7e034] hover:bg-[#ffe838] text-slate-950 font-black text-sm sm:text-base shadow-[0_0_30px_rgba(247,224,52,0.45)] hover:shadow-[0_0_40px_rgba(247,224,52,0.65)] flex items-center gap-2.5 transition-all transform hover:scale-[1.03] active:scale-[0.98]"
+                className="px-7 py-3.5 rounded-2xl bg-[#f7e034] hover:bg-[#ffe838] text-slate-950 font-black text-sm sm:text-base shadow-[0_0_30px_rgba(247,224,52,0.45)] hover:shadow-[0_0_40px_rgba(247,224,52,0.65)] flex items-center gap-2.5 transition-all transform hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
               >
                 <span>Start Free Chat</span>
                 <ArrowRight className="w-4 h-4 stroke-[3]" />
@@ -135,38 +135,53 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             </div>
           </div>
 
-          {/* Right Column: Perfectly Balanced 3 Overlapping Astrologer Frames */}
+          {/* Right Column: 3 Authentic Indian Sadhu / Vedic Rishi / Acharya Portraits */}
           <div className="lg:col-span-6 flex items-center justify-center lg:justify-end py-6 lg:py-0">
             <div className="relative w-full max-w-[500px] h-[340px] sm:h-[390px] flex items-center justify-center">
               
-              {/* Left Capsule/Arch Astrologer (Z-10) */}
+              {/* Left Capsule/Arch: Authentic Indian Sadhu / Rishi in Saffron Attire */}
               <div className="absolute left-[4%] sm:left-[8%] top-[10%] z-10 w-[140px] sm:w-[170px] h-[220px] sm:h-[270px] rounded-[90px] overflow-hidden border border-[#f7e034]/40 shadow-2xl bg-slate-900 group transform -rotate-2 hover:rotate-0 transition-transform duration-300">
                 <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400"
-                  alt="Pandit Ji"
+                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=400"
+                  alt="Vedic Sadhu Maharaj"
                   className="w-full h-full object-cover object-top filter brightness-95 group-hover:brightness-105 transition-all"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                <div className="absolute bottom-2 inset-x-0 text-center">
+                  <span className="text-[10px] font-bold text-amber-300 bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                    আচার্য দেব
+                  </span>
+                </div>
               </div>
 
-              {/* Center Main Acharya Circle (Z-20, Large Glowing Frame) */}
+              {/* Center Main Acharya Circle: Senior Vedic Rishi / Pandit with Glowing Ring */}
               <div className="relative z-20 w-[200px] sm:w-[250px] h-[200px] sm:h-[250px] rounded-full overflow-hidden border-[4px] border-[#f7e034] shadow-[0_0_45px_rgba(247,224,52,0.45)] bg-slate-950 transform hover:scale-105 transition-transform duration-300">
                 <img
-                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=500"
-                  alt="Chief Astrologer"
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=500"
+                  alt="Chief Vedic Pandit Ji"
                   className="w-full h-full object-cover object-top"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute bottom-3 inset-x-0 text-center pointer-events-none">
+                  <span className="text-xs font-black text-[#f7e034] bg-slate-950/80 border border-amber-400/40 px-3 py-0.5 rounded-full shadow-lg">
+                    পণ্ডিত মহারাজ
+                  </span>
+                </div>
               </div>
 
-              {/* Right Capsule/Arch Astrologer (Z-10) */}
+              {/* Right Capsule/Arch: Traditional Vedic Acharya */}
               <div className="absolute right-[4%] sm:right-[8%] top-[14%] z-10 w-[140px] sm:w-[170px] h-[220px] sm:h-[270px] rounded-[90px] overflow-hidden border border-[#f7e034]/40 shadow-2xl bg-slate-900 group transform rotate-2 hover:rotate-0 transition-transform duration-300">
                 <img
                   src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400"
-                  alt="Vedic Astrologer"
+                  alt="Vedic Guru"
                   className="w-full h-full object-cover object-top filter brightness-95 group-hover:brightness-105 transition-all"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                <div className="absolute bottom-2 inset-x-0 text-center">
+                  <span className="text-[10px] font-bold text-amber-300 bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                    গুরুজী
+                  </span>
+                </div>
               </div>
             </div>
           </div>

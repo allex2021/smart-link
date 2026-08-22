@@ -5,9 +5,9 @@ import { AstrologerCard } from './components/AstrologerCard';
 import { KundliCalculator } from './components/KundliCalculator';
 import { MatchmakingTool } from './components/MatchmakingTool';
 import { DailyHoroscopeSection } from './components/DailyHoroscopeSection';
-import { AstroShopSection } from './components/AstroShopSection';
 import { CalculatorsHub } from './components/CalculatorsHub';
 import { TopicsSection } from './components/TopicsSection';
+import { TarotReadingSection } from './components/TarotReadingSection';
 import { HomePageTrustSection } from './components/HomePageTrustSection';
 import { FaqSection } from './components/FaqSection';
 import { ChatModal } from './components/ChatModal';
@@ -18,7 +18,7 @@ import { AuthModal } from './components/AuthModal';
 import { MOCK_ASTROLOGERS } from './data/mockData';
 import { Astrologer, Transaction, UserProfile } from './types';
 import { SupportedLanguageCode } from './data/languages';
-import { Search, Sparkles, Bot, Globe, SlidersHorizontal, Tag, Filter } from 'lucide-react';
+import { Search, Sparkles, Bot, Globe, Tag, Filter } from 'lucide-react';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<AppNavTab>('astrologers');
@@ -29,6 +29,27 @@ export function App() {
   const [selectedLanguageFilter, setSelectedLanguageFilter] = useState('All');
   const [selectedSortBy, setSelectedSortBy] = useState<'recommended' | 'rating' | 'experience' | 'price_asc'>('recommended');
   const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguageCode>('bn');
+
+  // Theme State: Dark / Light Mode
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('astrotalk_theme');
+    return (saved === 'light' || saved === 'dark') ? saved : 'dark';
+  });
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  useEffect(() => {
+    localStorage.setItem('astrotalk_theme', theme);
+    if (theme === 'light') {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    }
+  }, [theme]);
 
   // User Authentication State
   const [user, setUser] = useState<UserProfile | null>(() => {
@@ -164,9 +185,13 @@ export function App() {
     el?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const isLight = theme === 'light';
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      {/* Navigation Bar with Sub-categories */}
+    <div className={`min-h-screen flex flex-col font-sans transition-colors duration-300 ${
+      isLight ? 'bg-slate-50 text-slate-900' : 'bg-slate-950 text-slate-100'
+    }`}>
+      {/* Navigation Bar with Sub-categories & Functional Theme Switcher */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={(tab) => {
@@ -184,6 +209,8 @@ export function App() {
         user={user}
         onOpenAuth={() => setIsAuthOpen(true)}
         onLogout={handleLogout}
+        theme={theme}
+        onToggleTheme={toggleTheme}
         onSelectSubCategory={(mainTab, sub) => {
           if (mainTab === 'astrologers' && sub) {
             const el = document.getElementById('astrologers-section');
@@ -221,11 +248,11 @@ export function App() {
               {/* Header & Search Bar */}
               <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-6">
                 <div>
-                  <h2 className="text-xl sm:text-3xl font-black text-white flex items-center gap-2">
+                  <h2 className={`text-xl sm:text-3xl font-black flex items-center gap-2 ${isLight ? 'text-slate-900' : 'text-white'}`}>
                     <Sparkles className="w-6 h-6 text-[#f7e034]" />
                     Talk to Verified Astrologers
                   </h2>
-                  <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                  <p className={`text-xs sm:text-sm mt-1 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
                     Connect 1-on-1 with experts via Chat or Audio Call (English, বাংলা, हिन्दी, தமிழ், తెలుగు)
                   </p>
                 </div>
@@ -238,14 +265,18 @@ export function App() {
                       placeholder="Search astrologer, tarot, marriage..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#f7e034] transition-colors"
+                      className={`w-full rounded-xl pl-9 pr-4 py-2.5 text-xs placeholder-slate-400 focus:outline-none focus:border-[#f7e034] transition-colors ${
+                        isLight ? 'bg-white border border-slate-300 text-slate-900' : 'bg-slate-900 border border-slate-700 text-white'
+                      }`}
                     />
                   </div>
                 </div>
               </div>
 
               {/* Multi-layer Filter System: Main Categories + Sub-Categories + Sorting */}
-              <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 mb-8 space-y-4 shadow-xl">
+              <div className={`rounded-3xl p-5 mb-8 space-y-4 shadow-xl border ${
+                isLight ? 'bg-white border-slate-200' : 'bg-slate-900/90 border-slate-800'
+              }`}>
                 
                 {/* 1. Main Categories Row */}
                 <div>
@@ -261,6 +292,8 @@ export function App() {
                         className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
                           selectedSkillFilter === skill
                             ? 'bg-[#f7e034] text-slate-950 border-[#f7e034] shadow-md font-bold'
+                            : isLight
+                            ? 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200 hover:text-slate-950'
                             : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-white'
                         }`}
                       >
@@ -271,9 +304,9 @@ export function App() {
                 </div>
 
                 {/* 2. Sub-Categories (Specializations & Problem Topics) */}
-                <div className="pt-2 border-t border-slate-800/80">
+                <div className="pt-2 border-t border-slate-800/20">
                   <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <Tag className="w-3.5 h-3.5 text-amber-400" />
+                    <Tag className="w-3.5 h-3.5 text-amber-500" />
                     Sub-Category / Specialization (সাব-ক্যাটাগরি ও বিষয়)
                   </div>
                   <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
@@ -284,6 +317,8 @@ export function App() {
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all border ${
                           selectedSubCategoryFilter === sub
                             ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold shadow-sm'
+                            : isLight
+                            ? 'bg-slate-100 text-slate-600 border-slate-200 hover:text-slate-900'
                             : 'bg-slate-950/70 text-slate-400 border-slate-800/80 hover:text-slate-200'
                         }`}
                       >
@@ -294,11 +329,11 @@ export function App() {
                 </div>
 
                 {/* 3. Language & Sorting Row */}
-                <div className="pt-2 border-t border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+                <div className="pt-2 border-t border-slate-800/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
                   
                   {/* Language Pills */}
                   <div className="flex items-center gap-1.5 overflow-x-auto max-w-full">
-                    <span className="text-slate-500 font-semibold flex items-center gap-1 shrink-0 text-[11px]">
+                    <span className="text-slate-400 font-semibold flex items-center gap-1 shrink-0 text-[11px]">
                       <Globe className="w-3.5 h-3.5" /> Language:
                     </span>
                     {languageFilters.map((lang) => (
@@ -308,6 +343,8 @@ export function App() {
                         className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
                           selectedLanguageFilter === lang
                             ? 'bg-purple-600 text-white font-bold'
+                            : isLight
+                            ? 'text-slate-600 hover:text-slate-950'
                             : 'text-slate-400 hover:text-white'
                         }`}
                       >
@@ -318,11 +355,13 @@ export function App() {
 
                   {/* Sorting Dropdown */}
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-slate-500 text-[11px]">Sort By:</span>
+                    <span className="text-slate-400 text-[11px]">Sort By:</span>
                     <select
                       value={selectedSortBy}
                       onChange={(e) => setSelectedSortBy(e.target.value as any)}
-                      className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-[#f7e034]"
+                      className={`border rounded-lg px-2.5 py-1 text-xs focus:outline-none focus:border-[#f7e034] ${
+                        isLight ? 'bg-white border-slate-300 text-slate-800' : 'bg-slate-950 border-slate-800 text-slate-200'
+                      }`}
                     >
                       <option value="recommended">⭐ Recommended</option>
                       <option value="rating">🌟 Highest Rating</option>
@@ -346,7 +385,9 @@ export function App() {
               </div>
 
               {filteredAstrologers.length === 0 && (
-                <div className="text-center py-12 text-slate-400 bg-slate-900/50 rounded-2xl border border-slate-800">
+                <div className={`text-center py-12 rounded-2xl border ${
+                  isLight ? 'bg-white border-slate-200 text-slate-600' : 'bg-slate-900/50 border-slate-800 text-slate-400'
+                }`}>
                   <p className="text-sm">No astrologers found matching the selected category and sub-category.</p>
                   <button
                     onClick={() => {
@@ -379,13 +420,13 @@ export function App() {
 
         {activeTab === 'calculators' && <CalculatorsHub />}
 
-        {activeTab === 'shop' && <AstroShopSection />}
+        {activeTab === 'tarot' && <TarotReadingSection />}
       </main>
 
       {/* Floating AI Astrologer Trigger Button */}
       <button
         onClick={() => setIsAIOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white font-bold text-xs shadow-2xl shadow-purple-600/40 hover:scale-105 active:scale-95 transition-all glow-amber"
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white font-bold text-xs shadow-2xl shadow-purple-600/40 hover:scale-105 active:scale-95 transition-all glow-amber cursor-pointer"
       >
         <Bot className="w-5 h-5 animate-pulse" />
         <span className="hidden sm:inline">Ask AI Astrologer 24/7</span>
@@ -437,10 +478,12 @@ export function App() {
       )}
 
       {/* Astrotalk Grand Footer */}
-      <footer className="bg-slate-900 border-t border-slate-800 py-12 px-4 sm:px-6 text-xs text-slate-400">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-8 pb-10 border-b border-slate-800">
+      <footer className={`border-t py-12 px-4 sm:px-6 text-xs ${
+        isLight ? 'bg-white border-slate-200 text-slate-600' : 'bg-slate-900 border-slate-800 text-slate-400'
+      }`}>
+        <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-8 pb-10 border-b border-slate-800/40">
           <div>
-            <h4 className="font-bold text-white text-sm mb-3">Consultations</h4>
+            <h4 className={`font-bold text-sm mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Consultations</h4>
             <ul className="space-y-2">
               <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('astrologers'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Chat with Astrologer</li>
               <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('astrologers'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Call with Astrologer</li>
@@ -449,7 +492,7 @@ export function App() {
           </div>
 
           <div>
-            <h4 className="font-bold text-white text-sm mb-3">Horoscope & Kundli</h4>
+            <h4 className={`font-bold text-sm mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Horoscope & Kundli</h4>
             <ul className="space-y-2">
               <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('horoscope'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Daily Horoscope (12 Signs)</li>
               <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('kundli'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Free Janam Kundli</li>
@@ -458,7 +501,7 @@ export function App() {
           </div>
 
           <div>
-            <h4 className="font-bold text-white text-sm mb-3">Calculators Hub</h4>
+            <h4 className={`font-bold text-sm mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Calculators Hub</h4>
             <ul className="space-y-2">
               <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('calculators'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Love Match Calculator</li>
               <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('calculators'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Lo Shu Grid Numerology</li>
@@ -467,18 +510,19 @@ export function App() {
           </div>
 
           <div>
-            <h4 className="font-bold text-white text-sm mb-3">AstroShop</h4>
+            <h4 className={`font-bold text-sm mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Vedic Accuracy & Trust</h4>
             <ul className="space-y-2">
-              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('shop'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Certified Gemstones</li>
-              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('shop'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Rudraksha Malas</li>
-              <li className="hover:text-[#f7e034] cursor-pointer" onClick={() => { setActiveTab('shop'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Shree Yantras</li>
+              <li className="hover:text-[#f7e034] cursor-pointer">NASA JPL Swiss Ephemeris</li>
+              <li className="hover:text-[#f7e034] cursor-pointer">1000+ Classical Yogas</li>
+              <li className="hover:text-[#f7e034] cursor-pointer">KP Cuspal Sub-Lords System</li>
+              <li className="hover:text-[#f7e034] cursor-pointer">100% Private & Encrypted</li>
             </ul>
           </div>
         </div>
 
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-center text-slate-500">
           <div className="flex items-center gap-2">
-            <span className="font-black text-slate-300">ASTROTALK LIVE PLATFORM</span>
+            <span className={`font-black ${isLight ? 'text-slate-900' : 'text-slate-300'}`}>ASTROTALK LIVE PLATFORM</span>
             <span>•</span>
             <span>Accurate Multilingual Vedic Astrology & Instant 24/7 Guidance</span>
           </div>

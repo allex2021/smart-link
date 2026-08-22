@@ -1,5 +1,35 @@
 @import "tailwindcss";
 
+@theme {
+  --animate-anti-gravity: anti-gravity 4.5s ease-in-out infinite alternate;
+
+  @keyframes anti-gravity {
+    0% {
+      transform: translateY(0) rotateZ(0deg) rotateX(0deg);
+    }
+    50% {
+      transform: translateY(-18px) rotateZ(-1.5deg) rotateX(4deg);
+    }
+    100% {
+      transform: translateY(0) rotateZ(1.5deg) rotateX(-4deg);
+    }
+  }
+}
+
+@utility pause {
+  animation-play-state: paused;
+}
+
+/* Fallbacks for older configurations */
+.animate-anti-gravity {
+  animation: anti-gravity 4.5s ease-in-out infinite alternate;
+}
+
+.hover\:pause:hover {
+  animation-play-state: paused;
+}
+
+
 body {
   background-color: #020617;
   color: #f8fafc;
@@ -34,3 +64,14 @@ body {
 .glow-amber {
   animation: pulseGlow 3s infinite ease-in-out;
 }
+
+/* Card Flip 3D Utilities */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
