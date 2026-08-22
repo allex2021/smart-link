@@ -16,6 +16,7 @@ import { AIAstrologerModal } from './components/AIAstrologerModal';
 import { WalletModal } from './components/WalletModal';
 import { AuthModal } from './components/AuthModal';
 import { LifetimeVipModal } from './components/LifetimeVipModal';
+import { VipAccessGateOverlay } from './components/VipAccessGateOverlay';
 import { MOCK_ASTROLOGERS } from './data/mockData';
 import { Astrologer, Transaction, UserProfile } from './types';
 import { SupportedLanguageCode } from './data/languages';
@@ -485,6 +486,14 @@ export function App() {
         <Sparkles className="w-5 h-5 fill-slate-950 animate-pulse" />
         <span className="hidden sm:inline">Ask AI Acharya 24/7</span>
       </button>
+
+      {/* 👑 High-Converting Semi-Transparent VIP Access Gate Overlay with Secret Key */}
+      <VipAccessGateOverlay
+        isUnlocked={isLifetimeVIP}
+        onUnlockSuccess={(key) => {
+          handleVipSuccess();
+        }}
+      />
 
       {/* 👑 Lifetime VIP Pass Modal for Rs 99 */}
       <LifetimeVipModal
